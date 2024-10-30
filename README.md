@@ -9,10 +9,13 @@ Starter project for ST0526 CICD
 
    ```
    DATABASE_URL=
+   PORT=
    ```
 
    2.1 `DATABASE_URL`: Paste the connection string for development and test environment into the `.env` files respectively.
+   2.2 Set PORT to `3000` for `.env.development` and `3001` for `.env.test`
 
 3. Install dependencies: `npm install`
-4. Start server: `npm start`
-5. Run end-2-end test: `npm test`
+4. Setup database: `npm run migrate:reset`
+5. Start server: `npm start`
+6. Run end-2-end test: `npm test`
