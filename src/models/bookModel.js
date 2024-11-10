@@ -82,75 +82,92 @@ module.exports.searchByCategory = async (data) => {
 }
 
 
-module.exports.rentBook = async (data) => {
+module.exports.rentBook = (data) => {
     const { bookId, userId } = data;
 
-    return await prisma.book.findFirst({
+    return prisma.book.findFirst({
         where: {
             id: bookId
-            // no_of_copies: { gt: 0 } (Return null if 0 but want to add a condition below)
         }
     })
-    .then((book) => {
-        if (!book) {
-            throw new Error("Book not available for rent");
-        }
-
-        return prisma.user_status.findFirst({
-            where: { user_id: userId }
-        })
-        .then((userStatus) => {
-            if (!userStatus) {
-                throw new Error("User status not found");
+        .then((book) => {
+            if (!book) {
+                throw new Error("Book not available for rent");
             }
 
-            if (userStatus.reputation < 40) {
-                throw new Error("User reputation is too low to rent a book");
-            }
-
+            // Check if the book is out of stock
             if (book.no_of_copies <= 0) {
                 throw new Error("This book is currently out of stock");
             }
 
-            if (userStatus.current_book_count >= userStatus.max_book_count) {
-                throw new Error("User has reached the maximum number of rented books");
-            }
-
-            const startDate = new Date();
-            const endDate = new Date(startDate);
-            endDate.setDate(startDate.getDate() + 3);
-
-            return prisma.$transaction([
-                prisma.user_status.update({
-                    where: { id: userStatus.id }, 
-                    data: { current_book_count: { increment: 1 } }
-                }),
-
-                prisma.book.update({
-                    where: { id: bookId },
-                    data: { no_of_copies: { decrement: 1 } }
-                }),
-
-                prisma.rent_history.create({
-                    data: {
-                        book_id: bookId,
-                        user_id: userId,
-                        start_date: startDate,
-                        end_date: endDate,
-                        return_date: null,
-                        due_status: null
+            // Check if the user has already rented this book and has not returned it
+            return prisma.rent_history.findFirst({
+                where: {
+                    book_id: bookId,
+                    user_id: userId,
+                    return_date: null  // Indicates the book has not been returned yet
+                }
+            })
+                .then((existingRental) => {
+                    if (existingRental) {
+                        throw new Error("User has already rented this book and has not returned it");
                     }
+
+                    // Check user status
+                    return prisma.user_status.findFirst({
+                        where: { user_id: userId }
+                    });
                 })
-            ]);
+                .then((userStatus) => {
+                    if (!userStatus) {
+                        throw new Error("User status not found");
+                    }
+
+                    if (userStatus.reputation < 40) {
+                        throw new Error("User reputation is too low to rent a book");
+                    }
+
+                    if (userStatus.current_book_count >= userStatus.max_book_count) {
+                        throw new Error("User has reached the maximum number of rented books");
+                    }
+
+                    // Calculate start_date and end_date
+                    const startDate = new Date();
+                    const endDate = new Date(startDate);
+                    endDate.setDate(startDate.getDate() + 3);
+
+                    // Rent the book by updating the database records in a transaction
+                    return prisma.$transaction([
+                        prisma.user_status.update({
+                            where: { id: userStatus.id },
+                            data: { current_book_count: { increment: 1 } }
+                        }),
+
+                        prisma.book.update({
+                            where: { id: bookId },
+                            data: { no_of_copies: { decrement: 1 } }
+                        }),
+
+                        prisma.rent_history.create({
+                            data: {
+                                book_id: bookId,
+                                user_id: userId,
+                                start_date: startDate,
+                                end_date: endDate,
+                                return_date: null,
+                                due_status: null
+                            }
+                        })
+                    ]);
+                })
+                .then(() => {
+                    return { message: "Book rented successfully", book };
+                });
         })
-        .then(() => {
-            return { message: "Book rented successfully", book };
+        .catch((error) => {
+            console.error(error);
+            throw new Error(error.message || "Failed to rent the book");
         });
-    })
-    .catch((error) => {
-        console.error(error);
-        throw new Error(error.message || "Failed to rent the book");
-    });
 };
 
 module.exports.return = async (data) => {
@@ -194,64 +211,141 @@ module.exports.rentBook = async (data) => {
             // no_of_copies: { gt: 0 } (Return null if 0 but want to add a condition below)
         }
     })
-    .then((book) => {
-        if (!book) {
-            throw new Error("Book not available for rent");
-        }
-
-        return prisma.user_status.findFirst({
-            where: { user_id: userId }
-        })
-        .then((userStatus) => {
-            if (!userStatus) {
-                throw new Error("User status not found");
+        .then((book) => {
+            if (!book) {
+                throw new Error("Book not available for rent");
             }
 
-            if (userStatus.reputation < 40) {
-                throw new Error("User reputation is too low to rent a book");
-            }
-
-            if (book.no_of_copies <= 0) {
-                throw new Error("This book is currently out of stock");
-            }
-
-            if (userStatus.current_book_count >= userStatus.max_book_count) {
-                throw new Error("User has reached the maximum number of rented books");
-            }
-
-            const startDate = new Date();
-            const endDate = new Date(startDate);
-            endDate.setDate(startDate.getDate() + 3);
-
-            return prisma.$transaction([
-                prisma.user_status.update({
-                    where: { id: userStatus.id }, 
-                    data: { current_book_count: { increment: 1 } }
-                }),
-
-                prisma.book.update({
-                    where: { id: bookId },
-                    data: { no_of_copies: { decrement: 1 } }
-                }),
-
-                prisma.rent_history.create({
-                    data: {
-                        book_id: bookId,
-                        user_id: userId,
-                        start_date: startDate,
-                        end_date: endDate,
-                        return_date: null,
-                        due_status: null
+            return prisma.user_status.findFirst({
+                where: { user_id: userId }
+            })
+                .then((userStatus) => {
+                    if (!userStatus) {
+                        throw new Error("User status not found");
                     }
+
+                    if (userStatus.reputation < 40) {
+                        throw new Error("User reputation is too low to rent a book");
+                    }
+
+                    if (book.no_of_copies <= 0) {
+                        throw new Error("This book is currently out of stock");
+                    }
+
+                    if (userStatus.current_book_count >= userStatus.max_book_count) {
+                        throw new Error("User has reached the maximum number of rented books");
+                    }
+
+                    const startDate = new Date();
+                    const endDate = new Date(startDate);
+                    endDate.setDate(startDate.getDate() + 3);
+
+                    return prisma.$transaction([
+                        prisma.user_status.update({
+                            where: { id: userStatus.id },
+                            data: { current_book_count: { increment: 1 } }
+                        }),
+
+                        prisma.book.update({
+                            where: { id: bookId },
+                            data: { no_of_copies: { decrement: 1 } }
+                        }),
+
+                        prisma.rent_history.create({
+                            data: {
+                                book_id: bookId,
+                                user_id: userId,
+                                start_date: startDate,
+                                end_date: endDate,
+                                return_date: null,
+                                due_status: null
+                            }
+                        })
+                    ]);
                 })
-            ]);
+                .then(() => {
+                    return { message: "Book rented successfully", book };
+                });
         })
-        .then(() => {
-            return { message: "Book rented successfully", book };
+        .catch((error) => {
+            console.error(error);
+            throw new Error(error.message || "Failed to rent the book");
         });
+};
+
+module.exports.returnBook = (data) => {
+    const { bookId, userId } = data;
+    const today = new Date();
+
+    return prisma.rent_history.findFirst({
+        where: {
+            book_id: bookId,
+            user_id: userId,
+            return_date: null  // Ensuring this is an active rental
+        }
     })
-    .catch((error) => {
-        console.error(error);
-        throw new Error(error.message || "Failed to rent the book");
-    });
+        .then((rentalRecord) => {
+            if (!rentalRecord) {
+                throw new Error("No active rental record found for this user and book");
+            }
+
+            const isDue = today > new Date(rentalRecord.end_date);
+            const daysOverdue = isDue ? Math.ceil((today - new Date(rentalRecord.end_date)) / (1000 * 60 * 60 * 24)) : 0;
+            const dueFee = daysOverdue * 5;  // $5 per day if overdue
+
+            // Fetch the user status
+            return prisma.user_status.findFirst({
+                where: { user_id: userId }
+            })
+                .then((userStatus) => {
+                    if (!userStatus) {
+                        throw new Error("User status not found");
+                    }
+
+                    // Start the transaction
+                    return prisma.$transaction([
+                        // Update the rental history with return_date and due status using composite key
+                        prisma.rent_history.update({
+                            where: {
+                                user_id_book_id: {  // Use the composite unique key created by Prisma
+                                    user_id: userId,
+                                    book_id: bookId
+                                }
+                            },
+                            data: {
+                                return_date: today,
+                                due_status: isDue ? true : false
+                            }
+                        }),
+
+                        // Update the book's no_of_copies
+                        prisma.book.update({
+                            where: { id: bookId },
+                            data: { no_of_copies: { increment: 1 } }
+                        }),
+
+                        // Update the user status based on whether the book is overdue or not
+                        prisma.user_status.update({
+                            where: { id: userId },
+                            data: {
+                                current_book_count: { decrement: 1 },
+                                reputation: { increment: isDue ? -5 : 5 },
+                                max_book_count: {
+                                    increment: isDue ? -1 : (userStatus.max_book_count < 5 ? 1 : 0)
+                                }
+                            }
+                        })
+                    ]).then(() => {
+                        // Return the result with due fee information if overdue
+                        return {
+                            message: "Book returned successfully",
+                            dueFee: isDue ? `$${dueFee} (Overdue by ${daysOverdue} days)` : "$0 (No overdue)"
+                        };
+                    });
+                });
+        })
+        .catch((error) => {
+            console.error(error);
+            throw new Error(error.message || "Failed to return the book");
+        });
 };
