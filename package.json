@@ -25,6 +25,7 @@
   },
   "scripts": {
     "postinstall": "npx prisma generate",
+    "tempt": "dotenv -e .env.development -- npx prisma migrate dev --name init",
     "migration:dev": "dotenv -e .env.development -- npx prisma migrate dev",
     "migration:reset": "dotenv -e .env.development -- npx prisma migrate reset",
     "start": "dotenv -e .env.development -- node ./src/server.js",
