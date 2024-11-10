@@ -6,6 +6,7 @@ const statusRouter = require('./routers/Status.router');
 const personRouter = require('./routers/Person.router');
 const userRoute = require('./routers/userRoute');
 const bookRoute = require('./routers/bookRoute');
+const bookRequestRoute = require('./routers/bookRequestRoute');
 const path = require('path');
 
 const app = express();
@@ -16,8 +17,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/tasks', taskRouter);
 app.use('/statuses', statusRouter);
 app.use('/persons', personRouter);
-app.use('/users',userRoute);
-app.use('/books',bookRoute)
+app.use('/api/users',userRoute);
+app.use('/api/books',bookRoute);
+app.use('/api/requests',bookRequestRoute);
 
 app.use((req, res, next) => {
   next(createError(404, `Unknown resource ${req.method} ${req.originalUrl}`));
