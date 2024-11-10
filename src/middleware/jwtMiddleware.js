@@ -53,20 +53,18 @@ module.exports.verifyToken = function (req, res, next){
     }
 
     const token = authHeader.substring(7);
-
+    console.log(token)
     if (!token) {
         return res.status(401).json({ error: "No token provided" });
     }
 
     const callback = function (err, decoded) {
         if (err) {
-            return res.status(401).json({ error: "Invalid token" });
+            return res.status(401).json({ error: err });
         }
 
-        console.log(decoded);
-
         res.locals.username = decoded.name;
-        res.locals.user_id = decoded.user_id,
+        res.locals.user_id = decoded.user_id;
         res.locals.role = decoded.role;
         res.locals.tokenTimestamp = decoded.timestamp;
 
@@ -80,7 +78,7 @@ module.exports.verifyToken = function (req, res, next){
 module.exports.verifyIsAdmin = function (req, res, next){
 
     console.log(res.locals.role, typeof(res.locals.role))
-    if (res.locals.role !== 2) {
+    if (res.locals.role !== "admin") {
         return res.status(403).json({ error: 'Requires administrator role.' });
     }
     next();

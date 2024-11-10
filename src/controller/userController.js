@@ -62,7 +62,7 @@ module.exports.login = (req, res, next) => {
             }
             res.locals.hash = user.password;
             res.locals.name = user.name;
-            res.locals.id = user.id;
+            res.locals.user_id = user.id;
             res.locals.role = user.role;
             next();
         })
