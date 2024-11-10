@@ -90,20 +90,3 @@ module.exports.rentBook = (req, res) => {
             return res.status(500).json({ error: error.message });
         });
 };
-
-module.exports.returnBook = (req, res, next) => {
-    if (!req.params.categoryName) {
-        return res.status(400).json({ message: "Necessary data is missing" });
-    }
-    const data = {
-        categoryName: req.params.categoryName
-    }
-    model.returnBook(data)
-        .then(books => {
-            res.json({ books: books });
-        })
-        .catch(function (error) {
-            console.error(error);
-            return res.status(500).json({ error: error.message });
-        });
-}
