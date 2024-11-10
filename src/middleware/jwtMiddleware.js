@@ -63,8 +63,10 @@ module.exports.verifyToken = function (req, res, next){
             return res.status(401).json({ error: "Invalid token" });
         }
 
-        res.locals.username = decoded.username;
-        res.locals.member_id = decoded.member_id,
+        console.log(decoded);
+
+        res.locals.username = decoded.name;
+        res.locals.member_id = decoded.id,
         res.locals.role = decoded.role;
         res.locals.tokenTimestamp = decoded.timestamp;
 

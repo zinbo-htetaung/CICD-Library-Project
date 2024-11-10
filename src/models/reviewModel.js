@@ -2,12 +2,10 @@ const pool = require('../database.js');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-module.exports.retrieveReviewsByBookId = async (data) => {
-    return await prisma.review.findMany({
+module.exports.retrieveReviewsByBookId = (data) => {
+    return prisma.review.findMany({
         where: {
-            book_id: {
-                book_id: data.bookId
-            }
+            book_id: data.bookId
         }
     })
         .then(reviews => {
@@ -18,6 +16,21 @@ module.exports.retrieveReviewsByBookId = async (data) => {
             console.error(error);
         });
 }
+
+module.exports.checkBookExists = (bookId) => {
+    return prisma.book.findUnique({
+        where: {
+            id: bookId,
+        },
+    })
+    .then((book) => {
+        return !!book;
+    })
+    .catch((error) => {
+        console.error(error);
+        throw error;
+    });
+};
 
 module.exports.checkRentHistory = (data) => {
     return prisma.rent_history.findFirst({
@@ -70,4 +83,55 @@ module.exports.createReview = (data) => {
         .catch(error => {
             console.error(error);
         });
+};
+
+module.exports.checkReviewOwner = (data) => {
+    return prisma.review.findFirst({
+        where: {
+            id: data.reviewId
+        }
+    })
+        .then(review => {
+            return review;
+        })
+        .catch(error => {
+            console.error(error);
+        });
+};
+
+module.exports.updateReview = (data) => {
+    return prisma.review.update({
+        where: {
+            id: data.reviewId
+        },
+        data: {
+            rating: data.rating,
+            review_text: data.reviewText
+        }
+    })
+        .then(updatedReview => {
+            return updatedReview;
+        })
+        .catch(error => {
+            console.error("Error in updateReview:", error);
+            throw new Error("Failed to update review.");
+        });
+};
+
+module.exports.deleteReview = (data) => {
+    return prisma.review.delete({
+        where: {
+            id: data.reviewId
+        }
+    })
+    .then(deletedReview => {
+        return deletedReview;
+    })
+    .catch(error => {
+        console.error("Error in deleteReview:", error);
+        if (error.code === 'P2025') {
+            return null;
+        }
+        throw new Error("Failed to delete the review.");
+    });
 };
