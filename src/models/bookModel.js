@@ -1,4 +1,5 @@
 const prisma = require('./prismaClient');
+
 module.exports.retrieveAll = async () => {
     return await prisma.book.findMany()
         .then(books => {

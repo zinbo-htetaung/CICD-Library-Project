@@ -1,7 +1,6 @@
 const { database } = require("pg/lib/defaults.js");
 const model = require("../models/bookModel.js");
 
-
 module.exports.retrieveAllBooks = (req, res, next) => {
     model.retrieveAll()
         .then(books => {
