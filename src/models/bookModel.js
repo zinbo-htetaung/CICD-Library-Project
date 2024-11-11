@@ -81,7 +81,6 @@ module.exports.searchByCategory = async (data) => {
         });
 }
 
-
 module.exports.rentBook = (data) => {
     const { bookId, userId } = data;
 
@@ -107,182 +106,72 @@ module.exports.rentBook = (data) => {
                     user_id: userId,
                     return_date: null  // Indicates the book has not been returned yet
                 }
-            })
-                .then((existingRental) => {
-                    if (existingRental) {
-                        throw new Error("User has already rented this book and has not returned it");
-                    }
-
-                    // Check user status
-                    return prisma.user_status.findFirst({
-                        where: { user_id: userId }
-                    });
-                })
-                .then((userStatus) => {
-                    if (!userStatus) {
-                        throw new Error("User status not found");
-                    }
-
-                    if (userStatus.reputation < 40) {
-                        throw new Error("User reputation is too low to rent a book");
-                    }
-
-                    if (userStatus.current_book_count >= userStatus.max_book_count) {
-                        throw new Error("User has reached the maximum number of rented books");
-                    }
-
-                    // Calculate start_date and end_date
-                    const startDate = new Date();
-                    const endDate = new Date(startDate);
-                    endDate.setDate(startDate.getDate() + 3);
-
-                    // Rent the book by updating the database records in a transaction
-                    return prisma.$transaction([
-                        prisma.user_status.update({
-                            where: { id: userStatus.id },
-                            data: { current_book_count: { increment: 1 } }
-                        }),
-
-                        prisma.book.update({
-                            where: { id: bookId },
-                            data: { no_of_copies: { decrement: 1 } }
-                        }),
-
-                        prisma.rent_history.create({
-                            data: {
-                                book_id: bookId,
-                                user_id: userId,
-                                start_date: startDate,
-                                end_date: endDate,
-                                return_date: null,
-                                due_status: null
-                            }
-                        })
-                    ]);
-                })
-                .then(() => {
-                    return { message: "Book rented successfully", book };
-                });
+            });
         })
-        .catch((error) => {
-            console.error(error);
-            throw new Error(error.message || "Failed to rent the book");
-        });
-};
+        .then((existingRental) => {
+            if (existingRental) {
+                throw new Error("User has already rented this book and has not returned it");
+            }
 
-module.exports.return = async (data) => {
-    return await prisma.book.findMany({
-        where: {
-            book_category: {
-                some: {
-                    category: {
-                        category_name: {
-                            contains: data.categoryName,
-                            mode: 'insensitive'
-                        }
-                    }
-                }
-            }
-        },
-        include: {
-            book_category: {
-                include: {
-                    category: true
-                }
-            }
-        }
-    })
-        .then(books => {
-            console.log(books)
-            return books;
+            // Check user status
+            return prisma.user_status.findFirst({
+                where: { user_id: userId }
+            });
         })
-        .catch(error => {
-            console.error(error);
-
-        });
-}
-
-module.exports.rentBook = (data) => {
-    const { bookId, userId } = data;
-
-    return prisma.book.findFirst({
-        where: {
-            id: bookId
-        }
-    })
-        .then((book) => {
-            if (!book) {
-                throw new Error("Book not available for rent");
+        .then((userStatus) => {
+            if (!userStatus) {
+                throw new Error("User status not found");
             }
 
-            // Check if the book is out of stock
-            if (book.no_of_copies <= 0) {
-                throw new Error("This book is currently out of stock");
+            if (userStatus.reputation < 40) {
+                throw new Error("User reputation is too low to rent a book");
             }
 
-            // Check if the user has already rented this book and has not returned it
-            return prisma.rent_history.findFirst({
-                where: {
-                    book_id: bookId,
-                    user_id: userId,
-                    return_date: null  // Indicates the book has not been returned yet
+            if (userStatus.current_book_count >= userStatus.max_book_count) {
+                throw new Error("User has reached the maximum number of rented books");
+            }
+
+            // Calculate start_date and end_date
+            const startDate = new Date();
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + 3);
+
+            // Rent the book by updating the database records in a transaction
+            return prisma.$transaction([
+                prisma.user_status.update({
+                    where: { id: userStatus.id },
+                    data: { current_book_count: { increment: 1 } }
+                }),
+                prisma.book.update({
+                    where: { id: bookId },
+                    data: { no_of_copies: { decrement: 1 } }
+                }),
+                prisma.rent_history.create({
+                    data: {
+                        book_id: bookId,
+                        user_id: userId,
+                        start_date: startDate,
+                        end_date: endDate,
+                        return_date: null,
+                        due_status: false
+                    }
+                })
+            ]);
+        })
+        .then(() => {
+            // Fetch the updated book data with the latest `no_of_copies`
+            return prisma.book.findUnique({
+                where: { id: bookId },
+                select: {
+                    id: true,
+                    book_name: true,
+                    no_of_copies: true,
+                    available_copies: true
                 }
-            })
-                .then((existingRental) => {
-                    if (existingRental) {
-                        throw new Error("User has already rented this book and has not returned it");
-                    }
-
-                    // Check user status
-                    return prisma.user_status.findFirst({
-                        where: { user_id: userId }
-                    });
-                })
-                .then((userStatus) => {
-                    if (!userStatus) {
-                        throw new Error("User status not found");
-                    }
-
-                    if (userStatus.reputation < 40) {
-                        throw new Error("User reputation is too low to rent a book");
-                    }
-
-                    if (userStatus.current_book_count >= userStatus.max_book_count) {
-                        throw new Error("User has reached the maximum number of rented books");
-                    }
-
-                    // Calculate start_date and end_date
-                    const startDate = new Date();
-                    const endDate = new Date(startDate);
-                    endDate.setDate(startDate.getDate() + 3);
-    
-                    // Rent the book by updating the database records in a transaction
-                    return prisma.$transaction([
-                        prisma.user_status.update({
-                            where: { id: userStatus.id },
-                            data: { current_book_count: { increment: 1 } }
-                        }),
-
-                        prisma.book.update({
-                            where: { id: bookId },
-                            data: { no_of_copies: { decrement: 1 } }
-                        }),
-
-                        prisma.rent_history.create({
-                            data: {
-                                book_id: bookId,
-                                user_id: userId,
-                                start_date: startDate,
-                                end_date: endDate,
-                                return_date: null,
-                                due_status: false
-                            }
-                        })
-                    ]);
-                })
-                .then(() => {
-                    return { message: "Book rented successfully", book };
-                });
+            });
+        })
+        .then((updatedBook) => {
+            return { message: "Book rented successfully", book: updatedBook };
         })
         .catch((error) => {
             console.error(error);
