@@ -85,7 +85,6 @@ model rent_history {
   due_status  Boolean?  @default(false)
   book        book      @relation(fields: [book_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   users       users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-@@unique([user_id, book_id])  
 }
 
 model review {
