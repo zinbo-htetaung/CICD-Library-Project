@@ -11,9 +11,13 @@
 2.Zin Bo{
    return seperate day-count value in return
 }
-3.{
+3.TTY {
    rating limit
    optional: retreive review by user id
+}
+
+4.All{
+   change category for books into array
 }
 
 
