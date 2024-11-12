@@ -56,8 +56,8 @@ model book_category {
   id          Int      @id @default(autoincrement())
   book_id     Int
   category_id Int
-  book        book     @relation(fields: [book_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  category    category @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  book        book     @relation(fields: [book_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  category    category @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model book_request {
@@ -66,7 +66,7 @@ model book_request {
   author       String?  @db.VarChar
   book_name    String   @db.VarChar
   requested_on DateTime @default(now()) @db.Timestamp(6)
-  users        users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users        users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model category {
@@ -83,8 +83,8 @@ model rent_history {
   end_date    DateTime  @db.Date
   return_date DateTime? @db.Date
   due_status  Boolean?  @default(false)
-  book        book      @relation(fields: [book_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users       users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  book        book      @relation(fields: [book_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users       users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model review {
@@ -94,8 +94,8 @@ model review {
   rating      Int
   review_text String?   @db.VarChar
   posted_on   DateTime? @default(now()) @db.Timestamp(6)
-  book        book      @relation(fields: [book_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users       users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  book        book      @relation(fields: [book_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users       users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model user_status {
@@ -104,7 +104,7 @@ model user_status {
   reputation         Int   @default(100)
   current_book_count Int
   max_book_count     Int
-  users              users @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users              users @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model users {
