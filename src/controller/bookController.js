@@ -133,7 +133,7 @@ module.exports.updateBook=(req,res,next)=>{
         book_name: req.body.book_name,
         author: req.body.author,
         description: req.body.description,
-        copies: req.body.copies,
+        copies: req.body.copies,    
         category_id: req.body.category_id
     }
     
@@ -200,16 +200,7 @@ module.exports.retrieveSingleBook = (req, res, next) => {
 
 module.exports.rentBook = (req, res) => {
     const { bookId } = req.body;
-    let userId = req.user?.id; // Temporary using let for testing only
-
-    // if (!userId) {
-    //     return res.status(400).json({ message: "Need to be a member to rent a book" });
-    // }
-
-    // Temporary setting just for postman testing only. The above commented line will be used for actual use
-    if (!userId) {
-        userId = 1;
-    }
+    let userId = res.locals.user_id
 
     if (!bookId) {
         return res.status(400).json({ message: "Book ID is required" });
@@ -227,16 +218,8 @@ module.exports.rentBook = (req, res) => {
 
 module.exports.returnBook = (req, res) => {
     const { bookId } = req.body;
-    let userId = req.user?.id; // Temporary using let for testing only
-
-    // if (!userId) {
-    //     return res.status(400).json({ message: "Need to be a member to rent a book" });
-    // }
-
-    // Temporary setting just for postman testing only. The above commented line will be used for actual use
-    if (!userId) {
-        userId = 1;
-    }
+    let userId = res.locals.user_id
+   
 
     if (!bookId) {
         return res.status(400).json({ message: "Book ID is required" });

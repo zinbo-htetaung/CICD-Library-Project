@@ -21,7 +21,7 @@ app.use('/persons', personRouter);
 app.use('/api/users',userRoute);
 app.use('/api/books',bookRoute);
 app.use('/api/requests',bookRequestRoute);
-app.use('/reviews',reviewRoute)
+app.use('/api/reviews',reviewRoute)
 
 app.use((req, res, next) => {
   next(createError(404, `Unknown resource ${req.method} ${req.originalUrl}`));

@@ -46,10 +46,10 @@ module.exports.checkRentHistory = (req, res, next) => {
         return res.status(400).json({ message: "BookId is not provided." });
     }
 
-    console.log(res.locals.member_id);
+    console.log(res.locals.user_id);
 
     const bookId = parseInt(req.params.bookId, 10);
-    const userId = parseInt(res.locals.member_id, 10);
+    const userId = parseInt(res.locals.user_id, 10);
 
     if (isNaN(bookId) || isNaN(userId)) {
         throw new Error("Invalid bookId or userId; both should be valid integers.");
@@ -76,7 +76,7 @@ module.exports.checkRentHistory = (req, res, next) => {
 
 module.exports.checkExistingReview = (req, res, next) => {
     const bookId = parseInt(req.params.bookId, 10);
-    const userId = parseInt(res.locals.member_id, 10);
+    const userId = parseInt(res.locals.user_id, 10);
 
     if (isNaN(bookId) || isNaN(userId)) {
         throw new Error("Invalid bookId or userId; both should be valid integers.");
@@ -106,7 +106,7 @@ module.exports.createReview = (req, res, next) => {
     }
 
     const bookId = parseInt(req.params.bookId, 10);
-    const userId = parseInt(res.locals.member_id, 10);
+    const userId = parseInt(res.locals.user_id, 10);
     const rating = parseInt(req.body.rating, 10);
 
     if (isNaN(bookId) || isNaN(rating)) {
@@ -131,7 +131,7 @@ module.exports.createReview = (req, res, next) => {
 
 module.exports.checkReviewOwner = (req, res, next) => {
     const reviewId = parseInt(req.params.reviewId, 10);
-    const userId = parseInt(res.locals.member_id, 10);
+    const userId = parseInt(res.locals.user_id, 10);
 
     if (isNaN(reviewId) || isNaN(userId)) {
         throw new Error("Invalid reviewId or userId; both should be valid integers.");

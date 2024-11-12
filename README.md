@@ -1,7 +1,20 @@
 #TO DO LIST
-1. 
-
-
+1. APP finish his job{
+   add user-status value while registering
+   add book category while adding books
+   book quantity update in boook update route, data inputs should be optional
+   OR
+   front end default value
+   shcema constraint modify book-book categroy
+   
+   }
+2.Zin Bo{
+   return seperate day-count value in return
+}
+3.{
+   rating limit
+   optional: retreive review by user id
+}
 
 
 

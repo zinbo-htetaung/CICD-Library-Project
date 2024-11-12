@@ -152,8 +152,7 @@ module.exports.returnBook = (data) => {
             console.error(error);
             throw new Error(error.message || "Failed to return the book");
         });
-  
- 
+    };
  module.exports.insertSingle = function insertSingle(data) {
     console.log("Data being inserted:", data);
     return prisma.book.create({
@@ -336,4 +335,3 @@ module.exports.rentBook = (data) => {
 };
 
 
-};
