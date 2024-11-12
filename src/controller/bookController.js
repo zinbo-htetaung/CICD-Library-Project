@@ -62,7 +62,7 @@ module.exports.searchBookByCategory = (req, res, next) => {
         categoryName: req.params.categoryName
     }
     model.searchByCategory(data)
-        .then(books => {
+    .then(books => {
             if (books.length == 0) {
                 return res.status(404).json({ message: "No book found" })
             }
@@ -74,6 +74,129 @@ module.exports.searchBookByCategory = (req, res, next) => {
         });
 }
 
+module.exports.checkIfBookExists = (req, res, next) => {
+    const { book_name, author } = req.body;
+
+    if (!book_name || !author) {
+        console.log("No book and author name")
+        return res.status(400).json({ message: "Please provide both book name and author" });
+    }
+
+    model.checkBookExists(book_name, author)
+        .then(existingBook => {
+            if (existingBook) {
+                console.log("Book already exists");
+                return res.status(409).json({ message: "Book with the same name and author already exists" });
+            }
+            next();
+        })
+        .catch(error => {
+            console.error("Error checking book existence:", error);
+            return res.status(500).json({ error: "Server error" });
+        });
+};
+
+module.exports.addBook=(req,res,next)=>{
+    if (!req.body.book_name || !req.body.author || !req.body.description || !req.body.copies || !req.body.category_id) {
+        console.log("Missing required data for adding a new book");
+        return res.status(400).json({ message: "Please provide input data for new book" });
+    }
+    
+    const data={
+        book_name: req.body.book_name,
+        author: req.body.author,
+        description: req.body.description,
+        copies: req.body.copies,
+        category_id: req.body.category_id
+    }
+    
+    model.insertSingle(data)
+    .then(book=>{
+        console.log("Successfully added new book. Proceeding to attach a category to the book...")
+        res.status(201).json({book: book});
+        // next();
+    })
+    .catch(function (error) {
+        console.error(error);
+        return res.status(500).json({ error: error.message });
+    });
+}
+
+module.exports.updateBook=(req,res,next)=>{
+    if (!req.params.bookId || !req.body.book_name || !req.body.author || !req.body.description || !req.body.copies || !req.body.category_id) {
+        console.log("Missing required data for updating book");
+        return res.status(400).json({ message: "Please provide input data for new book" });
+    }
+    
+    const data={
+        id: req.params.bookId,
+        book_name: req.body.book_name,
+        author: req.body.author,
+        description: req.body.description,
+        copies: req.body.copies,
+        category_id: req.body.category_id
+    }
+    
+    model.updateSingle(data)
+    .then(book=>{
+        console.log("Successfully updated book details. Proceeding to update its category...")
+        res.status(200).json({book: book});
+        // next();
+    })
+    .catch(error => {
+        if (error.message === 'Book not found') {
+            console.log("Book not found for ID:", data.id);
+            return res.status(404).json({ message: "Book not found" });
+        }
+        console.error("Error updating book:", error);
+        return res.status(500).json({ error: "An unexpected error occurred" });
+    });
+}
+
+module.exports.deleteBook = (req, res, next) => {
+    const id = req.params.bookId;
+
+    if (!id) {
+        console.log("Missing book ID for deletion");
+        return res.status(400).json({ message: "Book ID is required" });
+    }
+
+    model.deleteSingle(id)
+        .then(() => {
+            console.log(`Successfully deleted book`);
+            res.status(200).json({ message: "Book successfully deleted" });
+        })
+        .catch(error => {
+            if (error.message === 'Book not found') {
+                console.log(`Book not found for ID: ${id}`);
+                return res.status(404).json({ message: "Book not found" });
+            }
+            console.error("Error deleting book:", error);
+            return res.status(500).json({ error: "An unexpected error occurred" });
+        });
+};
+
+module.exports.retrieveSingleBook = (req, res, next) => {
+    const id = req.params.bookId;
+
+    if (!id) {
+        console.log("Missing book ID for retrieval");
+        return res.status(400).json({ message: "Book ID is required" });
+    }
+
+    model.retrieveSingle(id)
+        .then(book => {
+            res.status(200).json({ book: book });
+        })
+        .catch(error => {
+            if (error.message === 'Book not found') {
+                console.log(`Book not found for ID: ${id}`);
+                return res.status(404).json({ message: "Book not found" });
+            }
+            console.error("Error retrieving book:", error);
+            return res.status(500).json({ error: "An unexpected error occurred" });
+        });
+};
 
 module.exports.rentBook = (req, res) => {
     const { bookId } = req.body;
@@ -129,9 +252,3 @@ module.exports.returnBook = (req, res) => {
         });
 };
 
-// module.exports.singleBookDetails=(req,res,next)=>{
-//     const data={
-//         book_id: localStorage.getItem('book_id')
-//     }
-//     model.singleBookDetails(data)
-// }
