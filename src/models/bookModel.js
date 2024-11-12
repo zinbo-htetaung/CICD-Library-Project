@@ -143,7 +143,8 @@ module.exports.returnBook = (data) => {
                         // Return the result with due fee information if overdue
                         return {
                             message: "Book returned successfully",
-                            dueFee: isDue ? `$${dueFee} (Overdue by ${daysOverdue} days)` : "$0 (No overdue)"
+                            dueFee: isDue ? `$${dueFee} (Overdue by ${daysOverdue} days)` : "$0 (No overdue)",
+                            daysOverDue: daysOverdue
                         };
                     });
                 });
