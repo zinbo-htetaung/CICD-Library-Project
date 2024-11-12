@@ -9,7 +9,7 @@ const tokenAlgorithm = process.env.JWT_ALGORITHM;
 module.exports.generateToken = function (req, res, next) {
 
     const payload = {
-        id: res.locals.id,
+        user_id: res.locals.user_id,
         name: res.locals.name,
         role: res.locals.role,
         timestamp: new Date()
@@ -39,7 +39,7 @@ module.exports.sendToken = function (req, res, next) {
     res.status(200).json({
         token: res.locals.token,
         name: res.locals.name,
-        id: res.locals.id,
+        user_id: res.locals.user_id,
         role: res.locals.role,
     });
 };
@@ -53,19 +53,19 @@ module.exports.verifyToken = function (req, res, next){
     }
 
     const token = authHeader.substring(7);
-
+    console.log(token)
     if (!token) {
         return res.status(401).json({ error: "No token provided" });
     }
 
     const callback = function (err, decoded) {
         if (err) {
-            console.log("Invalid token");
-            return res.status(401).json({ error: "Invalid token" });
+            return res.status(401).json({ error: err });
         }
 
-        res.locals.name = decoded.name;
-        res.locals.id = decoded.id,
+        res.locals.username = decoded.name;
+        res.locals.user_id = decoded.user_id;
+
         res.locals.role = decoded.role;
         res.locals.tokenTimestamp = decoded.timestamp;
 
@@ -78,9 +78,9 @@ module.exports.verifyToken = function (req, res, next){
 // The verifyIsAdmin function checks if the user has the administrator role.
 module.exports.verifyIsAdmin = function (req, res, next){
 
-    // console.log(res.locals.role, typeof(res.locals.role))
+
+    console.log(res.locals.role, typeof(res.locals.role))
     if (res.locals.role !== "admin") {
-        console.log("Access not granted")
         return res.status(403).json({ error: 'Requires administrator role.' });
     }
     console.log("Welcome admin user!");

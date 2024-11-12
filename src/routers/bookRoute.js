@@ -12,5 +12,7 @@ router.post('/add', jwtMiddleware.verifyToken, jwtMiddleware.verifyIsAdmin, book
 router.put('/update/:bookId',jwtMiddleware.verifyToken, jwtMiddleware.verifyIsAdmin, bookController.updateBook);
 router.delete('/delete/:bookId',jwtMiddleware.verifyToken, jwtMiddleware.verifyIsAdmin, bookController.deleteBook);
 router.get('/:bookId', bookController.retrieveSingleBook);
-
+router.post('/rent', bookController.rentBook);
+router.post('/return', bookController.returnBook);
 module.exports=router;
+
