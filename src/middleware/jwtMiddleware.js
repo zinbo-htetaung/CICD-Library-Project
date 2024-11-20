@@ -78,12 +78,9 @@ module.exports.verifyToken = function (req, res, next){
 // The verifyIsAdmin function checks if the user has the administrator role.
 module.exports.verifyIsAdmin = function (req, res, next){
 
-
-    console.log(res.locals.role, typeof(res.locals.role))
     if (res.locals.role !== "admin") {
         return res.status(403).json({ error: 'Requires administrator role.' });
     }
-    console.log("Welcome admin user!");
     next();
 
 };
