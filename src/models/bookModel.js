@@ -155,7 +155,6 @@ module.exports.returnBook = (data) => {
         });
     };
  module.exports.insertSingle = function insertSingle(data) {
-    console.log("Data being inserted:", data);
     return prisma.book.create({
         data: {
             book_name: data.book_name,
@@ -192,21 +191,26 @@ module.exports.updateSingle = function updateSingle(data) {
             book_name: data.book_name,
             author: data.author,
             description: data.description,
-            no_of_copies: data.copies,
-            available_copies: data.copies
+            no_of_copies: {
+                increment: data.copies      // increment the no_of_copies column 
+            },
+            available_copies: {
+                increment: data.copies      // increment the available_copies column
+            }
         }
     })
     .then(book => {
-        console.log(book);
-        return book;
+        console.log("Updated book:", book);
+        return book; 
     })
     .catch(error => {
         if (error.code === 'P2025') {
-            throw new Error('Book not found');
+            throw new Error('Book not found'); 
         }
         throw error; 
     });
 };
+
   
 module.exports.deleteSingle = function deleteSingle(id) {
     return prisma.book.delete({
@@ -222,17 +226,33 @@ module.exports.deleteSingle = function deleteSingle(id) {
   
 module.exports.retrieveSingle = function retrieveSingle(id) {
     return prisma.book.findUnique({
-        where: { id: parseInt(id, 10) } 
+        where: {
+            id: parseInt(id, 10)
+        },
+        include: {
+            book_category: {
+                include: {
+                    category: true      // Include the category details
+                }
+            }
+        }
     })
     .then(book => {
         if (!book) {
             throw new Error('Book not found');
         }
-        return book;
-    }) 
-     .catch(error=> {
-        console.error(error);
-        
+
+        const categoryNames = book.book_category.map(entry => entry.category.category_name);
+
+        return {
+            id: book.id,
+            book_name: book.book_name,
+            author: book.author,
+            description: book.description,
+            no_of_copies: book.no_of_copies,
+            available_copies: book.available_copies,
+            categories: categoryNames
+        };
     });
 }
   
@@ -333,6 +353,40 @@ module.exports.rentBook = (data) => {
             console.error(error);
             throw new Error(error.message || "Failed to rent the book");
         });
+};
+module.exports.attachCategoriesToBook = function attachCategoriesToBook(bookId, categoryIds) {
+    const categoryData = categoryIds.map(categoryId => ({
+        book_id: bookId,
+        category_id: categoryId,
+    }));
+
+    return prisma.book_category.createMany({
+        data: categoryData,
+        skipDuplicates: true,   // avoid duplicate entries
+    });
+};
+module.exports.updateCategories = async function updateCategories(bookId, category_id) {
+    const book = await prisma.book.findUnique({
+        where: { id: bookId }
+    });
+
+    if (!book) {
+        throw new Error('Book not found');
+    }
+
+    const categoryData = category_id.map(categoryId => ({
+        book_id: bookId,
+        category_id: categoryId
+    }));
+
+    await prisma.book_category.deleteMany({
+        where: { book_id: bookId }
+    });
+
+    return prisma.book_category.createMany({
+        data: categoryData,
+        skipDuplicates: true    // prevent duplicate entries
+    });
 };
 
 

@@ -70,3 +70,22 @@ module.exports.login = (req, res, next) => {
             return res.status(500).json({ message: error.message });
         });
 }
+module.exports.getProfileInfo = (req, res) => {
+    const userId = res.locals.user_id;
+
+    if (!userId) {
+        return res.status(400).json({ message: "User ID not found in token" });
+    }
+
+    model.getProfileInfo(userId)
+        .then(profile => {
+            res.status(200).json({ profile });
+        })
+        .catch(error => {
+            if (error.message === 'User not found') {
+                return res.status(404).json({ message: "User not found" });
+            }
+            console.error("Error fetching profile info:", error);
+            return res.status(500).json({ error: "An unexpected error occurred" });
+        });
+};

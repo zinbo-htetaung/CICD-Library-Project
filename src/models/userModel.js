@@ -40,3 +40,28 @@ module.exports.checkEmail = function checkEmail(email) {
         return rows[0] || null; // Return the first row or null if no match
     });
 };
+module.exports.getProfileInfo = function getProfileInfo(userId) {
+    return prisma.users.findUnique({
+        where: {
+            id: parseInt(userId, 10) 
+        },
+        include: {
+            user_status: true   // join with user_status table
+        }
+    })
+    .then(user => {
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        return {
+            name: user.name,
+            email: user.email,
+            address: user.address,
+            dob: user.dob,
+            reputation: user.user_status?.reputation || null,
+            current_book_count: user.user_status?.current_book_count || null,
+            max_book_count: user.user_status?.max_book_count || null
+        };
+    });
+};
