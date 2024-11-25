@@ -49,13 +49,13 @@ module.exports.verifyToken = function (req, res, next){
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'No token provided' });
+        return res.status(401).json({ message: 'No token provided' });
     }
 
     const token = authHeader.substring(7);
     console.log(token)
     if (!token) {
-        return res.status(401).json({ error: "No token provided" });
+        return res.status(401).json({ message: "No token provided" });
     }
 
     const callback = function (err, decoded) {
@@ -79,7 +79,7 @@ module.exports.verifyToken = function (req, res, next){
 module.exports.verifyIsAdmin = function (req, res, next){
 
     if (res.locals.role !== "admin") {
-        return res.status(403).json({ error: 'Requires administrator role.' });
+        return res.status(403).json({ message: 'Requires administrator role.' });
     }
     next();
 

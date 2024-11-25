@@ -16,6 +16,9 @@ document.getElementById('loginForm').addEventListener('submit', async (event) =>
       if (response.status === 200) {
         const responseData = await response.json();
         localStorage.setItem('token', responseData.token);
+        localStorage.setItem('name', responseData.name);
+        localStorage.setItem('user_id', responseData.user_id);
+        localStorage.setItem('role', responseData.role);
         alert('Login successful!');
         window.location.href = 'index.html';
       } else {

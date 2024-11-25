@@ -1,4 +1,10 @@
 async function fetchBooks() {
+    fetch('admin_navbar.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('navbar-container').innerHTML = data;
+    })
+
     try {
       const response = await fetch('/api/books', {
         method: 'GET',
@@ -45,7 +51,7 @@ async function fetchBooks() {
       card.innerHTML = `
         <div class="card">
             <div class="card-header"><h4>${book.book_name}</h4></div>
-            <img src="./images/book_image.jpg" class="card-img-top" alt="Book Image">
+            <img src="../images/book_image.jpg" class="card-img-top" alt="Book Image">
             <div class="card-body">
             <h5 class="card-title">By: <strong>${book.author}</strong></h5>
             <a href="displaySingleBook.html?bookId=${book.id}" class="btn btn-primary">More</a>

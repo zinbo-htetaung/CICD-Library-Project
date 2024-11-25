@@ -57,6 +57,9 @@ function getBookIdFromURL() {
           <p class="card-text"><strong>Categories:</strong></p>
           <ul>${categoriesList}</ul>
         </div>
+        <a href="updateBookDetails.html?bookId=${book.id}" class="btn btn-secondary me-2">Update Book Details</a>
+        <a href="updateBookCategory.html?bookId=${book.id}" class="btn btn-secondary me-2">Update Book Category</a>
+        <a href="deleteBook.html?bookId=${book.id}" class="btn btn-secondary">Delete Book</a>
       </div>
     `;
 }
@@ -72,6 +75,12 @@ container.innerHTML = `
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  fetch('admin_navbar.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('navbar-container').innerHTML = data;
+    })
+
   const bookId = getBookIdFromURL();
   if (bookId) {
       fetchBookDetails(bookId);
