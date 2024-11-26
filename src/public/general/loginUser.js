@@ -29,3 +29,11 @@ document.getElementById('loginForm').addEventListener('submit', async (event) =>
       alert('An error occurred while trying to log in.');
     }
   });
+
+document.addEventListener('DOMContentLoaded', () => {
+  fetch('navbar.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('navbar-container').innerHTML = data;
+    })  
+});

@@ -1,9 +1,14 @@
 async function fetchBooks() {
-    fetch('admin_navbar.html')
-    .then(response => response.text())
-    .then(data => {
-        document.getElementById('navbar-container').innerHTML = data;
-    })
+  fetch('admin_navbar.html')
+  .then(response => response.text())
+  .then(data => {
+      document.getElementById('navbar-container').innerHTML = data;
+
+      const logoutButton = document.getElementById('logout-button');
+      if (logoutButton) {
+          logoutButton.addEventListener('click', logout);
+      }
+  })
 
     try {
       const response = await fetch('/api/books', {
@@ -46,17 +51,18 @@ async function fetchBooks() {
   
     books.forEach(book => {
       const card = document.createElement('div');
-      card.className = 'col-lg-4 col-md-6 col-sm-12 mb-4';
+      card.className = 'col-lg-3 col-md-4 col-sm-6 col-xs-6 mb-4';
   
       card.innerHTML = `
-        <div class="card">
+        <a href="displaySingleBook.html?bookId=${book.id}" class="card-link">
+        <div class="card text-dark card-hover">
             <div class="card-header"><h4>${book.book_name}</h4></div>
             <img src="../images/book_image.jpg" class="card-img-top" alt="Book Image">
             <div class="card-body">
-            <h5 class="card-title">By: <strong>${book.author}</strong></h5>
-            <a href="displaySingleBook.html?bookId=${book.id}" class="btn btn-primary">More</a>
+            <h5 class="card-title">By : ${book.author}</h5>
           </div>
         </div>
+        </a>
       `;
   
       container.appendChild(card);
