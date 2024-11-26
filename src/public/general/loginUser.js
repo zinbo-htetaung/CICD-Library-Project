@@ -20,6 +20,9 @@ document.getElementById('loginForm').addEventListener('submit', async (event) =>
         localStorage.setItem('user_id', responseData.user_id);
         localStorage.setItem('role', responseData.role);
         alert('Login successful!');
+        if (responseData.role == "admin") {
+          window.location.href = "/admin/displayAllBooks.html";
+        } else 
         window.location.href = 'index.html';
       } else {
         alert('Login attempt failed. Please check your credentials.');

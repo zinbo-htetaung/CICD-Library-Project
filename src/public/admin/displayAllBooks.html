@@ -40,6 +40,30 @@
     <div class="text-center mb-4">
       <a href="addBook.html" class="btn btn-block btn-lg btn-success">Add New Book<i class="bi bi-patch-plus ms-2"></i></a>
     </div>
+
+    <div class="row mb-5">
+      <div class="col-md-3">
+        <label for="filterTarget" class="form-label">Filter Target:</label>
+        <select id="filterTarget" class="form-select">
+          <option value="name" selected>By Book Name</option>
+          <option value="author">By Author Name</option>
+          <option value="category">By Category Name</option>
+        </select>
+      </div>
+      <div class="col-md-5">
+        <label for="filterKeyword" class="form-label">Enter Keyword:</label>
+        <input type="text" id="filterKeyword" class="form-control">
+      </div>
+      <div class="col-md-2 d-flex align-items-end">
+        <button id="filterSubmit" class="btn btn-primary w-100">Search<i class="bi bi-search ms-2"></i></button>
+      </div>
+      <div class="col-md-2 d-flex align-items-end">
+        <a href="displayAllBooks.html" class="btn btn-secondary btn-block w-100">Reset Filter<i class="bi bi-arrow-counterclockwise ms-2"></i></a>
+      </div>
+    </div>
+  
+    <div id="filterMessage" class="mb-4"></div>
+
     <div class="row" id="bookCardsContainer">
       <!-- Books display here -->
     </div>
