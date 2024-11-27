@@ -2,14 +2,15 @@
 if (localStorage.getItem('token')) {
     if (localStorage.getItem('role') !== 'admin') {   
         alert("Access Not Granted!");
-        window.location.href = 'index.html'; 
+        window.location.href = '../general/login.html'; 
     }
 } else {
-    window.location.href = 'index.html';   
+    window.location.href = '../general/login.html';   
 }
 
 function logout() {
     localStorage.clear();
-
-    window.location.href = 'index.html';
-}
+    alert("Logged out successfully!");
+    window.location.href = '../general/login.html';
+};
+window.logout = logout;
