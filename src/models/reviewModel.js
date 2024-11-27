@@ -17,6 +17,38 @@ module.exports.retrieveReviewsByBookId = (data) => {
         });
 }
 
+module.exports.retrieveReviewsByUserId = async (data) => {
+    return prisma.review.findMany({
+        where: {
+            user_id: data.userId
+        },
+        include: {
+            book: { // Include related book data
+                select: {
+                    book_name: true, // Only select the book name
+                }
+            }
+        }
+    })
+        .then(reviews => {
+            console.log(reviews); // Logs reviews with book name
+            return reviews.map(review => ({
+                id: review.id,
+                book_id: review.book_id,
+                book_name: review.book.book_name, // Include the book name
+                rating: review.rating,
+                review_text: review.review_text,
+                posted_on: review.posted_on
+            }));
+        })
+        .catch(error => {
+            console.error(error);
+            throw new Error(error.message || "Database query failed");
+        });
+};
+
+
+
 module.exports.checkBookExists = (bookId) => {
     return prisma.book.findUnique({
         where: {

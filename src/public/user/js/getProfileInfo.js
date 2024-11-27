@@ -1,0 +1,43 @@
+async function fetchProfileData() {
+    try {
+        const response = await fetch('/api/users/profile', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.status === 200) {
+            const data = await response.json();
+            console.log(data)
+            displayProfile(data);
+        } else {
+            const data = await response.json();
+            showAlert(data.message, 'danger');
+        }
+    } catch (error) {
+        console.error('Error fetching profile data:', error);
+        showAlert('An error occurred while fetching profile data. Please try again later.', 'danger');
+    }
+}
+
+function displayProfile(data) {
+    document.getElementById('profileName').value = data.profile.name;
+    document.getElementById('profileEmail').value = data.profile.email;
+    document.getElementById('profileAddress').value = data.profile.address;
+    
+}
+
+function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type}`;
+    alertDiv.setAttribute('role', 'alert');
+    alertDiv.innerText = message;
+    document.body.prepend(alertDiv);
+    setTimeout(() => alertDiv.remove(), 5000);  // Remove alert after 5 seconds
+}
+
+// Run fetchProfileData as soon as the DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    fetchProfileData();
+});

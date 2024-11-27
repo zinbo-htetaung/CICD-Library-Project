@@ -1,4 +1,7 @@
 const model = require("../models/userModel.js");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
+
 
 module.exports.checkUsernameOrEmailExist = (req, res, next) => {
     if (req.body.name == undefined || req.body.email== undefined || req.body.password== undefined || req.body.address== undefined || req.body.dob== undefined) {
@@ -71,7 +74,8 @@ module.exports.login = (req, res, next) => {
         });
 }
 module.exports.getProfileInfo = (req, res) => {
-    const userId = res.locals.user_id;
+    // const userId = res.locals.user_id;
+    const userId = 1;
 
     if (!userId) {
         return res.status(400).json({ message: "User ID not found in token" });
@@ -88,4 +92,133 @@ module.exports.getProfileInfo = (req, res) => {
             console.error("Error fetching profile info:", error);
             return res.status(500).json({ error: "An unexpected error occurred" });
         });
+};
+
+module.exports.updateProfileInfo = (req, res) => {
+    // const userId = res.locals.user_id;
+    const userId = 1;
+
+
+    if (!userId) {
+        return res.status(400).json({ message: "User ID not found in token" });
+    }
+    if(!req.body.name || !req.body.email || !req.body.address){
+        return res.status(400).json({message: "Input(s) is/are required " })
+    }
+    const data={
+        user_id:userId,
+        name:req.body.name,
+        email:req.body.email,
+        address: req.body.address
+    }
+    model.updateProfileInfo(data)
+        .then(() => {
+            res.status(200).json({ message:"Profile updated successfully" });
+        })
+        .catch(error => {
+            if (error.message === 'User not found') {
+                console.log("User not found for ID:", data.user_id);
+                return res.status(404).json({ message: "User not found" });
+            }
+            console.error("Error updating profile:", error);
+            return res.status(500).json({ error: "An unexpected error occurred" });
+        });
+};
+
+module.exports.getPassword = (req, res, next) => {
+    res.locals.user_id=1;
+    const userId = res.locals.user_id;
+
+    if (!userId) {
+        return res.status(400).json({ message: "User ID not found in token" });
+    }
+    if (!req.body.oldPassword || !req.body.newPassword) {
+        return res.status(400).json({ message: "Both oldPassword and newPassword are required" });
+    }
+
+    model.getPassword(userId)
+        .then((password) => {
+            if (!password) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+            res.locals.hash = password; // Store the retrieved password in res.locals
+            next(); // Pass control to the next middleware
+        })
+        .catch((error) => {
+            console.error("Error retrieving password:", error);
+            return res.status(500).json({ message: "An unexpected error occurred" });
+        });
+};
+
+module.exports.compareOldPassword=(req,res,next)=>{
+    const callback = (err, isMatch) => {
+        if (err) {
+            console.error("Error bcrypt:", err);
+            res.status(500).json(err);
+        } else if (isMatch) {
+                next();
+            } else {
+                res.status(401).json({
+                    message: "Old password is incorrect",
+                });
+            }
+    };
+    bcrypt.compare(req.body.oldPassword, res.locals.hash, callback);
+}
+
+module.exports.hashPassword = function (req, res, next) {
+    const callback = (err, hash) => {
+        if (err) {
+            console.error("Error bcrypt:", err);
+            res.status(500).json(err);
+        } else {
+            console.log("old pw"+req.body.oldPassword)
+            console.log("new password:" +req.body.newPassword)
+            console.log("new password:" +hash)
+            res.locals.hash = hash;
+            next();
+        }
+    };
+    bcrypt.hash(req.body.newPassword, saltRounds, callback);
+};
+
+module.exports.updatePassword = (req, res) => {
+    const data={
+        user_id:res.locals.user_id,
+        newPassword:res.locals.hash
+    }
+    model.updatePassword(data)
+        .then(() => {
+            res.status(200).json({ message:"Profile updated successfully" });
+        })
+        .catch(error => {
+            if (error.message === 'User not found') {
+                console.log("User not found for ID:", data.user_id);
+                return res.status(404).json({ message: "User not found" });
+            }
+            console.error("Error updating profile:", error);
+            return res.status(500).json({ error: "An unexpected error occurred" });
+        });
+};
+
+
+// controller.js or userController.js
+module.exports.deleteAccount = async (req, res) => {
+    const userId = req.userId; // assuming the userId is in the request (auth token or session)
+
+    if (!userId) {
+        return res.status(400).json({ message: "User ID not found in token" });
+    }
+
+    const data = { user_id: userId };
+
+    try {
+        const result = await model.deleteAccount(data);
+        return res.status(200).json(result);
+    } catch (error) {
+        if (error.message === 'User not found') {
+            return res.status(404).json({ message: "User not found" });
+        }
+        return res.status(500).json({ error: "An unexpected error occurred" });
+    }
 };
