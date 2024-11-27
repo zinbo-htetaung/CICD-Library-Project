@@ -1,7 +1,7 @@
 const model = require("../models/userModel.js");
 
 module.exports.checkUsernameOrEmailExist = (req, res, next) => {
-    if (req.body.name == undefined || req.body.email== undefined || req.body.password== undefined || req.body.address== undefined || req.body.dob== undefined) {
+    if (req.body.name == undefined || req.body.email == undefined || req.body.password == undefined || req.body.address == undefined || req.body.dob == undefined) {
         return res.status(400).json({ message: "Input fields missing" });
     }
 
