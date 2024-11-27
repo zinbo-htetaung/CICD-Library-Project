@@ -173,3 +173,63 @@ document.getElementById('displayReviews').addEventListener('click', () => {
   const bookId = getBookIdFromURL();
   fetchReviews(bookId);
 });
+
+document.getElementById('reviewForm').addEventListener('submit', (event) => {
+  event.preventDefault(); // Prevent form from submitting the traditional way
+  const bookId = getBookIdFromURL();
+
+  const rating = parseInt(document.getElementById('rating').value);
+  const reviewText = document.getElementById('reviewText').value;
+
+  // Clear any previous error messages
+  const errorMessage = document.getElementById('errorMessage');
+  errorMessage.textContent = '';
+
+  // Validate input
+  if (isNaN(rating) || rating < 0 || rating > 5) {
+    errorMessage.textContent = 'Please provide a valid rating between 0 and 5.';
+    return;
+  }
+
+  if (!reviewText.trim()) {
+    errorMessage.textContent = 'Please provide a review text.';
+    return;
+  }
+
+  const token = localStorage.getItem('token');
+  
+  if(token == null || token == undefined) {
+    errorMessage.textContent = 'Please login or create an account first to give a review.';
+    return;
+  }
+
+  // Proceed with submitting the review
+  const reviewData = { rating, reviewText };
+
+  // Perform the review creation request
+  fetch(`/api/reviews/${bookId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + localStorage.getItem('token'), 
+    },
+    body: JSON.stringify(reviewData),
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.message) {
+        // Display error message if there's an issue with submitting the review
+        errorMessage.textContent = data.message;
+      } else {
+        // Successfully created review
+        alert('Review submitted successfully!');
+        document.getElementById('reviewForm').reset();
+        $('#writeReviewModal').modal('hide');
+      }
+    })
+    .catch(error => {
+      // Handle any errors that occur during the fetch
+      errorMessage.textContent = 'There was an error submitting your review. Please try again later.';
+      console.error(error);
+    });
+});
