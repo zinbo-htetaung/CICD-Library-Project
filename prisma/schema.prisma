@@ -109,8 +109,8 @@ model user_status {
 
 model users {
   id           Int            @id @default(autoincrement())
-  name         String         @db.VarChar
-  email        String         @db.VarChar
+  name         String         @db.VarChar @unique
+  email        String         @db.VarChar @unique
   password     String         @db.VarChar
   address      String         @db.VarChar
   dob          DateTime       @db.Date

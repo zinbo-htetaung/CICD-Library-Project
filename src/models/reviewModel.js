@@ -6,16 +6,42 @@ module.exports.retrieveReviewsByBookId = (data) => {
     return prisma.review.findMany({
         where: {
             book_id: data.bookId
+        },
+        include: {
+            users: {
+                select: {
+                    name: true 
+                }
+            }
         }
     })
-        .then(reviews => {
-            console.log(reviews)
-            return reviews;
-        })
-        .catch(error => {
-            console.error(error);
-        });
-}
+    .then(reviews => {
+        console.log(reviews);
+        return reviews;
+    })
+    .catch(error => {
+        console.error(error);
+        throw error;
+    });
+};
+
+module.exports.getAverageRatingForBook = (data) => {
+    return prisma.review.aggregate({
+        where: {
+            book_id: data.bookId
+        },
+        _avg: {
+            rating: true
+        }
+    })
+    .then(result => {
+        return result._avg.rating;
+    })
+    .catch(error => {
+        console.error(error);
+        throw error;
+    });
+};
 
 module.exports.checkBookExists = (bookId) => {
     return prisma.book.findUnique({
