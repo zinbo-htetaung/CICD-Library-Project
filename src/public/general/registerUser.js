@@ -35,3 +35,11 @@
         alert('An error occurred during registration. Please try again later.');
       }
     });
+
+document.addEventListener('DOMContentLoaded', () => {
+  fetch('navbar.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('navbar-container').innerHTML = data;
+    })  
+});
