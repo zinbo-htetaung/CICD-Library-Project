@@ -10,6 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
           logoutButton.addEventListener('click', logout);
         }
       });
+
+    fetch('../footer.html')
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById('footer-container').innerHTML = data;
+    })
   
     // Get book ID from URL
     const bookId = getBookIdFromURL();

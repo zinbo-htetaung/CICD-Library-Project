@@ -9,6 +9,13 @@ document.addEventListener("DOMContentLoaded", function () {
             logoutButton.addEventListener('click', logout);
         }
     })
+
+    fetch('../footer.html')
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById('footer-container').innerHTML = data;
+    })
+
 });
 
 document.getElementById('addBookForm').addEventListener('submit', async (event) => {

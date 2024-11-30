@@ -11,6 +11,12 @@ async function fetchBooks() {
       }
     });
 
+  fetch('../footer.html')
+  .then(response => response.text())
+  .then(data => {
+    document.getElementById('footer-container').innerHTML = data;
+  })
+
   // Fetch all books by default
   try {
     const response = await fetch('/api/books', {
