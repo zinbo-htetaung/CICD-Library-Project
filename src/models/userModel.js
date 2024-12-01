@@ -65,3 +65,30 @@ module.exports.getProfileInfo = function getProfileInfo(userId) {
         };
     });
 };
+
+module.exports.insertUserStatus = (userId, callback) => {
+    const SQL_STATEMENT = `
+    INSERT INTO user_status (user_id, current_book_count, max_book_count)
+    VALUES ($1, $2, $3);
+    `;
+    const VALUES = [userId, 0, 4];
+
+    pool.query(SQL_STATEMENT, VALUES, callback);
+};
+
+module.exports.getUserIdByEmail = (email, callback) => {
+    const SQL_STATEMENT = `SELECT id FROM users WHERE email = $1;`;
+    const VALUES = [email];
+
+    pool.query(SQL_STATEMENT, VALUES, callback);
+};
+
+module.exports.getAllUsers = (callback) => {
+    const SQL_STATEMENT = `
+    SELECT u.id, u.name, u.email, u.role, us.reputation, us.current_book_count, us.max_book_count
+    FROM users u LEFT JOIN user_status us
+    ON u.id = us.user_id;
+    `;
+
+    pool.query(SQL_STATEMENT, [], callback);
+};

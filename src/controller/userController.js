@@ -26,7 +26,7 @@ module.exports.checkUsernameOrEmailExist = (req, res, next) => {
     });
 };
 
-module.exports.register = (req, res) => {
+module.exports.register = (req, res, next) => {
     const data = {
         name: req.body.name,
         email: req.body.email,
@@ -41,8 +41,19 @@ module.exports.register = (req, res) => {
             return res.status(500).json({ message: "Internal server error" });
         }
 
-        console.log("Registration successful");
-        res.status(201).json({ message: "Account created successfully" });
+        model.getUserIdByEmail(data.email, (err, resId) => {
+            if (err) {
+                console.error("Error fetching user ID:", err);
+                return res.status(500).json({ message: "Internal server error" });
+            }
+
+            if (resId.rows.length === 0) {
+                return res.status(404).json({ message: "User not found after insertion" });
+            }
+
+            res.locals.user_id = resId.rows[0].id;
+            next();
+        });
     });
 };
 
@@ -89,3 +100,70 @@ module.exports.getProfileInfo = (req, res) => {
             return res.status(500).json({ error: "An unexpected error occurred" });
         });
 };
+
+module.exports.addUserStatus = (req, res) => {
+    const userId = res.locals.user_id;
+
+    if (!userId) {
+        return res.status(400).json({ message: "User ID is missing" });
+    }
+
+    model.insertUserStatus(userId, (error) => {
+        if (error) {
+            console.error("Error inserting user status:", error);
+            return res.status(500).json({ message: "Internal server error" });
+        }
+
+        console.log("Registration successful");
+        res.status(201).json({ message: "Account created successfully" });
+    });
+};
+
+module.exports.verifyCaptcha = async (req, res, next) => {
+    const captchaToken = req.body['g-recaptcha-response']; // Token sent from the frontend
+    const secretKey = "6LfclI4qAAAAANZJNamoflbSsdPpwZzOrjAKmGt7"; 
+
+    if (!captchaToken) {
+        return res.status(400).json({ message: "Captcha verification failed. Please try again." });
+    }
+
+    try {
+        // Use fetch to send a POST request to Google's reCAPTCHA API
+        const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                secret: secretKey,       // Secret key from Google
+                response: captchaToken,  // CAPTCHA token from frontend
+            }),
+        });
+
+        const data = await response.json(); // Parse the JSON response
+
+        // Check if the CAPTCHA verification succeeded
+        if (!data.success) {
+            return res.status(400).json({ message: "Captcha verification failed. Please try again." });
+        }
+
+        next();     // catpcha valid - proceed with registering
+    } catch (error) {
+        console.error("Error verifying CAPTCHA:", error);
+        return res.status(500).json({ message: "Internal server error during CAPTCHA verification." });
+    }
+};
+
+module.exports.getAllUsers = (req, res, next) => {
+    model.getAllUsers((error, results) => {
+        if (error) {
+            console.error("Error fetching users:", error);
+            return res.status(500).json({ message: "Internal server error" });
+        }
+
+        if (results.rows.length === 0) {
+            return res.status(404).json({ message: "No users found." });
+        }
+
+        res.status(200).json(results.rows);
+    });
+};
+
