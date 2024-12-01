@@ -57,6 +57,30 @@ module.exports.getAverageRatingForBook = (req, res, next) => {
         });
 };
 
+module.exports.retrieveReviewsByUserId = (req, res, next) => {
+    res.locals.user_id = 1; // Simulated user ID for example
+    const userId = res.locals.user_id;
+
+    if (!userId) {
+        return res.status(400).json({ message: "User ID not found in token" });
+    }
+
+    const data = { userId: parseInt(userId, 10) };
+
+    model.retrieveReviewsByUserId(data)
+        .then(reviews => {
+            if (reviews.length === 0) {
+                return res.status(404).json({ message: "No reviews found for this user" });
+            }
+            res.json({ reviews });
+        })
+        .catch(error => {
+            console.error(error);
+            return res.status(500).json({ error: error.message });
+        });
+};
+
+
 module.exports.checkBookExists = (req, res, next) => {
     if (!req.params.bookId) {
         return res.status(400).json({ message: "BookId is not provided." });
