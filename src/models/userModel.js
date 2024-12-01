@@ -92,3 +92,111 @@ module.exports.getAllUsers = (callback) => {
 
     pool.query(SQL_STATEMENT, [], callback);
 };
+
+module.exports.updateProfileInfo=(data)=>{
+    return prisma.users.update({
+        where: {
+            id: parseInt(data.user_id,10), 
+        },
+        data: {
+            name: data.name,
+            email: data.email,
+            address: data.address
+        }
+    })
+    .then(updateProfile  => {
+        console.log("Updated book:", updateProfile);
+        return updateProfile; 
+    })
+    .catch(error => {
+        if (error.code === 'P2025') {
+            throw new Error('User not found'); 
+        }
+        throw error; 
+    });
+}
+
+module.exports.getPassword = async (userId)=> {
+    return prisma.users.findUnique({
+        where: {
+            id: parseInt(userId, 10) // Ensure the userId is an integer
+        },
+        select: {
+            password: true // Only retrieve the password column
+        }
+    })
+    .then(user => {
+        if (!user) {
+            throw new Error('User not found'); // Handle case where user does not exist
+        }
+        return user.password; // Return the password
+    })
+    .catch(error => {
+        console.error("Error retrieving password:", error);
+        throw error; // Re-throw error for higher-level handling
+    });
+};
+
+
+
+module.exports.updatePassword = async (data) => {
+    return prisma.users.update({
+        where: {
+            id: parseInt(data.user_id, 10), // Ensure the userId is an integer
+        },
+        data: {
+            password: data.newPassword , // Update the password field
+        },
+    })
+    .then((updatedUser) => {
+        console.log("Password updated successfully for user ID:", updatedUser.id);
+        return updatedUser; // Return the updated user info if needed
+    })
+    .catch((error) => {
+        if (error.code === 'P2025') {
+            throw new Error('User not found'); // Handle case where user does not exist
+        }
+        console.error("Error updating password:", error);
+        throw error; // Re-throw error for higher-level handling
+    });
+};
+
+// model.js or userModel.js
+
+module.exports.deleteAccount = async (data) => {
+    const { user_id } = data;
+
+    try {
+        // Try to delete the user account by the unique user_id
+        const user = await prisma.users.findUnique({
+            where: { id: user_id },
+        });
+
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        // Delete all associated data before deleting the user (if required)
+        await prisma.review.deleteMany({
+            where: { user_id: user_id },
+        });
+
+        await prisma.rent_history.deleteMany({
+            where: { user_id: user_id },
+        });
+
+        await prisma.book_request.deleteMany({
+            where: { user_id: user_id },
+        });
+
+        // Now delete the user account using deleteUnique (which targets a unique field)
+        await prisma.users.deleteUnique({
+            where: { id: user_id }, // Specify the unique identifier (user_id)
+        });
+
+        return { message: "User account deleted successfully" };
+    } catch (error) {
+        console.error(error);
+        throw new Error(error.message || "Failed to delete user account");
+    }
+};
