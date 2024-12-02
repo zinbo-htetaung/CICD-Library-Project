@@ -13,4 +13,5 @@ router.get('/profile',  userController.getProfileInfo);
 router.get('/all', jwtMiddleware.verifyToken, jwtMiddleware.verifyIsAdmin, userController.getAllUsers);
 router.delete('/account',  userController.deleteAccount);
 //removed jwtMiddleware.verifyToken, for testing
+router.delete('/ban/:userId', jwtMiddleware.verifyToken, jwtMiddleware.verifyIsAdmin, userController.banUser);
 module.exports = router;

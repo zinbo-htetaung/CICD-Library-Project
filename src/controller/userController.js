@@ -167,7 +167,7 @@ module.exports.getAllUsers = (req, res, next) => {
             return res.status(404).json({ message: "No users found." });
         }
 
-        res.status(200).json(results.rows);
+        res.status(200).json({users: results.rows});
     });
 };
 
@@ -300,4 +300,24 @@ module.exports.deleteAccount = async (req, res) => {
         }
         return res.status(500).json({ error: "An unexpected error occurred" });
     }
+};
+
+module.exports.banUser = (req, res) => {
+    const userId = parseInt(req.params.userId, 10); // validate the user ID
+
+    if (isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    model.banUser(userId)
+        .then(() => {
+            return res.status(200).json({ message: "User successfully deleted!" });
+        })
+        .catch((error) => {
+            if (error.message === "UserNotFound") {
+                return res.status(404).json({ message: "User not found" });
+            }
+            console.error("Error deleting user:", error);
+            return res.status(500).json({ message: "Internal server error" });
+        });
 };

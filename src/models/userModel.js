@@ -87,7 +87,8 @@ module.exports.getAllUsers = (callback) => {
     const SQL_STATEMENT = `
     SELECT u.id, u.name, u.email, u.role, us.reputation, us.current_book_count, us.max_book_count
     FROM users u LEFT JOIN user_status us
-    ON u.id = us.user_id;
+    ON u.id = us.user_id
+    WHERE u.role <> 'admin';
     `;
 
     pool.query(SQL_STATEMENT, [], callback);
@@ -199,4 +200,19 @@ module.exports.deleteAccount = async (data) => {
         console.error(error);
         throw new Error(error.message || "Failed to delete user account");
     }
+};
+
+module.exports.banUser = (userId) => {
+    return prisma.users.delete({
+            where: {
+                id: userId,
+            },
+        })
+        .catch((error) => {
+            if (error.code === "P2025") {
+                // User not found
+                throw new Error("UserNotFound");
+            }
+            throw error; // Other errors
+        });
 };
