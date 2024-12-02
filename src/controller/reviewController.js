@@ -9,17 +9,77 @@ module.exports.retrieveReviewsByBookId = (req, res, next) => {
 
     const data = {
         bookId: bookId
-    }
+    };
 
     model.retrieveReviewsByBookId(data)
         .then(reviews => {
-            res.json({ reviews: reviews });
+            const formattedReviews = reviews.map(review => ({
+                id: review.id,
+                book_id: review.book_id,
+                user_id: review.user_id,
+                rating: review.rating,
+                review_text: review.review_text,
+                posted_on: review.posted_on,
+                review_owner: review.users.name
+            }));
+
+            res.json({ reviews: formattedReviews });
         })
-        .catch(function (error) {
+        .catch(error => {
             console.error(error);
             return res.status(500).json({ error: error.message });
         });
-}
+};
+
+module.exports.getAverageRatingForBook = (req, res, next) => {
+    if (!req.params.bookId) {
+        return res.status(400).json({ message: "BookId is not provided." });
+    }
+
+    if (isNaN(req.params.bookId)) {
+        console.log(req.params.bookId);
+        return res.status(400).json({ message: "Provided BookId is not an integer." });
+    }
+
+    const bookId = parseInt(req.params.bookId, 10);
+
+    const data = {
+        bookId: bookId
+    };
+
+    model.getAverageRatingForBook(data)
+        .then(averageRating => {
+            res.json({ averageRating: averageRating || 0 });
+        })
+        .catch(error => {
+            console.error(error);
+            return res.status(500).json({ error: error.message });
+        });
+};
+
+module.exports.retrieveReviewsByUserId = (req, res, next) => {
+    res.locals.user_id = 1; // Simulated user ID for example
+    const userId = res.locals.user_id;
+
+    if (!userId) {
+        return res.status(400).json({ message: "User ID not found in token" });
+    }
+
+    const data = { userId: parseInt(userId, 10) };
+
+    model.retrieveReviewsByUserId(data)
+        .then(reviews => {
+            if (reviews.length === 0) {
+                return res.status(404).json({ message: "No reviews found for this user" });
+            }
+            res.json({ reviews });
+        })
+        .catch(error => {
+            console.error(error);
+            return res.status(500).json({ error: error.message });
+        });
+};
+
 
 module.exports.checkBookExists = (req, res, next) => {
     if (!req.params.bookId) {
@@ -111,6 +171,10 @@ module.exports.createReview = (req, res, next) => {
 
     if (isNaN(bookId) || isNaN(rating)) {
         throw new Error("Invalid bookId or rating; both should be valid integers.");
+    }
+
+    if (rating > 5 || rating < 0) {
+        throw new Error ("Rating Out of Range. It should be between 0 and 5.");
     }
 
     const data = {

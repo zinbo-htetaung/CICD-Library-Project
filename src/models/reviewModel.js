@@ -6,16 +6,74 @@ module.exports.retrieveReviewsByBookId = (data) => {
     return prisma.review.findMany({
         where: {
             book_id: data.bookId
+        },
+        include: {
+            users: {
+                select: {
+                    name: true 
+                }
+            }
+        }
+    })
+    .then(reviews => {
+        console.log(reviews);
+        return reviews;
+    })
+    .catch(error => {
+        console.error(error);
+        throw error;
+    });
+};
+
+module.exports.getAverageRatingForBook = (data) => {
+    return prisma.review.aggregate({
+        where: {
+            book_id: data.bookId
+        },
+        _avg: {
+            rating: true
+        }
+    })
+    .then(result => {
+        return result._avg.rating;
+    })
+    .catch(error => {
+        console.error(error);
+        throw error;
+    });
+};
+
+module.exports.retrieveReviewsByUserId = async (data) => {
+    return prisma.review.findMany({
+        where: {
+            user_id: data.userId
+        },
+        include: {
+            book: { // Include related book data
+                select: {
+                    book_name: true, // Only select the book name
+                }
+            }
         }
     })
         .then(reviews => {
-            console.log(reviews)
-            return reviews;
+            console.log(reviews); // Logs reviews with book name
+            return reviews.map(review => ({
+                id: review.id,
+                book_id: review.book_id,
+                book_name: review.book.book_name, // Include the book name
+                rating: review.rating,
+                review_text: review.review_text,
+                posted_on: review.posted_on
+            }));
         })
         .catch(error => {
             console.error(error);
+            throw new Error(error.message || "Database query failed");
         });
-}
+};
+
+
 
 module.exports.checkBookExists = (bookId) => {
     return prisma.book.findUnique({

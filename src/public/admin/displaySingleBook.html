@@ -3,34 +3,85 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>All Books</title>
+  <title>Book Details</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous">
   <style>
     body {
-      background-color: #fff;
-      color: #000;
+      background-color: #f9f9f9;
     }
-    .card img {
-      border: 1px solid black;
-      object-fit: cover;
+    .book-card {
+      margin-top: 20px;
+      background-color: ghostwhite;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .book-image {
+      object-fit: contain;
+    }
+    .btn-block-custom {
+      margin-top: 10px;
+      font-size: 16px;
+      padding: 10px;
+    }
+    .badge-category {
+      font-size: 14px;
+      margin-right: 5px;
+      margin-bottom: 5px;
     }
   </style>
 </head>
 <body>
   <div id="navbar-container"></div>
 
-  <div class="container my-2">
-    <a href="displayAllBooks.html" class="btn btn-secondary"><i class="bi bi-arrow-left ms-2"></i>Go Back</a>
+  <div class="container my-4">
+    <a href="displayAllBooks.html" class="btn btn-block btn-warning text-start"><i class="bi bi-caret-left-fill me-2"></i>Go Back</a>
   </div>
 
-  <div class="container">  
-    <h1 class="text-center mb-4">Book Details</h1>
-    <div id="bookDetailsContainer"></div>
+  <div class="container">
+    <h1 class="text-center my-4">Book Details</h1>
+    <div id="bookDetailsContainer" class="book-card"></div>
+  </div>
+
+  <div class="modal fade" id="updateCategoriesModal" tabindex="-1" role="dialog" aria-labelledby="updateCategoriesModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updateCategoriesModalLabel">Update Book Categories</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="updateCategoriesForm">
+            <div class="row">
+              <div class="col-6">
+                <div class="form-check"><input type="checkbox" class="form-check-input" id="category1" value="1"><label for="category1" class="form-check-label">Fiction</label></div>
+                <div class="form-check"><input type="checkbox" class="form-check-input" id="category2" value="2"><label for="category2" class="form-check-label">Non-Fiction</label></div>
+                <div class="form-check"><input type="checkbox" class="form-check-input" id="category3" value="3"><label for="category3" class="form-check-label">Mystery</label></div>
+                <div class="form-check"><input type="checkbox" class="form-check-input" id="category4" value="4"><label for="category4" class="form-check-label">Fantasy</label></div>
+                <div class="form-check"><input type="checkbox" class="form-check-input" id="category5" value="5"><label for="category5" class="form-check-label">Science Fiction</label></div>
+              </div>
+              <div class="col-6">
+                <div class="form-check"><input type="checkbox" class="form-check-input" id="category6" value="6"><label for="category6" class="form-check-label">Romance</label></div>
+                <div class="form-check"><input type="checkbox" class="form-check-input" id="category7" value="7"><label for="category7" class="form-check-label">Thriller</label></div>
+                <div class="form-check"><input type="checkbox" class="form-check-input" id="category8" value="8"><label for="category8" class="form-check-label">Historical Fiction</label></div>
+                <div class="form-check"><input type="checkbox" class="form-check-input" id="category9" value="9"><label for="category9" class="form-check-label">Biography</label></div>
+                <div class="form-check"><input type="checkbox" class="form-check-input" id="category10" value="10"><label for="category10" class="form-check-label">Self-Help</label></div>
+              </div>
+            </div>
+            <div class="container text-end mt-3">              
+              <button type="reset" class="btn btn-danger me-2">Reset</button>
+              <button type="submit" class="btn btn-primary">Update Categories</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+  <script src="authAdmin.js" type="text/javascript"></script>
   <script src="displaySingleBook.js" type="text/javascript"></script>
 </body>
 </html>

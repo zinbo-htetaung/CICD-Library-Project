@@ -20,6 +20,9 @@ document.getElementById('loginForm').addEventListener('submit', async (event) =>
         localStorage.setItem('user_id', responseData.user_id);
         localStorage.setItem('role', responseData.role);
         alert('Login successful!');
+        if (responseData.role == "admin") {
+          window.location.href = "/admin/displayAllBooks.html";
+        } else 
         window.location.href = 'index.html';
       } else {
         alert('Login attempt failed. Please check your credentials.');
@@ -29,3 +32,11 @@ document.getElementById('loginForm').addEventListener('submit', async (event) =>
       alert('An error occurred while trying to log in.');
     }
   });
+
+document.addEventListener('DOMContentLoaded', () => {
+  fetch('navbar.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('navbar-container').innerHTML = data;
+    })  
+});

@@ -151,7 +151,7 @@ module.exports.updateBook=(req,res,next)=>{
     
     model.updateSingle(data)
     .then(book=>{
-        res.status(200).json({book: book});
+        res.status(200).json({message: "Book details successfully updated"});
     })
     .catch(error => {
         if (error.message === 'Book not found') {

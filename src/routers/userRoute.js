@@ -7,6 +7,9 @@ const bcryptMiddleware = require('../middleware/bcryptMiddleware');
 
 router.post('/register',userController.checkUsernameOrEmailExist, bcryptMiddleware.hashPassword, userController.register);
 router.post('/login', userController.login, bcryptMiddleware.comparePassword, jwtMiddleware.generateToken, jwtMiddleware.sendToken);
-router.get('/profile', jwtMiddleware.verifyToken, userController.getProfileInfo);
-
+router.post('/updatePassword', userController.getPassword, userController.compareOldPassword,userController.hashPassword, userController.updatePassword);
+router.post('/updateProfile',  userController.updateProfileInfo);
+router.get('/profile',  userController.getProfileInfo);
+router.delete('/account',  userController.deleteAccount);
+//removed jwtMiddleware.verifyToken, for testing
 module.exports = router;
