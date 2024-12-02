@@ -88,7 +88,7 @@ module.exports.returnBook = (data) => {
         where: {
             book_id: bookId,
             user_id: userId,
-            return_date: null  // Ensuring this is an active rental
+            return_date: null // Ensuring this is an active rental
         }
     })
         .then((rentalRecord) => {
@@ -98,81 +98,103 @@ module.exports.returnBook = (data) => {
 
             const isDue = today > new Date(rentalRecord.end_date);
             const daysOverdue = isDue ? Math.ceil((today - new Date(rentalRecord.end_date)) / (1000 * 60 * 60 * 24)) : 0;
-            const dueFee = daysOverdue * 5;  // $5 per day if overdue
+            const dueFee = daysOverdue * 5; // $5 per day if overdue
 
             // Fetch the user status
             return prisma.user_status.findFirst({
                 where: { user_id: userId }
-            })
-                .then((userStatus) => {
-                    if (!userStatus) {
-                        throw new Error("User status not found");
-                    }
+            }).then((userStatus) => {
+                if (!userStatus) {
+                    throw new Error("User status not found");
+                }
 
-                    // Start the transaction
-                    return prisma.$transaction([
-                        // Update the rental history using the primary key `id`
-                        prisma.rent_history.update({
-                            where: {
-                                id: rentalRecord.id  // Use `id` from `findFirst` result
-                            },
-                            data: {
-                                return_date: today,
-                                due_status: isDue ? true : false
-                            }
-                        }),
+                // Calculate new reputation based on overdue status
+                const reputationAdjustment = isDue ? -5 : 5;
+                const newReputation = Math.min(
+                    100, // Cap reputation at 100
+                    Math.max(0, userStatus.reputation + reputationAdjustment) // Ensure it doesn't go below 0
+                );
+                console.log("Im new reputation" + newReputation);
+                // Dynamically calculate maxBookCount based on reputation
+                let dynamicMaxBookCount;
+                if (newReputation >= 90) {
+                    dynamicMaxBookCount = 5;
+                } else if (newReputation >= 80) {
+                    dynamicMaxBookCount = 4;
+                } else if (newReputation >= 70) {
+                    dynamicMaxBookCount = 3;
+                } else if (newReputation >= 60) {
+                    dynamicMaxBookCount = 2;
+                } else if (newReputation >= 40) {
+                    dynamicMaxBookCount = 0; // If reputation is below 40, no book renting allowed(also handled in rent )
+                }
+                console.log("Im dynamicMaxBooKCount: " + dynamicMaxBookCount);
+                // Adjust current_book_count to ensure it doesn't exceed the new max
 
-                        // Update the book's no_of_copies
-                        prisma.book.update({
-                            where: { id: bookId },
-                            data: { no_of_copies: { increment: 1 } }
-                        }),
+                // Start the transaction
+                return prisma.$transaction([
+                    // Update the rental history to mark the book as returned
+                    prisma.rent_history.update({
+                        where: {
+                            id: rentalRecord.id // Use `id` from `findFirst` result
+                        },
+                        data: {
+                            return_date: today,
+                            due_status: isDue ? true : false
+                        }
+                    }),
 
-                        // Update the user status based on whether the book is overdue or not
-                        prisma.user_status.update({
-                            where: { id: userStatus.id },
-                            data: {
-                                current_book_count: { decrement: 1 },
-                                reputation: { increment: isDue ? -5 : 5 },
-                                max_book_count: {
-                                    increment: isDue ? -1 : (userStatus.max_book_count < 5 ? 1 : 0)
-                                }
-                            }
-                        })
-                    ]).then(() => {
-                        // Return the result with due fee information if overdue
-                        return {
-                            message: "Book returned successfully",
-                            dueFee: isDue ? `$${dueFee} (Overdue by ${daysOverdue} days)` : "$0 (No overdue)",
-                            daysOverDue: daysOverdue
-                        };
-                    });
+                    // Update the book's no_of_copies
+                    prisma.book.update({
+                        where: { id: bookId },
+                        data: { no_of_copies: { increment: 1 } }
+                    }),
+
+                    // Update the user's status
+                    prisma.user_status.update({
+                        where: { id: userStatus.id },
+                        data: {
+                            current_book_count: { decrement: 1 },
+                            reputation: newReputation,
+                            max_book_count: dynamicMaxBookCount
+                        }
+                    })
+                ]).then(() => {
+                    // Return the result with due fee information
+                    return {
+                        message: "Book returned successfully",
+                        dueFee: isDue ? `$${dueFee} (Overdue by ${daysOverdue} days)` : "$0 (No overdue)",
+                        daysOverdue: daysOverdue,
+                        newReputation: newReputation,
+                        maxBookCount: dynamicMaxBookCount
+                    };
                 });
+            });
         })
         .catch((error) => {
             console.error(error);
             throw new Error(error.message || "Failed to return the book");
         });
-    };
- module.exports.insertSingle = function insertSingle(data) {
+};
+module.exports.insertSingle = function insertSingle(data) {
     return prisma.book.create({
         data: {
             book_name: data.book_name,
             author: data.author,
             description: data.description,
-            no_of_copies: data.copies,       
-            available_copies: data.copies    
+            no_of_copies: data.copies,
+            available_copies: data.copies
         }
     })
-    .then(book => {
-        console.log(book);
-        return book;
-    })
-    .catch(error => {
-        console.error(error);
-    });
-}; 
-  
+        .then(book => {
+            console.log(book);
+            return book;
+        })
+        .catch(error => {
+            console.error(error);
+        });
+};
+
 module.exports.checkBookExists = function checkBookExists(book_name, author) {
     return prisma.book.findFirst({
         where: {
@@ -181,11 +203,11 @@ module.exports.checkBookExists = function checkBookExists(book_name, author) {
         }
     });
 };
-  
+
 module.exports.updateSingle = function updateSingle(data) {
     return prisma.book.update({
         where: {
-            id: parseInt(data.id, 10), 
+            id: parseInt(data.id, 10),
         },
         data: {
             book_name: data.book_name,
@@ -199,31 +221,31 @@ module.exports.updateSingle = function updateSingle(data) {
             }
         }
     })
-    .then(book => {
-        console.log("Updated book:", book);
-        return book; 
-    })
-    .catch(error => {
-        if (error.code === 'P2025') {
-            throw new Error('Book not found'); 
-        }
-        throw error; 
-    });
+        .then(book => {
+            console.log("Updated book:", book);
+            return book;
+        })
+        .catch(error => {
+            if (error.code === 'P2025') {
+                throw new Error('Book not found');
+            }
+            throw error;
+        });
 };
 
-  
+
 module.exports.deleteSingle = function deleteSingle(id) {
     return prisma.book.delete({
         where: { id: parseInt(id, 10) }
     })
-    .catch(error => {
-        if (error.code === 'P2025') {
-            throw new Error('Book not found');
-        }
-        throw error; 
-    });
+        .catch(error => {
+            if (error.code === 'P2025') {
+                throw new Error('Book not found');
+            }
+            throw error;
+        });
 };
-  
+
 module.exports.retrieveSingle = function retrieveSingle(id) {
     return prisma.book.findUnique({
         where: {
@@ -237,26 +259,26 @@ module.exports.retrieveSingle = function retrieveSingle(id) {
             }
         }
     })
-    .then(book => {
-        if (!book) {
-            throw new Error('Book not found');
-        }
+        .then(book => {
+            if (!book) {
+                throw new Error('Book not found');
+            }
 
-        const categoryNames = book.book_category.map(entry => entry.category.category_name);
+            const categoryNames = book.book_category.map(entry => entry.category.category_name);
 
-        return {
-            id: book.id,
-            book_name: book.book_name,
-            author: book.author,
-            description: book.description,
-            no_of_copies: book.no_of_copies,
-            available_copies: book.available_copies,
-            categories: categoryNames
-        };
-    });
+            return {
+                id: book.id,
+                book_name: book.book_name,
+                author: book.author,
+                description: book.description,
+                no_of_copies: book.no_of_copies,
+                available_copies: book.available_copies,
+                categories: categoryNames
+            };
+        });
 }
-  
-  
+
+
 module.exports.rentBook = (data) => {
     const { bookId, userId } = data;
 
@@ -265,7 +287,7 @@ module.exports.rentBook = (data) => {
             id: bookId
         }
     })
-     .then((book) => {
+        .then((book) => {
             if (!book) {
                 throw new Error("Book not available for rent");
             }

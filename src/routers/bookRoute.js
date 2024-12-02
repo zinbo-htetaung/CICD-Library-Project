@@ -14,6 +14,7 @@ router.put('/update/:bookId',jwtMiddleware.verifyToken, jwtMiddleware.verifyIsAd
 router.delete('/delete/:bookId',jwtMiddleware.verifyToken, jwtMiddleware.verifyIsAdmin, bookController.deleteBook);
 router.get('/:bookId', bookController.retrieveSingleBook);
 router.post('/rent',jwtMiddleware.verifyToken, bookController.rentBook);
-router.post('/return',jwtMiddleware.verifyToken, bookController.returnBook);
+router.post('/return/:bookId', bookController.returnBook);
+// to add jwtMiddleware.verifyToken for return route
 module.exports=router;
 
