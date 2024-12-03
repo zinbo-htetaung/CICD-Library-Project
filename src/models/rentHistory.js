@@ -34,12 +34,11 @@ module.exports.retrieveByUserId = async (userId) => {
         // Fetch rental history records for the given user_id
         const rentHistories = await prisma.rent_history.findMany({
             where: {
-                user_id: userId // Filter by user_id
+                user_id: userId, // Filter by user_id
             },
             include: {
-                users: true, // Include all fields from the users table
-                book: true   // Include all fields from the book table
-            }
+                book: true, // Include all fields from the book table
+            },
         });
 
         // Log the fetched records for debugging purposes
@@ -51,8 +50,14 @@ module.exports.retrieveByUserId = async (userId) => {
             return [];
         }
 
-        // Return the full rent histories
-        return rentHistories;
+        // Map to return the desired fields
+        return rentHistories.map((history) => ({
+            id: history.book.id, // Book ID
+            book_name: history.book.book_name, // Book Name
+            author: history.book.author, // Author Name
+            start_date: history.start_date, // Start Date from rent_history
+            end_date: history.end_date, // End Date from rent_history
+        }));
     } catch (error) {
         // Log the error details for debugging
         console.error(`Error occurred while retrieving rent histories for user_id ${userId}:`, error.message);

@@ -5,6 +5,6 @@ const rentHistoryController = require('../controller/rentHistoryController');
 const jwtMiddleware = require('../middleware/jwtMiddleware');
 
 router.get('/',rentHistoryController.retrieveRentHistory);
-router.get('/:userId',jwtMiddleware.verifyToken, rentHistoryController.retrieveRentHistoryById);
+router.get('/user',jwtMiddleware.verifyToken, rentHistoryController.retrieveRentHistoryById);
 
 module.exports = router;

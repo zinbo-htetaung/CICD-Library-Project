@@ -38,10 +38,7 @@ module.exports.retrieveRentHistoryById = async (req, res, next) => {
         }
 
         // Respond with the retrieved data
-        return res.status(200).json({
-            message: "Rental history retrieved successfully",
-            history
-        });
+        return res.status(200).json({history});
     } catch (error) {
         // Log the error for debugging
         console.error("Error in retrieveAllBooks controller:", error);
