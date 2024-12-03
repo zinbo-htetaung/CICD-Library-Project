@@ -228,8 +228,7 @@ module.exports.rentBook = (req, res) => {
 
 module.exports.returnBook = (req, res) => {
     const bookId  = parseInt(req.params.bookId);
-    // let userId = res.locals.user_id
-   let userId = 1;
+    let userId = res.locals.user_id;
 
     if (!bookId) {
         return res.status(400).json({ message: "Book ID is required" });

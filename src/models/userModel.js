@@ -136,18 +136,6 @@ module.exports.getProfileInfo = function getProfileInfo(userId) {
         });
 };
 
-        return {
-            name: user.name,
-            email: user.email,
-            address: user.address,
-            dob: user.dob,
-            reputation: user.user_status?.reputation || null,
-            current_book_count: user.user_status?.current_book_count || null,
-            max_book_count: user.user_status?.max_book_count || null
-        };
-    });
-};
-
 module.exports.insertUserStatus = (userId, callback) => {
     const SQL_STATEMENT = `
     INSERT INTO user_status (user_id, current_book_count, max_book_count)

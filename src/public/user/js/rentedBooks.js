@@ -1,11 +1,26 @@
 document.addEventListener("DOMContentLoaded", async () => {
+    fetch('../html/user_navbar.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('navbar-container').innerHTML = data;
+
+        const logoutButton = document.getElementById('logout-button');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', logout);
+        }
+    })
+
+    fetch('../../footer.html')
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById('footer-container').innerHTML = data;
+    })
+
     const token = localStorage.getItem("token");
     const userId = 1; // Replace with dynamic user ID if needed
 
     const currentRentedTableBody = document.getElementById("current-rented-table-body");
-    const historyTableBody = document.getElementById("history-table-body");
     const noCurrentBooksMessage = document.getElementById("no-current-books-message");
-    const noHistoryMessage = document.getElementById("no-history-message");
 
     async function fetchRentHistory() {
         try {
