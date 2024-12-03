@@ -29,8 +29,7 @@ module.exports.retrieveRentHistory = async (req, res, next) => {
 
 module.exports.retrieveRentHistoryById = async (req, res, next) => {
     try {
-        let userId = 1;
-        // Fetch rental history data from the model
+        let userId = res.locals.user_id;
         const history = await model.retrieveByUserId(userId);
 
         // Check if the history is empty

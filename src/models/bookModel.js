@@ -117,9 +117,7 @@ module.exports.returnBook = (data) => {
                 console.log("Im new reputation" + newReputation);
                 // Dynamically calculate maxBookCount based on reputation
                 let dynamicMaxBookCount;
-                if (newReputation >= 90) {
-                    dynamicMaxBookCount = 5;
-                } else if (newReputation >= 80) {
+                if (newReputation >= 80) {
                     dynamicMaxBookCount = 4;
                 } else if (newReputation >= 70) {
                     dynamicMaxBookCount = 3;

@@ -136,16 +136,32 @@ module.exports.getProfileInfo = function getProfileInfo(userId) {
         });
 };
 
-        return {
-            name: user.name,
-            email: user.email,
-            address: user.address,
-            dob: user.dob,
-            reputation: user.user_status?.reputation || null,
-            current_book_count: user.user_status?.current_book_count || null,
-            max_book_count: user.user_status?.max_book_count || null
-        };
-    });
+module.exports.insertUserStatus = (userId, callback) => {
+    const SQL_STATEMENT = `
+    INSERT INTO user_status (user_id, current_book_count, max_book_count)
+    VALUES ($1, $2, $3);
+    `;
+    const VALUES = [userId, 0, 4];
+
+    pool.query(SQL_STATEMENT, VALUES, callback);
+};
+
+module.exports.getUserIdByEmail = (email, callback) => {
+    const SQL_STATEMENT = `SELECT id FROM users WHERE email = $1;`;
+    const VALUES = [email];
+
+    pool.query(SQL_STATEMENT, VALUES, callback);
+};
+
+module.exports.getAllUsers = (callback) => {
+    const SQL_STATEMENT = `
+    SELECT u.id, u.name, u.email, u.role, us.reputation, us.current_book_count, us.max_book_count
+    FROM users u LEFT JOIN user_status us
+    ON u.id = us.user_id
+    WHERE u.role <> 'admin';
+    `;
+
+    pool.query(SQL_STATEMENT, [], callback);
 };
 
 module.exports.updateProfileInfo=(data)=>{
@@ -254,4 +270,19 @@ module.exports.deleteAccount = async (data) => {
         console.error(error);
         throw new Error(error.message || "Failed to delete user account");
     }
+};
+
+module.exports.banUser = (userId) => {
+    return prisma.users.delete({
+            where: {
+                id: userId,
+            },
+        })
+        .catch((error) => {
+            if (error.code === "P2025") {
+                // User not found
+                throw new Error("UserNotFound");
+            }
+            throw error; // Other errors
+        });
 };

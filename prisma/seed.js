@@ -1,5 +1,7 @@
 const prisma = require('../src/models/prismaClient');
 
+const bcrypt = require('bcrypt');
+
 const statuses = [
   { text: 'Pending' },
   { text: 'In Progress' },
@@ -87,15 +89,60 @@ const books = [
   },
 ];
 
-async function main() {
-  // Seed Statuses
+const users = [
+  {
+    name: 'john',
+    email: 'john@gmail.com',
+    password: 'password', // Plain text password, will be hashed
+    address: '123 Main St, Springfield',
+    dob: new Date('1990-01-01'),
+    role: 'user',
+  },
+  {
+    name: 'mary',
+    email: 'mary@gmail.com',
+    password: 'password', // Plain text password, will be hashed
+    address: '1 Boon Lay',
+    dob: new Date('2000-01-01'),
+    role: 'user',
+  },
+  {
+    name: 'bruce',
+    email: 'bruce@gmail.com',
+    password: 'password', // Plain text password, will be hashed
+    address: '2 Canberra',
+    dob: new Date('2004-04-04'),
+    role: 'user',
+  },
+  {
+    name: 'admin',
+    email: 'admin@gmail.com',
+    password: 'password', // Plain text password, will be hashed
+    address: '456 Elm St, Metropolis',
+    dob: new Date('1985-08-10'),
+    role: 'admin',
+  },
+];
 
+const userStatuses = [];
+
+async function main() {
+
+  for (const user of users) {
+    user.password = await bcrypt.hash(user.password, 10); // Hash password with 10 salt rounds
+  }
+
+  // Seed Statuses
   const insertedStatuses = await prisma.status.createManyAndReturn({
     data: statuses,
   });
 
   const insertedPersons = await prisma.person.createManyAndReturn({
     data: persons,
+  });
+
+  const insertedUsers = await prisma.users.createManyAndReturn({
+    data: users,
   });
 
   console.log(insertedPersons, insertedStatuses);
@@ -145,6 +192,21 @@ async function main() {
       data: bookCategories,
     });
   }
+
+  // Map user_status data to the inserted user IDs
+  insertedUsers.forEach(user => {
+    userStatuses.push({
+      user_id: user.id,
+      reputation: 100,
+      current_book_count: 0,
+      max_book_count: 4,
+    });
+  });
+
+  const insertedUserStatuses = await prisma.user_status.createMany({
+    data: userStatuses,
+  });
+
 
   console.log('Seed data inserted successfully');
 }
