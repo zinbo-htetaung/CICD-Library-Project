@@ -56,6 +56,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 formMessage.style.display = 'block';
                 formMessage.style.color = 'green';
                 formMessage.innerHTML = '🎉 Your message has been sent successfully! We will get back to you shortly.';
+                setTimeout(() => {
+                    formMessage.innerHTML = '';
+                }, 5000)
                 alert('🎉 Your message has been sent successfully! We will get back to you shortly.');
                 form.reset(); // Clear form fields after successful submission
                 grecaptcha.reset(); // Reset the reCAPTCHA widget
@@ -68,6 +71,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 formMessage.style.display = 'block';
                 formMessage.style.color = 'red';
                 formMessage.innerHTML = `❌ Failed to send message. Error: ${errorData.error || 'Please try again.'}`;
+                setTimeout(() => {
+                    formMessage.innerHTML = '';
+                }, 5000)
             }
         } catch (error) {
             console.error('Network error:', error);
@@ -76,6 +82,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             formMessage.style.display = 'block';
             formMessage.style.color = 'red';
             formMessage.innerHTML = '❌ Network error. Please check your connection and try again.';
+            setTimeout(() => {
+                formMessage.innerHTML = '';
+            }, 5000)
         }
     });
 });
