@@ -43,15 +43,26 @@ document.addEventListener("DOMContentLoaded", () => {
         rentHistory.forEach((rent) => {
             const row = document.createElement("tr");
             console.log(rent.due_status);
+            let buttonHTML = '';
+            if (!rent.return_date) {
+                // Book hasn't been returned, redirect to the return page
+                buttonHTML = '<button class="btn btn-warning" onclick="window.location.href=\'../../general/displaySingleBook.html?bookId=' + rent.book_id + '\'">Return Book</button>';
+            } else {
+                // Book has been returned, redirect to the review page
+                buttonHTML = '<button class="btn btn-success" onclick="window.location.href=\'../../general/displaySingleBook.html?bookId=' + rent.book_id + '#writeReviewModal\'">Give Review</button>';
+            } 
             row.innerHTML = `
-                <td>${rent.id}</td>
+                <td  class="text-center">${rent.id}</td>
                 <td>${rent.book.book_name}</td>
-                <td>${new Date(rent.start_date).toLocaleString()}</td>
-                <td>${rent.return_date ? new Date(rent.return_date).toLocaleString() : "N/A"}</td>
+                <td class="text-center">${new Date(rent.start_date).toLocaleDateString()}</td>
+                <td class="text-center">${rent.return_date ? new Date(rent.return_date).toLocaleDateString() : "N/A"}</td>
                 <td class="text-center">
                     ${rent.due_status
                     ? '<i class="bi bi-check-circle-fill text-danger"></i>'
                     : '<i class="bi bi-x-circle-fill text-success"></i>'}
+                </td>
+                <td>
+                <div class="d-flex justify-content-center"> ${buttonHTML}</div>
                 </td>
             `;
 

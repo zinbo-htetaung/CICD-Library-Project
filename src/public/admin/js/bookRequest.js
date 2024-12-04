@@ -1,10 +1,8 @@
-// adminBookRequests.js
-
 document.addEventListener("DOMContentLoaded", () => {
-    fetchBookRequests(); // Load existing book requests on page load
+    fetchAllBookRequests(); // Load all book requests on page load
 
-    // Fetch and display book requests
-    async function fetchBookRequests() {
+    // Fetch all book requests
+    async function fetchAllBookRequests() {
         try {
             const response = await fetch("/api/requests", {
                 method: "GET",
@@ -27,6 +25,34 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // Fetch filtered book requests
+    async function fetchFilteredBookRequests(filters) {
+        try {
+            const response = await fetch("/api/requests/filter", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                },
+                body: JSON.stringify(filters)
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                displayBookRequests(data.requests);
+            } else {
+                if(response.status==404){
+                    alert("No data found");
+                }else{
+                console.error("Failed to fetch filtered book requests.");
+                alert("Failed to load filtered book requests. Please try again later.");}
+            }
+        } catch (error) {
+            console.error("Error fetching filtered book requests:", error);
+            alert("An error occurred while fetching filtered book requests.");
+        }
+    }
+
     // Display book requests in the table
     function displayBookRequests(requests) {
         const tableBody = document.getElementById("bookRequestTableBody");
@@ -34,26 +60,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (requests.length === 0) {
             const noDataRow = document.createElement("tr");
-            noDataRow.innerHTML = `<td colspan="5" class="text-center">No book requests available.</td>`;
+            noDataRow.innerHTML = `<td colspan="7" class="text-center">No book requests available.</td>`;
             tableBody.appendChild(noDataRow);
             return;
         }
+
         requests.forEach((request) => {
-            console.log(request);
             const row = document.createElement("tr");
             row.innerHTML = `
-                <td class="text-center">${request.id}</td>
-                <td class="text-center">${request.user_id}</td>
-                <td>${request.user_name}</td>
-                <td>${request.book_name}</td>
-                <td>${request.author ? request.author : '-'}</td>
-                <td class="text-center">${new Date(request.requested_on).toLocaleDateString()}</td>
-                <td class="">
-                    <div class="d-flex justify-content-center">
-                        <button class="btn btn-danger btn-sm delete-btn" data-id="${request.id}">Delete</button>
-                    </div>
-                </td>
-            `;
+            <td class="text-center">${request.id}</td>
+            <td class="text-center">${request.user_id}</td>
+            <td>${request.user_name}</td>
+            <td>${request.book_name}</td>
+            <td>${request.author ? request.author : '-'}</td>
+            <td class="text-center">${new Date(request.requested_on).toLocaleDateString()}</td>
+            <td class="">
+                <div class="d-flex justify-content-center gap-3">
+                    <button class="btn btn-success btn-sm add-btn w-25" 
+                        data-id="${request.id}" 
+                        data-book-name="${encodeURIComponent(request.book_name)}" 
+                        data-author="${encodeURIComponent(request.author || '')}">
+                        Add
+                    </button>
+                    <button class="btn btn-danger btn-sm delete-btn w-25" data-id="${request.id}">Delete</button>
+                </div>
+            </td>
+`;
+
             tableBody.appendChild(row);
         });
 
@@ -64,6 +97,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 deleteBookRequest(requestId);
             });
         });
+
+        document.querySelectorAll(".add-btn").forEach((button) => {
+            button.addEventListener("click", (e) => {
+                
+                const bookName = e.target.getAttribute("data-book-name");
+                const author = e.target.getAttribute("data-author");
+        
+                // Redirect to addbook.html with query parameters
+                window.location.href = `../addbook.html?bookName=${bookName}&author=${author}`;
+            });
+        });
+        
     }
 
     // Delete a book request
@@ -82,8 +127,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (response.ok) {
                 alert("Book request deleted successfully.");
-                fetchBookRequests(); // Refresh the table
+                fetchAllBookRequests(); // Refresh the table
             } else {
+                
                 console.error("Failed to delete book request.");
                 alert("Failed to delete the book request. Please try again.");
             }
@@ -92,4 +138,15 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("An error occurred while deleting the book request.");
         }
     }
+
+    // Handle filter search button click
+    document.getElementById("filterSearchBtn").addEventListener("click", () => {
+        const filters = {
+            user_id: document.getElementById("filterUserId").value,
+            start_date: document.getElementById("filterStartDate").value,
+            end_date: document.getElementById("filterEndDate").value,
+            sort_order: document.getElementById("sortOrder").value
+        };
+        fetchFilteredBookRequests(filters);
+    });
 });

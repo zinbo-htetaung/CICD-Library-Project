@@ -52,18 +52,45 @@
         </header>
         <main class="p-3">
             <h3 class="text-center">Book Request Management</h3>
-            <h5>Book Request(s)</h5>
             <div class="p-3">
+                <div class="filter-container my-3">
+                    <div class="row g-2 p-3 border border-1 rounded-4 border-black" style="background-color:#d4e2f5 ;">
+                        <div class="col-md-3">
+                            <label for="filterUserId" class="form-label">User ID</label>
+                            <input type="text" class="form-control" id="filterUserId" placeholder="Enter User ID">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="filterStartDate" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="filterStartDate">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="filterEndDate" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="filterEndDate">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="sortOrder" class="form-label">Sort By</label>
+                            <select class="form-select" id="sortOrder">
+                                <option value="">Select</option>
+                                <option value="asc">Date (Ascending)</option>
+                                <option value="desc">Date (Descending)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12 d-flex justify-content-end">
+                            <button id="filterSearchBtn" class="btn btn-primary">Search</button>
+                        </div>
+                    </div>
+                </div>
+                
                 <table class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
+                    <thead >
+                        <tr >
                             <th class="text-center">ID</th>
                             <th class="text-center">User ID</th>
                             <th class="text-center">User Name</th>
                             <th class="text-center">Book Name</th>
                             <th class="text-center">Author</th>
                             <th class="text-center">Requested On</th>
-                            <th class="text-center">Remove</th>
+                            <th class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody id="bookRequestTableBody">

@@ -40,7 +40,45 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("An unexpected error occurred. Please try again later.");
         }
     });
+
+    document.getElementById("sortOrder").addEventListener("change", () => {
+        const sortOrder = document.getElementById("sortOrder").value;
+        const userId = localStorage.getItem("user_id");
+        const filters = {
+            sort_order: sortOrder,
+            user_id:userId
+        };
+        fetchFilteredBookRequests(filters);
+    });
 });
+
+async function fetchFilteredBookRequests(filters) {
+    try {
+        const response = await fetch("/api/requests/filter", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            },
+            body: JSON.stringify(filters)
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            displayBookRequests(data);
+        } else {
+            if(response.status==404){
+                alert("No data found");
+            }else{
+                console.error("Failed to fetch filtered book requests.");
+                alert("Failed to load filtered book requests. Please try again later.");
+            }
+        }
+    } catch (error) {
+        console.error("Error fetching filtered book requests:", error);
+        alert("An error occurred while fetching filtered book requests.");
+    }
+}
 
 // Fetch existing book requests and display them in the table
 async function fetchBookRequests() {
