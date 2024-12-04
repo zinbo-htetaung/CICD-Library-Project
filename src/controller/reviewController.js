@@ -134,6 +134,33 @@ module.exports.checkRentHistory = (req, res, next) => {
         });
 }
 
+module.exports.checkReadStatus = (req, res) => {
+    if (!req.params.bookId) {
+      return res.status(400).json({ message: "BookId is not provided." });
+    }
+  
+    console.log(res.locals.user_id);
+  
+    const bookId = parseInt(req.params.bookId, 10);
+    const userId = parseInt(res.locals.user_id, 10);
+  
+    if (isNaN(bookId) || isNaN(userId)) {
+      return res.status(400).json({ message: "Invalid bookId or userId; both should be valid integers." });
+    }
+  
+    const data = { bookId: bookId, userId: userId };
+  
+    model.checkReadStatus(data)
+      .then(result => {
+        res.status(200).json(result);
+      })
+      .catch(error => {
+        console.error("Error in checkReadStatus controller:", error);
+        res.status(500).json({ error: "An internal server error occurred." });
+      });
+  };
+  
+
 module.exports.checkExistingReview = (req, res, next) => {
     const bookId = parseInt(req.params.bookId, 10);
     const userId = parseInt(res.locals.user_id, 10);
@@ -174,7 +201,7 @@ module.exports.createReview = (req, res, next) => {
     }
 
     if (rating > 5 || rating < 0) {
-        throw new Error ("Rating Out of Range. It should be between 0 and 5.");
+        throw new Error("Rating Out of Range. It should be between 0 and 5.");
     }
 
     const data = {

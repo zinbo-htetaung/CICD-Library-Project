@@ -1,0 +1,28 @@
+body {
+    background-color: #fff;
+    color: #000;
+}
+
+.card img {
+    border: 1px solid black;
+    object-fit: cover;
+}
+
+#bookDetailsCard {
+    background-color: #cde5f3;
+}
+
+#innerBookDetails {
+    margin: 20px;
+}
+
+.read-status-icon {
+    font-size: 2rem;
+    color: #38597a;
+    opacity: 0.8;
+    border-radius: 50%;
+}
+
+.modal-custom-size {
+    max-width: 66.67%;
+}

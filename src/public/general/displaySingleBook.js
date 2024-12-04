@@ -38,6 +38,33 @@ async function fetchBookDetails(bookId) {
   }
 }
 
+// Function to check if the user has read the book
+async function fetchReadStatus(bookId) {
+  const token = localStorage.getItem('token');
+
+  try {
+    const response = await fetch(`/api/reviews/checkReadStatus/${bookId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const readStatus = data.status;
+      console.log(data);
+      console.log(readStatus);
+      return readStatus;
+    } else {
+      console.error('Failed to fetch read status');
+    }
+  } catch (error) {
+    console.error('Error fetching read status:', error);
+  }
+}
+
 // Function to fetch reviews for the book
 async function fetchReviews(bookId) {
   try {
@@ -84,32 +111,86 @@ function fetchAverageRating(bookId) {
 }
 
 // Modified function to display book details
-function displayBookDetails(book) {
+async function displayBookDetails(book) {
   const container = document.getElementById('bookDetailsContainer');
-  fetchAverageRating(getBookIdFromURL())
-    .then(averageRating => {
-      const categoriesList = book.categories
-        .map((category) => `<li>${category}</li>`)
-        .join('');
+  try {
+    const averageRating = await fetchAverageRating(getBookIdFromURL());
+    const categoriesList = book.categories
+      .map((category) => `<li>${category}</li>`)
+      .join('');
 
-      container.innerHTML = `
-              <div class="card">
-                  <div class="card-body">
-                      <h2 class="card-title">${book.book_name}</h2>
-                      <h6 class="card-subtitle mb-2 text-muted">By: ${book.author}</h6><br>
-                      <p class="card-text"><strong>Description:</strong> ${book.description}</p>
-                      <p class="card-text"><strong>Total Copies:</strong> ${book.no_of_copies}</p>
-                      <p class="card-text"><strong>Available Copies:</strong> ${book.available_copies}</p>
-                      <p class="card-text"><strong>Average Rating:</strong> ${averageRating}</p>
-                      <p class="card-text"><strong>Categories:</strong></p>
-                      <ul>${categoriesList}</ul>
-                  </div>
-              </div>
-          `;
-    })
-    .catch(error => {
-      console.error('Error displaying book details:', error);
+    const readStatus = await fetchReadStatus(getBookIdFromURL());
+
+    console.log(readStatus);
+
+    let statusIcon = '';
+    let feedbackMessage = '';
+    switch (readStatus) {
+      case "not_read":
+        statusIcon = '<i class="bi bi-book"></i>';
+        feedbackMessage = "You have not rented or read this book before.";
+        break;
+      case "reading":
+        statusIcon = '<i class="bi bi-book-half"></i>';
+        feedbackMessage = "You are renting and reading this book.";
+        break;
+      case "read":
+        statusIcon = '<i class="bi bi-book-fill"></i>';
+        feedbackMessage = "You have rented and read this book before.";
+        break;
+      default:
+        statusIcon = '<i class="bi bi-question-lg"></i>';
+        feedbackMessage = "You are not logged in.";
+    }
+
+    container.innerHTML = `
+      <div class="card mb-4" id ="bookDetailsCard">
+        <div class="row g-0" id="innerBookDetails">
+          <div class="col-md-8">
+            <div class="card-body">
+              <h2 class="card-title">${book.book_name}</h2>
+              <h6 class="card-subtitle mb-2 text-muted">By: ${book.author}</h6><br>
+              <p class="card-text"><strong>Description:</strong> ${book.description}</p>
+              <p class="card-text"><strong>Total Copies:</strong> ${book.no_of_copies}</p>
+              <p class="card-text"><strong>Available Copies:</strong> ${book.available_copies}</p>
+              <p class="card-text"><strong>Average Rating:</strong> ${averageRating}</p>
+              <p class="card-text"><strong>Categories:</strong></p>
+              <ul>${categoriesList}</ul>
+            </div>
+          </div>
+          <div class="col-md-4 position-relative">
+            <img src="../images/book_cover.webp" class="img-fluid rounded-end" alt="Book Image">
+            <div class="read-status-icon position-absolute top-0 end-0 p-2 m-1" id="iconContainer" title="${feedbackMessage}">
+              ${statusIcon}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const iconContainer = document.getElementById('iconContainer');
+    iconContainer.addEventListener('mouseover', () => {
+      const tooltip = document.createElement('div');
+      tooltip.id = 'statusTooltip';
+      tooltip.style.position = 'absolute';
+      tooltip.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+      tooltip.style.color = 'white';
+      tooltip.style.padding = '5px 10px';
+      tooltip.style.borderRadius = '5px';
+      tooltip.style.top = `${iconContainer.offsetTop - 30}px`;
+      tooltip.style.left = `${iconContainer.offsetLeft}px`;
+      tooltip.textContent = feedbackMessage;
+      container.appendChild(tooltip);
     });
+
+    iconContainer.addEventListener('mouseout', () => {
+      const tooltip = document.getElementById('statusTooltip');
+      if (tooltip) tooltip.remove();
+    });
+
+  } catch (error) {
+    console.error("Error displaying book details:", error);
+  }
 }
 
 // Function to display reviews in the modal
@@ -123,6 +204,9 @@ function displayReviews(reviews) {
   }
 
   reviews.forEach(review => {
+    // Generate star ratings
+    const stars = generateStars(review.rating);
+
     const reviewCard = `
       <div class="card mb-3">
         <div class="card-body">
@@ -131,16 +215,22 @@ function displayReviews(reviews) {
               <i class="bi bi-person-circle me-2"></i>
               <strong>${review.review_owner || 'Anonymous'}</strong>
             </div>
-            <span class="badge bg-primary">Rating Given: ${review.rating}</span>
+            <span class="badge bg-primary">Rating Given: ${stars}</span>
           </div>
           <p class="mt-3">${review.review_text || 'No review text provided.'}</p>
           <small class="text-muted">Posted On: ${new Date(review.posted_on).toLocaleString()}</small>
+          <div class="d-flex justify-content-end mt-3">
+            <button class="btn btn-outline-primary btn-sm me-2 update-review-btn" data-review-id="${review.id}">Edit</button>
+            <button class="btn btn-outline-danger btn-sm delete-review-btn" data-review-id="${review.id}">Delete</button>
+          </div>
         </div>
       </div>
     `;
 
     reviewsContainer.insertAdjacentHTML('beforeend', reviewCard);
   });
+
+  attachButtonHandlers();
 }
 
 // Function to display Bootstrap alert
@@ -151,6 +241,84 @@ function displayAlert(message) {
     ${message}
     </div>
 `;
+}
+
+// Helper function to generate star icons
+function generateStars(rating) {
+  let stars = '';
+  for (let i = 1; i <= 5; i++) {
+    if (i <= rating) {
+      stars += '<i class="bi bi-star-fill text-warning"></i>';
+    } else {
+      stars += '<i class="bi bi-star text-warning"></i>';
+    }
+  }
+  return stars;
+}
+
+// Attach event handlers to buttons
+function attachButtonHandlers() {
+  // Update review button handler
+  document.querySelectorAll('.update-review-btn').forEach(button => {
+    button.addEventListener('click', (event) => {
+      const reviewId = event.target.dataset.reviewId;
+      const newRating = prompt("Enter new rating (1-5):");
+      const newReviewText = prompt("Enter new review text:");
+
+      if (newRating && newReviewText) {
+        updateReview(reviewId, newRating, newReviewText);
+      }
+    });
+  });
+
+  // Delete review button handler
+  document.querySelectorAll('.delete-review-btn').forEach(button => {
+    button.addEventListener('click', (event) => {
+      const reviewId = event.target.dataset.reviewId;
+
+      if (confirm("Are you sure you want to delete this review?")) {
+        deleteReview(reviewId);
+      }
+    });
+  });
+}
+
+// Make a PUT request to update the review
+function updateReview(reviewId, rating, reviewText) {
+  fetch(`/api/reviews/${reviewId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${localStorage.getItem('token')}` // Include JWT
+    },
+    body: JSON.stringify({ rating, reviewText })
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.message) {
+        alert(data.message);
+        fetchReviews(); // Reload reviews
+      }
+    })
+    .catch(error => console.error('Error updating review:', error));
+}
+
+// Make a DELETE request to delete the review
+function deleteReview(reviewId) {
+  fetch(`/api/reviews/${reviewId}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}` // Include JWT
+    }
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.message) {
+        alert(data.message);
+        fetchReviews(); // Reload reviews
+      }
+    })
+    .catch(error => console.error('Error deleting review:', error));
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -197,8 +365,8 @@ document.getElementById('reviewForm').addEventListener('submit', (event) => {
   }
 
   const token = localStorage.getItem('token');
-  
-  if(token == null || token == undefined) {
+
+  if (token == null || token == undefined) {
     errorMessage.textContent = 'Please login or create an account first to give a review.';
     return;
   }
@@ -211,7 +379,7 @@ document.getElementById('reviewForm').addEventListener('submit', (event) => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + localStorage.getItem('token'), 
+      'Authorization': 'Bearer ' + localStorage.getItem('token'),
     },
     body: JSON.stringify(reviewData),
   })
