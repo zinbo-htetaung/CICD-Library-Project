@@ -23,7 +23,7 @@ async function updateProfile() {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("authToken")}` // Pass token for authentication
+                "Authorization": `Bearer ${localStorage.getItem("token")}` // Pass token for authentication
             },
             body: JSON.stringify({ name, email, address }),
         });

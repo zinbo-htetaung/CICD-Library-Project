@@ -1,15 +1,30 @@
 const prisma = require('./prismaClient');
-module.exports.retrieveAll=async()=>{
-    return await prisma.book_request.findMany()
-    .then(requests=>{
-        console.log(requests)
-        return requests;
+module.exports.retrieveAll = async () => {
+    return await prisma.book_request.findMany({
+        include: {
+            users: {
+                select: {
+                    id: true,
+                    name: true
+                }
+            }
+        }
     })
-    .catch(error=> {
+    .then(requests => {
+        return requests.map(request => ({
+            id: request.id,
+            book_name: request.book_name,
+            author: request.author,
+            requested_on: request.requested_on,
+            user_id: request.users.id,
+            user_name: request.users.name
+        }));
+    })
+    .catch(error => {
         console.error(error);
-        
     });
-}
+};
+
 
 module.exports.retrieveByUserId=async(data)=>{
     return await prisma.book_request.findMany({
@@ -40,7 +55,7 @@ module.exports.createByUserId=async(data)=>{
 module.exports.deleteById=async(data)=>{
     return await prisma.book_request.delete({
         where:{
-            id:data.request_id
+            id:parseInt(data.request_id,10)
         }
     })
 }

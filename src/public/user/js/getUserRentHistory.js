@@ -7,10 +7,10 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await fetch(`/api/rentHistory/${userId}`, {
                 method: "GET",
-                // headers: {
-                //     "Authorization": `Bearer ${token}`,
-                //     "Content-Type": "application/json",
-                // },
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "Content-Type": "application/json",
+                },
             });
 
             if (!response.ok) {

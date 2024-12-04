@@ -3,7 +3,8 @@ async function fetchProfileData() {
         const response = await fetch('/api/users/profile', {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
             }
         });
 

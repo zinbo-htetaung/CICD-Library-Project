@@ -85,8 +85,7 @@ module.exports.login = (req, res, next) => {
         });
 }
 module.exports.getProfileInfo = (req, res) => {
-    // const userId = res.locals.user_id;
-    const userId = 1;
+    const userId = res.locals.user_id;
 
     if (!userId) {
         return res.status(400).json({ message: "User ID not found in token" });
@@ -174,8 +173,7 @@ module.exports.getAllUsers = (req, res, next) => {
 
 
 module.exports.updateProfileInfo = (req, res) => {
-    // const userId = res.locals.user_id;
-    const userId = 1;
+    const userId = res.locals.user_id;
 
 
     if (!userId) {
@@ -205,7 +203,6 @@ module.exports.updateProfileInfo = (req, res) => {
 };
 
 module.exports.getPassword = (req, res, next) => {
-    res.locals.user_id=1;
     const userId = res.locals.user_id;
 
     if (!userId) {
@@ -283,7 +280,7 @@ module.exports.updatePassword = (req, res) => {
 
 // controller.js or userController.js
 module.exports.deleteAccount = async (req, res) => {
-    const userId = req.userId; // assuming the userId is in the request (auth token or session)
+    const userId = res.locals.user_id; // assuming the userId is in the request (auth token or session)
 
     if (!userId) {
         return res.status(400).json({ message: "User ID not found in token" });
