@@ -6,7 +6,392 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>Library Home</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="../css/home.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #F9F7F7;
+            /* Lightest background */
+            color: #112D4E;
+            /* Deep Blue for text */
+        }
+
+        header {
+            background-color: #DBE2EF;
+            /* Light Blue for header background */
+            color: #112D4E;
+            /* Deep Blue for text */
+        }
+
+        header h1 {
+            color: #3F72AF;
+            /* Medium Blue for main heading */
+        }
+
+        h2 {
+            color: #3F72AF;
+            /* Medium Blue */
+            font-weight: bold;
+        }
+
+        header p {
+            color: #112D4E;
+            /* Deep Blue for subtext */
+        }
+
+        /* Card Styling */
+        .card {
+            background-color: #F9F7F7;
+            /* Lightest Color */
+            border: 1px solid #DBE2EF;
+            /* Light Blue border */
+        }
+
+        .card-title {
+            color: #3F72AF;
+            /* Medium Blue */
+        }
+
+        .card-text {
+            color: #112D4E;
+            /* Deep Blue */
+        }
+
+        .btn-primary {
+            background-color: #3F72AF;
+            /* Medium Blue */
+            border-color: #3F72AF;
+        }
+
+        .btn-primary:hover {
+            background-color: #112D4E;
+            /* Deep Blue */
+            border-color: #112D4E;
+        }
+
+        /* Accordion Styling */
+        .accordion-button {
+            background-color: #DBE2EF;
+            /* Light Blue */
+            color: #112D4E;
+            /* Deep Blue for text */
+        }
+
+        .accordion-button:not(.collapsed) {
+            background-color: #3F72AF;
+            /* Medium Blue */
+            color: #F9F7F7;
+            /* Lightest Color for active state */
+        }
+
+        .accordion-body {
+            background-color: #F9F7F7;
+            /* Lightest Color */
+            color: #112D4E;
+            /* Deep Blue */
+        }
+
+        /* Form Styling */
+        input,
+        textarea {
+            border: 1px solid #DBE2EF;
+            /* Light Blue */
+            background-color: #F9F7F7;
+            /* Lightest Color */
+            color: #112D4E;
+            /* Deep Blue */
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #DBE2EF;
+            /* Light Blue placeholder */
+        }
+
+        button[type="submit"] {
+            background-color: #3F72AF;
+            /* Medium Blue */
+            color: #F9F7F7;
+            /* Lightest Color */
+            border: none;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #112D4E;
+            /* Deep Blue */
+        }
+
+        /* Chatbot container style */
+        #chatbot-container {
+            margin: 50px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            height: 450px;
+            background-color: #DBE2EF;
+            /* Light Blue */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(100px);
+            animation: slideIn 0.5s ease-out forwards;
+        }
+
+        /* Slide-in animation for chatbot container */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(100px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Bot message fade-in and bounce animation */
+        @keyframes botMessageBounce {
+            0% {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translateX(10px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Bot messages */
+        .bot-message {
+            background-color: #F9F7F7;
+            /* Lightest Color */
+            color: #112D4E;
+            /* Deep Blue */
+            align-self: flex-start;
+            animation: botMessageBounce 0.5s ease-out;
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+
+        /* User messages */
+        .user-message {
+            background-color: #3F72AF;
+            /* Medium Blue */
+            color: #F9F7F7;
+            /* Lightest Color */
+            align-self: flex-end;
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 10px;
+            max-width: 80%;
+            width: auto;
+            word-wrap: break-word;
+            display: inline-block;
+        }
+
+        /* Floating Button Style (Chatbot Icon) */
+        #chatbot-toggle-btn {
+            position: fixed;
+            bottom: 50px;
+            right: 50px;
+            background-color: transparent;
+            /* Deep Blue */
+            border: none;
+            padding: 0;
+            font-size: 40px;
+            cursor: pointer;
+            z-index: 1000;
+            animation: bounceIcon 1s ease-in-out infinite;
+        }
+
+        /* Icon animation for the chatbot */
+        @keyframes bounceIcon {
+            0% {
+                transform: translateY(0);
+            }
+
+            30% {
+                transform: translateY(-10px);
+            }
+
+            50% {
+                transform: translateY(0);
+            }
+
+            70% {
+                transform: translateY(-5px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        /* Chatbot Icon image */
+        #chatbot-toggle-btn img {
+            width: 75px;
+            height: 75px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        /* Notification badge */
+        #notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 15px;
+            height: 15px;
+            background-color: #3F72AF;
+            /* Medium Blue */
+            border-radius: 50%;
+            color: #F9F7F7;
+            /* Lightest Color */
+            font-size: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+
+        #chatbot-header {
+            background-color: #3F72AF;
+            /* Medium Blue */
+            color: #F9F7F7;
+            /* Lightest Color */
+            padding: 10px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            text-align: center;
+            font-size: 18px;
+            position: relative;
+        }
+
+        #chatbot-header .close-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: transparent;
+            border: none;
+            color: #F9F7F7;
+            /* Lightest Color */
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        /* Typing animation */
+        .typing {
+            display: inline-block;
+            position: relative;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .typing:after {
+            content: ".";
+            position: absolute;
+            animation: typingEffect 1.5s infinite steps(1, end);
+        }
+
+        @keyframes typingEffect {
+            0% {
+                content: ".";
+            }
+
+            33% {
+                content: "..";
+            }
+
+            66% {
+                content: "...";
+            }
+
+            100% {
+                content: ".";
+            }
+        }
+
+        /* Chatbot messages container */
+        #chatbot-messages {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 10px;
+            overflow-y: auto;
+            flex-grow: 1;
+            height: calc(100% - 140px);
+            overflow-wrap: break-word;
+        }
+
+        .bot-response-options {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .bot-response-options button {
+            background-color: #3F72AF;
+            /* Medium Blue */
+            color: #F9F7F7;
+            /* Lightest Color */
+            border: none;
+            padding: 5px 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .bot-response-options button:hover {
+            background-color: #112D4E;
+            /* Deep Blue */
+        }
+
+        #chatbot-input-container {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #DBE2EF;
+            /* Light Blue */
+        }
+
+        #chatbot-input {
+            flex-grow: 1;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #DBE2EF;
+            /* Light Blue */
+        }
+
+        #chatbot-send-btn {
+            background-color: #3F72AF;
+            /* Medium Blue */
+            color: #F9F7F7;
+            /* Lightest Color */
+            border: none;
+            padding: 8px;
+            margin-left: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #chatbot-send-btn:hover {
+            background-color: #112D4E;
+            /* Deep Blue */
+        }
+    </style>
 </head>
 
 <body>
@@ -272,6 +657,25 @@
         }
 
         // Function to generate bot responses
+        // function generateBotResponse(userInput) {
+        //     userInput = userInput.toLowerCase();
+
+        //     if (userInput.includes('hours') || userInput.includes('open')) {
+        //         return "We are open from 9 AM to 6 PM every day!";
+        //     } else if (userInput.includes('books') || userInput.includes('collection')) {
+        //         return 'We have a large collection of books available for borrowing! <a href="displayAllBooks.html" target="_blank">Explore more ^^</a>';
+        //     } else if (userInput.includes('membership')) {
+        //         return "You can sign up for a membership on our website or by visiting the library.";
+        //     } else if (userInput.includes('agent') || userInput.includes('help') || userInput.includes('contact') || userInput.includes('agree')) {
+        //         return "I will connect you to a live agent shortly.";
+        //     } else if (userInput.includes('search') && !searchInProgress) {
+        //         searchInProgress = true; // Prevent repeating the search request
+        //         return "Please enter the book name you want to search for.";
+        //     } else {
+        //         return "I'm not sure how to respond to that. Press \"Agree\" to contact a live agent.";
+        //     }
+        // }
+
         function generateBotResponse(userInput) {
             let doc = nlp(userInput.toLowerCase());
 
