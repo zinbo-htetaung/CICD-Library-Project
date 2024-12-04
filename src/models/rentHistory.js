@@ -34,7 +34,8 @@ module.exports.retrieveByUserId = async (userId) => {
         // Fetch rental history records for the given user_id
         const rentHistories = await prisma.rent_history.findMany({
             where: {
-                user_id: userId, // Filter by user_id
+                user_id: userId, 
+                return_date: null
             },
             include: {
                 book: true, // Include all fields from the book table
@@ -52,6 +53,7 @@ module.exports.retrieveByUserId = async (userId) => {
 
         // Map to return the desired fields
         return rentHistories.map((history) => ({
+            history_id: history.id,
             id: history.book.id, // Book ID
             book_name: history.book.book_name, // Book Name
             author: history.book.author, // Author Name
@@ -65,4 +67,38 @@ module.exports.retrieveByUserId = async (userId) => {
         // Throw a detailed error to the caller
         throw new Error(`Failed to retrieve rent histories for user_id ${userId} due to a database error.`);
     }
+};
+
+module.exports.extendBookRental = async (historyId, userId) => {
+    const rentHistory = await prisma.rent_history.findUnique({
+        where: { 
+            id: parseInt(historyId),
+            return_date: null
+        }
+    });
+
+    if (!rentHistory || rentHistory.user_id !== userId) {
+        const error = new Error('Rent history not found');
+        error.type = 'NotFound';
+        throw error;
+    }
+
+    const currentDate = new Date().toDateString();
+    const dueDate = new Date(rentHistory.end_date).toDateString();
+
+    if (currentDate !== dueDate) {
+        const error = new Error('You can only extend a rented book on the due date.');
+        error.type = 'InvalidRequest';
+        throw error;
+    }
+
+    const newEndDate = new Date(rentHistory.end_date);
+    newEndDate.setDate(newEndDate.getDate() + 3);
+
+    const updatedRentHistory = await prisma.rent_history.update({
+        where: { id: rentHistory.id },
+        data: { end_date: newEndDate },
+    });
+
+    return updatedRentHistory;
 };

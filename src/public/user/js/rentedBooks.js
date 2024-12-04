@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (logoutButton) {
                 logoutButton.addEventListener('click', logout);
             }
-        });
+        })
 
     // Load footer
     fetch('../../footer.html')
@@ -20,33 +20,55 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const token = localStorage.getItem('token');
 
-    // Fetch rented books data from the API
     try {
         const response = await fetch('/api/rentHistory/user', {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${token}`, // Include token in Authorization header
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             }
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            console.error("Failed to fetch rented books:", errorData.message);
-            alert("Failed to retrieve rented books data. Please try again later.");
+            if (response.status === 404) {
+                const errorData = await response.json();
+                const currentlyRentedBooksSection = document.getElementById('currentlyRentedBooksSection');
+                const dueTodayBooksSection = document.getElementById('dueTodayBooksSection');
+                const overdueBooksSection = document.getElementById('overdueBooksSection');
+                currentlyRentedBooksSection.innerHTML = `
+                    <h3 class="text-start mb-3">Currently Rented Books</h3>
+                    <div class="alert alert-danger text-center" role="alert" style="display: inline-block;">
+                        ${errorData.message}
+                    </div>
+                `;
+                dueTodayBooksSection.innerHTML = `
+                    <h3 class="text-start mb-3">Books Due Today</h3>
+                    <div class="alert alert-danger text-center" role="alert" style="display: inline-block;">
+                        ${errorData.message}
+                    </div>
+                `;
+                overdueBooksSection.innerHTML = `
+                    <h3 class="text-start mb-3">Overdue Books</h3>
+                    <div class="alert alert-danger text-center" role="alert" style="display: inline-block;">
+                        ${errorData.message}
+                    </div>
+                `;
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.message}`);
+            }
             return;
         }
 
         const data = await response.json();
 
-        // Categorize books into sections
         const currentDate = new Date();
         const currentlyRented = [];
         const dueToday = [];
         const overdue = [];
 
+        // Separate books into three categories
         data.history.forEach(book => {
-            const startDate = new Date(book.start_date);
             const endDate = new Date(book.end_date);
 
             if (endDate.toDateString() === currentDate.toDateString()) {
@@ -54,98 +76,131 @@ document.addEventListener("DOMContentLoaded", async () => {
             } else if (endDate < currentDate) {
                 overdue.push(book);
             } else {
-                // Calculate days remaining for currently rented books
                 const daysRemaining = Math.ceil((endDate - currentDate) / (1000 * 60 * 60 * 24));
                 currentlyRented.push({ ...book, daysRemaining });
             }
         });
 
-        // Render the sections
-        renderBooksSection("Currently Rented Books", currentlyRented, "daysRemaining");
-        renderBooksSection("Books Due Today", dueToday, null, "danger", true);
-        renderBooksSection("Overdue Books", overdue, null, "danger", false, true);
+        // Render sections
+        renderBooksSection("Currently Rented Books", currentlyRented, "daysRemaining", "currentlyRentedBooksSection");
+        renderBooksSection("Books Due Today", dueToday, null, "dueTodayBooksSection", "warning", true);
+        renderBooksSection("Overdue Books", overdue, null, "overdueBooksSection", "danger", true, true);
     } catch (error) {
-        console.error("Error fetching or processing rented books data:", error);
-        alert("An error occurred while fetching rented books data. Please try again later.");
+        alert("Failed to load data. Please try again.");
     }
 });
 
-// Function to render book cards into a section
-function renderBooksSection(title, books, showDaysKey, badgeClass = null, showExtend = false, disableExtend = false) {
-    const container = document.querySelector('.container');
+function renderBooksSection(title, books, showDaysKey, sectionId, badgeClass = null, showExtend = false, disableExtend = false) {
+    const section = document.getElementById(sectionId);
+    section.innerHTML = `<h3 class="text-start mb-3">${title}</h3>`; 
 
-    // Create section header
-    const section = document.createElement('div');
-    section.classList.add('mt-4');
-    const header = document.createElement('h3');
-    header.classList.add('mb-3');
-    header.textContent = title;
-    section.appendChild(header);
+    if (books.length === 0) {
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-danger text-center d-inline-block';
+        alert.role = 'alert';
+        alert.innerText = `No books in the "${title}" section.`;
+        section.appendChild(alert);
+        return;
+    }
 
-    // Create a row for the books
     const row = document.createElement('div');
-    row.classList.add('row', 'g-4');
+    row.className = 'row'; 
 
     books.forEach(book => {
-        // Create a column for each book
+        const daysRemaining = showDaysKey && book[showDaysKey] ? `<p class="mb-2 text-danger">Days remaining:<strong> ${book[showDaysKey]} </strong></p>` : '';
+        const badge = badgeClass
+            ? `<span class="badge p-2 bg-${badgeClass} mb-2">${disableExtend ? 'Overdue' : 'Due Today'}</span>`
+            : '';
+        const extendButton = showExtend
+            ? `<button class="btn btn-secondary me-2 extend-btn mb-2" data-history-id="${book.history_id}" ${disableExtend ? 'disabled' : ''}>Extend<i class="bi bi-clock ms-2"></i></button>`
+            : '';
+        const returnButton = `<button class="btn btn-primary return-btn" data-book-id="${book.id}">Return<i class="bi bi-arrow-return-right ms-2"></i></button>`;
+    
         const col = document.createElement('div');
-        col.classList.add('col-12', 'col-sm-6', 'col-md-4', 'col-lg-3');
-
-        // Create the card
-        const card = document.createElement('div');
-        card.classList.add('card', 'h-100', 'shadow-sm');
-
-        // Add book details
-        const cardBody = document.createElement('div');
-        cardBody.classList.add('card-body');
-
-        const cardTitle = document.createElement('h5');
-        cardTitle.classList.add('card-title');
-        cardTitle.textContent = book.book_name;
-
-        const cardAuthor = document.createElement('p');
-        cardAuthor.classList.add('card-text', 'mb-2');
-        cardAuthor.textContent = `Author: ${book.author}`;
-
-        cardBody.appendChild(cardTitle);
-        cardBody.appendChild(cardAuthor);
-
-        // Show days remaining for currently rented books
-        if (showDaysKey && book[showDaysKey]) {
-            const daysRemainingText = document.createElement('p');
-            daysRemainingText.classList.add('card-text', 'text-muted', 'mb-2');
-            daysRemainingText.textContent = `Days remaining: ${book[showDaysKey]}`;
-            cardBody.appendChild(daysRemainingText);
-        }
-
-        // Add a badge for due or overdue books
-        if (badgeClass) {
-            const badge = document.createElement('span');
-            badge.classList.add('badge', `bg-${badgeClass}`, 'mb-2');
-            badge.textContent = 'Due Today';
-            if (disableExtend) badge.textContent = 'Overdue';
-            cardBody.appendChild(badge);
-        }
-
-        // Add Extend button
-        if (showExtend) {
-            const extendButton = document.createElement('button');
-            extendButton.classList.add('btn', 'btn-primary', 'mt-2');
-            extendButton.textContent = 'Extend';
-            if (disableExtend) {
-                extendButton.disabled = true;
-            }
-            cardBody.appendChild(extendButton);
-        }
-
-        card.appendChild(cardBody);
-        col.appendChild(card);
+        col.className = 'col-lg-3 col-md-4 col-sm-6 col-xs-6 mb-4'; 
+    
+        col.innerHTML = `
+          <div class="card shadow-sm h-100">
+            <h4 class="card-header">${book.book_name}</h4>
+            <img src="../../images/book_image.jpg" alt="Book Image" class="card-img-top">
+            <div class="card-body">   
+              <h5 class="card-subtitle mb-2 text-muted"><em>By : ${book.author}</em></h5>
+              ${daysRemaining}
+              ${badge}
+              <div class="d-flex flex-wrap flex-md-row flex-column align-items-start mt-3">
+                ${showExtend ? extendButton : ''}
+                ${returnButton}
+              </div>
+            </div>
+          </div>
+        `;
+    
         row.appendChild(col);
     });
-
-    // Append row to the section
+    
     section.appendChild(row);
+    
+    document.querySelectorAll('.return-btn').forEach(button => {
+        button.addEventListener('click', async (event) => {
+            const bookId = event.target.getAttribute('data-book-id');
+            returnBook(bookId);
+        });
+    });
+    
+    document.querySelectorAll('.extend-btn').forEach(button => {
+        button.addEventListener('click', async (event) => {
+            const historyId = event.target.getAttribute('data-history-id');
+            extendBook(historyId);
+        });
+    });
+}
 
-    // Append section to the container
-    container.appendChild(section);
+async function returnBook(bookId) {
+    const token = localStorage.getItem('token');
+
+    try {
+        const response = await fetch(`/api/books/return/${bookId}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert(`${result.message} - Due Fee ${result.dueFee}`);
+            window.location.reload();
+        } else {
+            alert(`Error: ${result.message}`);
+        }
+    } catch (error) {
+        alert("An error occurred. Please try again.");
+    }
+}
+
+async function extendBook(historyId) {
+    const token = localStorage.getItem('token');
+
+    try {
+        const response = await fetch(`/api/rentHistory/extend/${historyId}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert(`${result.message}`);
+            window.location.reload();
+        } else {
+            alert(`${result.message}`);
+        }
+    } catch (error) {
+        alert("An error occurred. Please try again.");
+    }
 }

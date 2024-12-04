@@ -105,7 +105,7 @@ function displayBooks(books) {
 
     card.innerHTML = `
       <a href="displaySingleBook.html?bookId=${book.id}" class="card-link">
-      <div class="card text-dark card-hover">
+      <div class="card text-dark card-hover h-100">
           <div class="card-header"><h4>${book.book_name}</h4></div>
           <img src="../images/book_image.jpg" class="card-img-top" alt="Book Image">
           <div class="card-body">

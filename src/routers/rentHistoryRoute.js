@@ -6,5 +6,6 @@ const jwtMiddleware = require('../middleware/jwtMiddleware');
 
 router.get('/',rentHistoryController.retrieveRentHistory);
 router.get('/user',jwtMiddleware.verifyToken, rentHistoryController.retrieveRentHistoryById);
+router.put('/extend/:historyId',jwtMiddleware.verifyToken, rentHistoryController.extendBookRental);
 
 module.exports = router;

@@ -12,11 +12,6 @@
       background-color: #fff;
       color: #000;
     }
-    .search-container {
-      display: flex;
-      justify-content: flex-end;
-      margin-bottom: 20px;
-    }
 
     .search-input {
       max-width: 300px;
@@ -39,12 +34,12 @@
     <div id="alert-container"></div> 
   
     <!-- Search Bar -->
-    <div class="search-container">
+    <div class="search-container mb-3">
       <input type="text" id="searchInput" class="form-control search-input" placeholder="Search Users...">
     </div>
 
     <div class="table-responsive">
-      <table class="table table-bordered" id="userTable">
+      <table class="table table-bordered table-hover" id="userTable">
         <thead class="table-dark">
           <tr>
             <th>User ID</th>
