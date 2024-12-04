@@ -9,7 +9,7 @@ async function fetchProfileData() {
 
         if (response.status === 200) {
             const data = await response.json();
-            console.log(data)
+            console.log(data);
             displayProfile(data);
         } else {
             const data = await response.json();
@@ -22,10 +22,15 @@ async function fetchProfileData() {
 }
 
 function displayProfile(data) {
-    document.getElementById('profileName').value = data.profile.name;
-    document.getElementById('profileEmail').value = data.profile.email;
-    document.getElementById('profileAddress').value = data.profile.address;
-    
+    // Update text content of fields
+    document.getElementById('profileName').textContent = data.profile.name;
+    document.getElementById('profileEmail').textContent = data.profile.email;
+    document.getElementById('profileAddress').textContent = data.profile.address;
+
+    // Pre-fill modal input fields
+    document.getElementById('modalProfileName').value = data.profile.name;
+    document.getElementById('modalProfileEmail').value = data.profile.email;
+    document.getElementById('modalProfileAddress').value = data.profile.address;
 }
 
 function showAlert(message, type) {
@@ -34,10 +39,11 @@ function showAlert(message, type) {
     alertDiv.setAttribute('role', 'alert');
     alertDiv.innerText = message;
     document.body.prepend(alertDiv);
-    setTimeout(() => alertDiv.remove(), 5000);  // Remove alert after 5 seconds
+    setTimeout(() => alertDiv.remove(), 5000); // Remove alert after 5 seconds
 }
 
+
 // Run fetchProfileData as soon as the DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     fetchProfileData();
 });
