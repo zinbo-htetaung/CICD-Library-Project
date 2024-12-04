@@ -1,15 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const updateButton = document.querySelector(".btn.bg-warning");
-    updateButton.addEventListener("click", () => {
-        updateProfile();
+    const updateButton = document.getElementById('updateButton');
+    updateButton.addEventListener("click", async () => {
+        await updateProfile();
     });
 });
 
 async function updateProfile() {
     // Get input values from the profile form
-    const name = document.getElementById("profileName").value.trim();
-    const email = document.getElementById("profileEmail").value.trim();
-    const address = document.getElementById("profileAddress").value.trim();
+    const name = document.getElementById('modalProfileName').value.trim();
+    const email = document.getElementById('modalProfileEmail').value.trim();
+    const address = document.getElementById('modalProfileAddress').value.trim();
 
     // Validate inputs
     if (!name || !email || !address) {
@@ -18,7 +18,7 @@ async function updateProfile() {
     }
 
     try {
-        // Call the backend API
+        // Call the backend API to update the profile
         const response = await fetch("/api/users/updateProfile", {
             method: "POST",
             headers: {
@@ -37,21 +37,16 @@ async function updateProfile() {
         console.log("Profile updated:", result.message);
 
         alert("Profile updated successfully!");
+
+        // Close the update modal
+        const updateModal = bootstrap.Modal.getInstance(document.getElementById("updateModal"));
+        updateModal.hide();
+
+        // Call fetchProfileData to refresh the profile data after the update
+        fetchProfileData();
+
     } catch (error) {
         console.error("Error updating profile:", error);
         alert(error.message || "An unexpected error occurred. Please try again.");
-    } finally {
-        // Always call getProfileInfo.js regardless of success or failure
-        loadGetProfileInfoScript();
     }
-}
-
-function loadGetProfileInfoScript() {
-    const script = document.createElement("script");
-    script.src = "../js/getProfileInfo.js"; // Path to your `getProfileInfo.js`
-    script.type = "text/javascript";
-    document.body.appendChild(script);
-
-    script.onload = () => console.log("getProfileInfo.js executed successfully");
-    script.onerror = () => console.error("Failed to load getProfileInfo.js");
 }

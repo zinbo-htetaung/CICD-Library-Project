@@ -29,6 +29,7 @@ module.exports.retrieveRentHistory = async (req, res, next) => {
 
 module.exports.retrieveRentHistoryById = async (req, res, next) => {
     try {
+        res.locals.user_id=1;
         let userId = res.locals.user_id;
         const history = await model.retrieveByUserId(userId);
 
