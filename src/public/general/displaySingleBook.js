@@ -86,6 +86,55 @@ async function fetchReviews(bookId) {
   }
 }
 
+// Function to fetch filtered reviews for the book
+async function fetchFilteredReviews() {
+  const bookId = getBookIdFromURL();
+  if (!bookId) return;
+
+  const reviewType = document.getElementById('reviewType').value;
+  const ratingFilter = document.getElementById('ratingFilter').value;
+  const ratingOrder = document.getElementById('ratingOrder').value;
+  const dateFilter = document.getElementById('dateFilter').value;
+  const startDate = document.getElementById('startDate').value;
+  const endDate = document.getElementById('endDate').value;
+  const userId = localStorage.getItem("user_id");
+
+  if (!userId) {
+    console.error('User ID could not be retrieved from token');
+    userId = 0;
+  }
+
+  // Set up query parameters
+  const queryParams = new URLSearchParams({
+    reviewType,
+    rating: ratingFilter,
+    ratingOrder,
+    dateOrder: dateFilter,
+    startDate,
+    endDate,
+    userId,
+  });
+
+  try {
+    const response = await fetch(`/api/reviews/${bookId}/filter?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch filtered reviews: ${response.status}`);
+    }
+
+    const data = await response.json();
+    displayReviews(data.reviews);
+  } catch (error) {
+    console.error('Error fetching filtered reviews:', error.message);
+    displayAlert('Error fetching filtered reviews. Please try again later.');
+  }
+}
+
 // Function to fetch the average rating for a book using Promises
 function fetchAverageRating(bookId) {
   return fetch(`/api/reviews/rating/${bookId}`, {
@@ -198,6 +247,13 @@ function displayReviews(reviews) {
   const reviewsContainer = document.getElementById('reviewsContainer');
   reviewsContainer.innerHTML = ''; // Clear existing content
 
+  const currentUserId = localStorage.getItem("user_id");
+
+  if (!currentUserId) {
+    console.error('User ID could not be retrieved from token');
+    currentUserId = 0;
+  }
+
   if (reviews.length === 0) {
     reviewsContainer.innerHTML = '<p class="text-center">No reviews available for this book.</p>';
     return;
@@ -207,6 +263,9 @@ function displayReviews(reviews) {
     // Generate star ratings
     const stars = generateStars(review.rating);
 
+    // Check if the review belongs to the current user
+    const isCurrentUserReview = review.user_id == currentUserId;
+    
     const reviewCard = `
       <div class="card mb-3">
         <div class="card-body">
@@ -219,10 +278,13 @@ function displayReviews(reviews) {
           </div>
           <p class="mt-3">${review.review_text || 'No review text provided.'}</p>
           <small class="text-muted">Posted On: ${new Date(review.posted_on).toLocaleString()}</small>
-          <div class="d-flex justify-content-end mt-3">
-            <button class="btn btn-outline-primary btn-sm me-2 update-review-btn" data-review-id="${review.id}">Edit</button>
-            <button class="btn btn-outline-danger btn-sm delete-review-btn" data-review-id="${review.id}">Delete</button>
-          </div>
+          ${isCurrentUserReview
+        ? `<div class="d-flex justify-content-end mt-3">
+                  <button class="btn btn-outline-primary btn-sm me-2 update-review-btn" data-review-id="${review.id}">Edit</button>
+                  <button class="btn btn-outline-danger btn-sm delete-review-btn" data-review-id="${review.id}">Delete</button>
+                </div>`
+        : ''
+      }
         </div>
       </div>
     `;
@@ -400,4 +462,75 @@ document.getElementById('reviewForm').addEventListener('submit', (event) => {
       errorMessage.textContent = 'There was an error submitting your review. Please try again later.';
       console.error(error);
     });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+  const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+  document.getElementById('startDate').setAttribute('max', today);
+  document.getElementById('endDate').setAttribute('max', today);
+});
+
+// Update the min attribute of end date based on start date selection
+document.getElementById('startDate').addEventListener('change', function () {
+  const startDateValue = this.value;
+  document.getElementById('endDate').setAttribute('min', startDateValue);
+  if (startDateValue) {
+    document.getElementById('endDate').value = '';
+  }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  const dateFilter = document.getElementById("dateFilter");
+  const startDate = document.getElementById("startDate");
+  const endDate = document.getElementById("endDate");
+
+  const ratingFilter = document.getElementById("ratingFilter");
+  const ratingOrder = document.getElementById("ratingOrder");
+
+  const handleDateFilterChange = () => {
+    const dateSortSelected = dateFilter.value !== "";
+    startDate.disabled = dateSortSelected;
+    endDate.disabled = dateSortSelected;
+    if (dateSortSelected) {
+      startDate.value = "";
+      endDate.value = "";
+    }
+  };
+
+  const handleDateRangeChange = () => {
+    const dateRangeSelected = startDate.value !== "" || endDate.value !== "";
+    dateFilter.disabled = dateRangeSelected;
+    if (dateRangeSelected) {
+      dateFilter.value = "";
+    }
+  };
+
+  const handleRatingFilterChange = () => {
+    const ratingSortSelected = ratingOrder.value !== "";
+    ratingFilter.disabled = ratingSortSelected;
+    if (ratingSortSelected) {
+      ratingFilter.value = "";
+    }
+  };
+
+  const handleRatingSortChange = () => {
+    const ratingFilterSelected = ratingFilter.value !== "";
+    ratingOrder.disabled = ratingFilterSelected;
+    if (ratingFilterSelected) {
+      ratingOrder.value = "";
+    }
+  };
+
+  dateFilter.addEventListener("change", handleDateFilterChange);
+  startDate.addEventListener("change", handleDateRangeChange);
+  endDate.addEventListener("change", handleDateRangeChange);
+
+  ratingOrder.addEventListener("change", handleRatingFilterChange);
+  ratingFilter.addEventListener("change", handleRatingSortChange);
+});
+
+// Attach an event listener to the "Apply Filters" button
+document.getElementById('applyFilters').addEventListener('click', (event) => {
+  event.preventDefault();
+  fetchFilteredReviews(); // Trigger the filter fetch process
 });

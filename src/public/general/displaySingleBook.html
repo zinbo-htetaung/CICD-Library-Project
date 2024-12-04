@@ -38,6 +38,62 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
+          <div id="filterSection" class="mb-3">
+            <h5>Filter Reviews</h5>
+            <div class="row">
+              <div class="col">
+                <label for="reviewType">Review Options</label>
+                <select id="reviewType" class="form-select">
+                  <option value="all">All Reviews</option>
+                  <option value="my">My Reviews</option>
+                </select>
+              </div>
+
+              <div class="col">
+                <label for="ratingFilter">Rating</label>
+                <select id="ratingFilter" class="form-select">
+                  <option value="">All Ratings</option>
+                  <option value="1">1 Star</option>
+                  <option value="2">2 Stars</option>
+                  <option value="3">3 Stars</option>
+                  <option value="4">4 Stars</option>
+                  <option value="5">5 Stars</option>
+                </select>
+              </div>
+
+              <div class="col">
+                <label for="ratingOrder">Sort by Rating</label>
+                <select id="ratingOrder" class="form-select">
+                  <option value="">Default</option>
+                  <option value="asc">Rating Ascending</option>
+                  <option value="desc">Rating Descending</option>
+                </select>
+              </div>
+
+              <div class="col">
+                <label for="dateFilter">Sort By Date</label>
+                <select id="dateFilter" class="form-select">
+                  <option value="">Default</option>
+                  <option value="asc">Date Ascending</option>
+                  <option value="desc">Date Descending</option>
+                </select>
+              </div>
+
+              <div class="col">
+                <label for="startDate">Start Date</label>
+                <input type="date" id="startDate" class="form-control" max="">
+              </div>
+
+              <div class="col">
+                <label for="endDate">End Date</label>
+                <input type="date" id="endDate" class="form-control" min="" max="">
+              </div>
+            </div>
+
+            <div class="filterButtonSection mt-3">
+              <button id="applyFilters" class="btn btn-primary">Apply Filters</button>
+            </div>
+          </div>
           <div id="reviewsContainer">
           </div>
         </div>

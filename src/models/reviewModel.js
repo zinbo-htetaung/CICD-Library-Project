@@ -25,6 +25,55 @@ module.exports.retrieveReviewsByBookId = (data) => {
         });
 };
 
+module.exports.filterReviews = async (filters) => {
+    const whereClause = {
+      book_id: filters.bookId,
+    };
+  
+    // Filter by review type (user-specific or all)
+    if (filters.reviewType === 'my') {
+      whereClause.user_id = filters.userId;
+    }
+  
+    // Filter by rating
+    if (filters.rating) {
+      whereClause.rating = filters.rating;
+    }
+  
+    // Filter by date range
+    if (filters.startDate && filters.endDate) {
+      whereClause.posted_on = {
+        gte: new Date(filters.startDate),
+        lte: new Date(filters.endDate),
+      };
+    }
+  
+    // Build sorting order
+    const orderBy = [];
+    if (filters.ratingOrder) {
+      orderBy.push({ rating: filters.ratingOrder });
+    }
+    if (filters.dateOrder) {
+      orderBy.push({ posted_on: filters.dateOrder });
+    }
+  
+    try {
+      return await prisma.review.findMany({
+        where: whereClause,
+        orderBy: orderBy.length > 0 ? orderBy : undefined,
+        include: {
+          users: {
+            select: { name: true },
+          },
+        },
+      });
+    } catch (error) {
+      console.error('Error in filterReviews model:', error);
+      throw new Error('Failed to filter reviews.');
+    }
+  };
+  
+
 module.exports.getAverageRatingForBook = (data) => {
     return prisma.review.aggregate({
         where: {

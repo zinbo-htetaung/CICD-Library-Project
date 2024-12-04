@@ -31,6 +31,45 @@ module.exports.retrieveReviewsByBookId = (req, res, next) => {
         });
 };
 
+module.exports.filterReviews = async (req, res, next) => {
+    try {
+        const { bookId } = req.params;
+        const { reviewType, rating, ratingOrder, dateOrder, startDate, endDate, userId } = req.query;
+
+        if (!bookId || isNaN(bookId)) {
+            return res.status(400).json({ message: 'Invalid or missing book ID.' });
+        }
+
+        const filters = {
+            bookId: parseInt(bookId, 10),
+            reviewType,
+            rating: rating ? parseInt(rating, 10) : null,
+            ratingOrder,
+            dateOrder,
+            startDate: startDate || null,
+            endDate: endDate || null,
+            userId: parseInt(userId) || 0
+        };
+
+        const reviews = await model.filterReviews(filters);
+
+        const formattedReviews = reviews.map(review => ({
+            id: review.id,
+            book_id: review.book_id,
+            user_id: review.user_id,
+            rating: review.rating,
+            review_text: review.review_text,
+            posted_on: review.posted_on,
+            review_owner: review.users.name
+        }));
+
+        return res.status(200).json({ reviews: formattedReviews });
+    } catch (error) {
+        console.error('Error filtering reviews:', error);
+        return res.status(500).json({ error: 'An error occurred while filtering reviews.' });
+    }
+};
+
 module.exports.getAverageRatingForBook = (req, res, next) => {
     if (!req.params.bookId) {
         return res.status(400).json({ message: "BookId is not provided." });
@@ -79,7 +118,6 @@ module.exports.retrieveReviewsByUserId = (req, res, next) => {
             return res.status(500).json({ error: error.message });
         });
 };
-
 
 module.exports.checkBookExists = (req, res, next) => {
     if (!req.params.bookId) {
@@ -136,30 +174,30 @@ module.exports.checkRentHistory = (req, res, next) => {
 
 module.exports.checkReadStatus = (req, res) => {
     if (!req.params.bookId) {
-      return res.status(400).json({ message: "BookId is not provided." });
+        return res.status(400).json({ message: "BookId is not provided." });
     }
-  
+
     console.log(res.locals.user_id);
-  
+
     const bookId = parseInt(req.params.bookId, 10);
     const userId = parseInt(res.locals.user_id, 10);
-  
+
     if (isNaN(bookId) || isNaN(userId)) {
-      return res.status(400).json({ message: "Invalid bookId or userId; both should be valid integers." });
+        return res.status(400).json({ message: "Invalid bookId or userId; both should be valid integers." });
     }
-  
+
     const data = { bookId: bookId, userId: userId };
-  
+
     model.checkReadStatus(data)
-      .then(result => {
-        res.status(200).json(result);
-      })
-      .catch(error => {
-        console.error("Error in checkReadStatus controller:", error);
-        res.status(500).json({ error: "An internal server error occurred." });
-      });
-  };
-  
+        .then(result => {
+            res.status(200).json(result);
+        })
+        .catch(error => {
+            console.error("Error in checkReadStatus controller:", error);
+            res.status(500).json({ error: "An internal server error occurred." });
+        });
+};
+
 
 module.exports.checkExistingReview = (req, res, next) => {
     const bookId = parseInt(req.params.bookId, 10);
