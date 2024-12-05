@@ -1,14 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
     fetch('admin_navbar.html')
-    .then(response => response.text())
-    .then(data => {
-        document.getElementById('navbar-container').innerHTML = data;
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('navbar-container').innerHTML = data;
 
-        const logoutButton = document.getElementById('logout-button');
-        if (logoutButton) {
-            logoutButton.addEventListener('click', logout);
-        }
-    })
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', logout);
+            }
+        })
+        .catch(error => console.error("Error loading navbar:", error));
+
 
     fetch('../footer.html')
     .then(response => response.text())
