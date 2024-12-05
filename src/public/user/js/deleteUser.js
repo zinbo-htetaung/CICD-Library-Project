@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 method: "DELETE", // Assuming DELETE method is used in the backend
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
                 },
                 // You may also need to send an authorization token if you're using JWT authentication
                 // headers: {

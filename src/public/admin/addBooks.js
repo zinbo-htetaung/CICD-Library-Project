@@ -1,4 +1,13 @@
 document.addEventListener("DOMContentLoaded", function () {
+  const urlParams = new URLSearchParams(window.location.search);
+
+
+  const bookName = urlParams.get("bookName");
+  const author = urlParams.get("author");
+
+
+  if (bookName) document.getElementById("bookName").value = decodeURIComponent(bookName);
+  if (author) document.getElementById("author").value = decodeURIComponent(author);
     fetch('admin_navbar.html')
     .then(response => response.text())
     .then(data => {

@@ -82,7 +82,7 @@ model rent_history {
   start_date  DateTime  @db.Date
   end_date    DateTime  @db.Date
   return_date DateTime? @db.Date
-  due_status  Boolean?  @default(false)
+  due_status  Boolean?  
   book        book      @relation(fields: [book_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   users       users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }

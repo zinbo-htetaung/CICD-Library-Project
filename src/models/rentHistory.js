@@ -31,43 +31,41 @@ module.exports.retrieveAll = async () => {
 
 module.exports.retrieveByUserId = async (userId) => {
     try {
-        // Fetch rental history records for the given user_id
         const rentHistories = await prisma.rent_history.findMany({
             where: {
-                user_id: userId, 
-                return_date: null
+
+                user_id: userId
             },
             include: {
-                book: true, // Include all fields from the book table
-            },
+                users: true, // Include user details
+                book: {
+                    include: {
+                        review: {
+                            where: {
+                                user_id: userId // Include only reviews written by the user
+                            }
+                        }
+                    }
+                }
+            }
+
         });
 
-        // Log the fetched records for debugging purposes
-        console.log(`Successfully retrieved rent history records for user_id ${userId}:`, rentHistories);
+        console.log(`Successfully retrieved rental history and reviews for user_id ${userId}:`, rentHistories);
 
-        // Check if any records were found
         if (!rentHistories || rentHistories.length === 0) {
             console.warn(`No rental history records found for user_id ${userId}.`);
             return [];
         }
 
-        // Map to return the desired fields
-        return rentHistories.map((history) => ({
-            history_id: history.id,
-            id: history.book.id, // Book ID
-            book_name: history.book.book_name, // Book Name
-            author: history.book.author, // Author Name
-            start_date: history.start_date, // Start Date from rent_history
-            end_date: history.end_date, // End Date from rent_history
-        }));
-    } catch (error) {
-        // Log the error details for debugging
-        console.error(`Error occurred while retrieving rent histories for user_id ${userId}:`, error.message);
+        return rentHistories;
 
-        // Throw a detailed error to the caller
-        throw new Error(`Failed to retrieve rent histories for user_id ${userId} due to a database error.`);
+    } catch (error) {
+        console.error(`Error retrieving rental history and reviews for user_id ${userId}:`, error.message);
+        throw new Error(`Failed to fetch rental history and reviews due to a database error.`);
     }
 };
+
 
 module.exports.extendBookRental = async (historyId, userId) => {
     const rentHistory = await prisma.rent_history.findUnique({
@@ -102,3 +100,4 @@ module.exports.extendBookRental = async (historyId, userId) => {
 
     return updatedRentHistory;
 };
+

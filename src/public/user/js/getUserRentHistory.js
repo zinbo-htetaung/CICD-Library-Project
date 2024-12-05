@@ -7,10 +7,10 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await fetch(`/api/rentHistory/${userId}`, {
                 method: "GET",
-                // headers: {
-                //     "Authorization": `Bearer ${token}`,
-                //     "Content-Type": "application/json",
-                // },
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "Content-Type": "application/json",
+                },
             });
 
             if (!response.ok) {
@@ -43,15 +43,36 @@ document.addEventListener("DOMContentLoaded", () => {
         rentHistory.forEach((rent) => {
             const row = document.createElement("tr");
             console.log(rent.due_status);
+            let reviewStatus=false;
+            if(rent.book.review.length>0){
+                reviewStatus=true
+            }
+            let buttonHTML = '';
+            if (!rent.return_date) {
+                // Book hasn't been returned, redirect to the return page
+                buttonHTML = '<button class="btn btn-warning" onclick="window.location.href=\'../../general/displaySingleBook.html?bookId=' + rent.book_id + '\'">Return Book</button>';
+            } else {
+                // Book has been returned, redirect to the review page
+                if(reviewStatus){
+                    buttonHTML = '<button class="btn btn-secondary">Review Given</button>';
+                }
+                else{
+                    buttonHTML = '<button class="btn border-2 border-black" onclick="window.location.href=\'../../general/displaySingleBook.html?bookId=' + rent.book_id + '#writeReviewModal\'" style="background-color: #DBE2EF;">Give Review</button>';
+                }
+            } 
             row.innerHTML = `
-                <td>${rent.id}</td>
+                <td  class="text-center">${rent.id}</td>
                 <td>${rent.book.book_name}</td>
-                <td>${new Date(rent.start_date).toLocaleString()}</td>
-                <td>${rent.return_date ? new Date(rent.return_date).toLocaleString() : "N/A"}</td>
+                <td class="text-center">${new Date(rent.start_date).toLocaleDateString()}</td>
+                <td class="text-center">${rent.return_date ? new Date(rent.return_date).toLocaleDateString() : "N/A"}</td>
                 <td class="text-center">
-                    ${rent.due_status
-                    ? '<i class="bi bi-check-circle-fill text-danger"></i>'
-                    : '<i class="bi bi-x-circle-fill text-success"></i>'}
+                    ${
+                        rent.due_status!=null
+                    ? rent.due_status? '<i class="bi bi-check-circle-fill text-danger"></i>'
+                    : '<i class="bi bi-x-circle-fill text-success"></i>':'-'}
+                </td>
+                <td>
+                <div class="d-flex justify-content-center"> ${buttonHTML}</div>
                 </td>
             `;
 

@@ -85,8 +85,7 @@ module.exports.login = (req, res, next) => {
         });
 }
 module.exports.getProfileInfo = (req, res) => {
-    // const userId = res.locals.user_id;
-    const userId = 1;
+    const userId = res.locals.user_id;
 
     if (!userId) {
         return res.status(400).json({ message: "User ID not found in token" });
@@ -171,11 +170,24 @@ module.exports.getAllUsers = (req, res, next) => {
     });
 };
 
+module.exports.checkDuplicateEmail=(req,res,next)=>{
+    const email=req.body.email
+    model.checkEmail(email)
+        .then(function (user) {
+            if (user) {
+                console.log("User with this email already exist");
+                return res.status(401).json({ message: 'User with this email already exist' });
+            }
 
+            next();
+        })
+        .catch(function (error) {
+            return res.status(500).json({ message: error.message });
+        });
+}
 
 module.exports.updateProfileInfo = (req, res) => {
-    // const userId = res.locals.user_id;
-    const userId = 1;
+    const userId = res.locals.user_id;
 
 
     if (!userId) {
@@ -205,7 +217,6 @@ module.exports.updateProfileInfo = (req, res) => {
 };
 
 module.exports.getPassword = (req, res, next) => {
-    res.locals.user_id=1;
     const userId = res.locals.user_id;
 
     if (!userId) {
@@ -261,6 +272,8 @@ module.exports.hashPassword = function (req, res, next) {
     bcrypt.hash(req.body.newPassword, saltRounds, callback);
 };
 
+
+
 module.exports.updatePassword = (req, res) => {
     const data={
         user_id:res.locals.user_id,
@@ -283,7 +296,7 @@ module.exports.updatePassword = (req, res) => {
 
 // controller.js or userController.js
 module.exports.deleteAccount = async (req, res) => {
-    const userId = req.userId; // assuming the userId is in the request (auth token or session)
+    const userId = res.locals.user_id; // assuming the userId is in the request (auth token or session)
 
     if (!userId) {
         return res.status(400).json({ message: "User ID not found in token" });
