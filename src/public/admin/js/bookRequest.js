@@ -75,14 +75,14 @@ document.addEventListener("DOMContentLoaded", () => {
             <td>${request.author ? request.author : '-'}</td>
             <td class="text-center">${new Date(request.requested_on).toLocaleDateString()}</td>
             <td class="">
-                <div class="d-flex justify-content-center gap-3">
-                    <button class="btn btn-success btn-sm add-btn w-25" 
+                <div class="d-flex justify-content-center gap-4 px-4">
+                    <button class="btn btn-success btn-sm add-btn w-50 border-2 border-black"  
                         data-id="${request.id}" 
                         data-book-name="${encodeURIComponent(request.book_name)}" 
                         data-author="${encodeURIComponent(request.author || '')}">
                         Add
                     </button>
-                    <button class="btn btn-danger btn-sm delete-btn w-25" data-id="${request.id}">Delete</button>
+                    <button class="btn btn-danger btn-sm delete-btn w-50 border-2 border-black" data-id="${request.id} ">Delete</button>
                 </div>
             </td>
 `;
