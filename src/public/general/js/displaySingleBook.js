@@ -6,7 +6,7 @@ function getBookIdFromURL() {
   // validate book id
   if (!bookId || isNaN(bookId) || parseInt(bookId) <= 0) {
     alert('Invalid book ID detected. Redirecting to previous page...');
-    window.location.href = 'displayAllBooks.html';
+    window.location.href = '../html/displayAllBooks.html';
   }
 
   return bookId;
@@ -207,7 +207,7 @@ async function displayBookDetails(book) {
             </div>
           </div>
           <div class="col-md-4 position-relative">
-            <img src="../images/book_cover.webp" class="img-fluid rounded-end" alt="Book Image">
+            <img src="../../images/book_cover.webp" class="img-fluid rounded-end" alt="Book Image">
             <div class="read-status-icon position-absolute top-0 end-0 p-2 m-1" id="iconContainer" title="${feedbackMessage}">
               ${statusIcon}
             </div>
@@ -261,7 +261,7 @@ function displayReviews(reviews) {
     const stars = generateStars(review.rating);
 
     const isCurrentUserReview = review.user_id == currentUserId;
-    
+
     const reviewCard = `
       <div class="card mb-3">
         <div class="card-body">
@@ -380,10 +380,16 @@ function deleteReview(reviewId) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  fetch('navbar.html')
+  fetch('../html/navbar.html')
     .then(response => response.text())
     .then(data => {
       document.getElementById('navbar-container').innerHTML = data;
+    })
+
+  fetch('../../footer.html')
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById('footer-container').innerHTML = data;
     })
 
   const bookId = getBookIdFromURL();
@@ -391,7 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchBookDetails(bookId);
   } else {
     alert('Invalid book ID detected. Redirecting to previous page...');
-    window.location.href = 'displayAllBooks.html';
+    window.location.href = '../html/displayAllBooks.html';
   }
 });
 
@@ -455,7 +461,7 @@ document.getElementById('reviewForm').addEventListener('submit', (event) => {
     });
 });
 
- // Get today's date in YYYY-MM-DD format
+// Get today's date in YYYY-MM-DD format
 document.addEventListener('DOMContentLoaded', function () {
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('startDate').setAttribute('max', today);
@@ -548,19 +554,19 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-window.onload = function() {
+window.onload = function () {
   const url = new URL(window.location.href);
   const hash = url.hash;
 
   // Check if the hash is '#writeReviewModal'
   if (hash === '#writeReviewModal') {
-      // Assuming you're using Bootstrap modal
-      const modal = document.getElementById('writeReviewModal');
-      
-      if (modal) {
-          // Show the modal if it's hidden
-          $(modal).modal('show');
-      }
+    // Assuming you're using Bootstrap modal
+    const modal = document.getElementById('writeReviewModal');
+
+    if (modal) {
+      // Show the modal if it's hidden
+      $(modal).modal('show');
+    }
   }
 };
 
