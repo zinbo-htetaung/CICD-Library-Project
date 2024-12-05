@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     buttonHTML = '<button class="btn btn-secondary">Review Given</button>';
                 }
                 else{
-                    buttonHTML = '<button class="btn btn-success" onclick="window.location.href=\'../../general/displaySingleBook.html?bookId=' + rent.book_id + '#writeReviewModal\'">Give Review</button>';
+                    buttonHTML = '<button class="btn border-2 border-black" onclick="window.location.href=\'../../general/displaySingleBook.html?bookId=' + rent.book_id + '#writeReviewModal\'" style="background-color: #DBE2EF;">Give Review</button>';
                 }
             } 
             row.innerHTML = `
