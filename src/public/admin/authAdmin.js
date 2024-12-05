@@ -5,6 +5,7 @@ if (localStorage.getItem('token')) {
         window.location.href = '../general/login.html'; 
     }
 } else {
+    alert("Please log in to access these webpages");
     window.location.href = '../general/login.html';   
 }
 

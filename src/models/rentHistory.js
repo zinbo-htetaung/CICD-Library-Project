@@ -33,6 +33,7 @@ module.exports.retrieveByUserId = async (userId) => {
     try {
         const rentHistories = await prisma.rent_history.findMany({
             where: {
+
                 user_id: userId
             },
             include: {
@@ -47,6 +48,7 @@ module.exports.retrieveByUserId = async (userId) => {
                     }
                 }
             }
+
         });
 
         console.log(`Successfully retrieved rental history and reviews for user_id ${userId}:`, rentHistories);
@@ -57,8 +59,45 @@ module.exports.retrieveByUserId = async (userId) => {
         }
 
         return rentHistories;
+
     } catch (error) {
         console.error(`Error retrieving rental history and reviews for user_id ${userId}:`, error.message);
         throw new Error(`Failed to fetch rental history and reviews due to a database error.`);
     }
 };
+
+
+module.exports.extendBookRental = async (historyId, userId) => {
+    const rentHistory = await prisma.rent_history.findUnique({
+        where: { 
+            id: parseInt(historyId),
+            return_date: null
+        }
+    });
+
+    if (!rentHistory || rentHistory.user_id !== userId) {
+        const error = new Error('Rent history not found');
+        error.type = 'NotFound';
+        throw error;
+    }
+
+    const currentDate = new Date().toDateString();
+    const dueDate = new Date(rentHistory.end_date).toDateString();
+
+    if (currentDate !== dueDate) {
+        const error = new Error('You can only extend a rented book on the due date.');
+        error.type = 'InvalidRequest';
+        throw error;
+    }
+
+    const newEndDate = new Date(rentHistory.end_date);
+    newEndDate.setDate(newEndDate.getDate() + 3);
+
+    const updatedRentHistory = await prisma.rent_history.update({
+        where: { id: rentHistory.id },
+        data: { end_date: newEndDate },
+    });
+
+    return updatedRentHistory;
+};
+
