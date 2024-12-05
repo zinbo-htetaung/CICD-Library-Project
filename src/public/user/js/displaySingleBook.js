@@ -477,6 +477,60 @@ document.getElementById('startDate').addEventListener('change', function () {
   }
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+  const rentButton = document.getElementById("rentBook");
+  const token = localStorage.getItem("token"); // Retrieve the user token from localStorage
+
+  // Function to extract the book ID from the URL
+  function getBookIdFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get("bookId"); // Retrieve the "bookId" parameter from the URL
+  }
+
+  // Add click event listener to the "rentBook" button
+  rentButton.addEventListener("click", async () => {
+    try {
+      const bookId = getBookIdFromURL(); // Fetch the book ID from the URL
+
+      // Validate the presence of book ID and user token
+      if (!bookId) {
+        alert("Book ID is missing or invalid. Please check the URL and try again.");
+        return;
+      }
+
+      if (!token) {
+        alert("You are not logged in. Please log in to rent the book.");
+        return;
+      }
+
+      // Make the API call to rent the book
+      const response = await fetch("/api/books/rent", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ bookId }), // Send the book ID as the payload
+      });
+
+      if (!response.ok) {
+        const errorResponse = await response.json(); // Parse the error response
+        throw new Error(errorResponse.error || "Failed to rent the book. Please try again.");
+      }
+
+      const result = await response.json();
+
+      // Handle success response
+      alert(`Book rented successfully! Rented Book: ${result.book.book_name || "N/A"}`);
+      console.log("Rental Result:", result);
+    } catch (error) {
+      // Handle API errors or unexpected issues
+      console.error("Error renting book:", error);
+      alert(error.message || "An unexpected error occurred. Please try again.");
+    }
+  });
+});
+
 document.addEventListener("DOMContentLoaded", function () {
   const dateFilter = document.getElementById("dateFilter");
   const startDate = document.getElementById("startDate");
