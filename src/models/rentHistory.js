@@ -1,31 +1,142 @@
 const prisma = require('./prismaClient');
 
-module.exports.retrieveAll = async () => {
+module.exports.retrieveAll = async function retrieveAll(filters) {
     try {
-        // Fetch all rental history records with user details
+        // Initialize an empty where condition
+        const whereConditions = {};
+
+        // Dynamic User Filters
+        if (filters.userId) whereConditions.userId = parseInt(filters.userId, 10);
+
+        whereConditions.users = {};
+        if (filters.userName) {
+            whereConditions.users.name = {
+                contains: filters.userName,
+                mode: 'insensitive'
+            };
+        }
+        if (filters.userEmail) {
+            whereConditions.users.email = {
+                contains: filters.userEmail,
+                mode: 'insensitive'
+            };
+        }
+        if (filters.userAddress) {
+            whereConditions.users.address = {
+                contains: filters.userAddress,
+                mode: 'insensitive'
+            };
+        }
+        if (filters.userDob) {
+            whereConditions.users.dob = new Date(filters.userDob);
+        }
+
+        // Dynamic Book Filters
+        whereConditions.book = {};
+        if (filters.bookId) whereConditions.bookId = parseInt(filters.bookId, 10);
+
+        if (filters.bookName) {
+            whereConditions.book.name = {
+                contains: filters.bookName,
+                mode: 'insensitive'
+            };
+        }
+        if (filters.author) {
+            whereConditions.book.author = {
+                contains: filters.author,
+                mode: 'insensitive'
+            };
+        }
+        if (filters.bookDescription) {
+            whereConditions.book.description = {
+                contains: filters.bookDescription,
+                mode: 'insensitive'
+            };
+        }
+        if (filters.minNoOfCopies || filters.maxNoOfCopies) {
+            whereConditions.book.no_of_copies = {
+                ...(filters.minNoOfCopies && { gte: parseInt(filters.minNoOfCopies, 10) }),
+                ...(filters.maxNoOfCopies && { lte: parseInt(filters.maxNoOfCopies, 10) })
+            };
+        }
+        if (filters.minAvailableCopies || filters.maxAvailableCopies) {
+            whereConditions.book.available_copies = {
+                ...(filters.minAvailableCopies && { gte: parseInt(filters.minAvailableCopies, 10) }),
+                ...(filters.maxAvailableCopies && { lte: parseInt(filters.maxAvailableCopies, 10) })
+            };
+        }
+
+        // Rental Filters
+        if (filters.minRentalDate || filters.maxRentalDate) {
+            whereConditions.start_date = {
+                ...(filters.minRentalDate && { gte: new Date(filters.minRentalDate) }),
+                ...(filters.maxRentalDate && { lte: new Date(filters.maxRentalDate) })
+            };
+        }
+        if (filters.minEndDate || filters.maxEndDate) {
+            whereConditions.end_date = {
+                ...(filters.minEndDate && { gte: new Date(filters.minEndDate) }),
+                ...(filters.maxEndDate && { lte: new Date(filters.maxEndDate) })
+            };
+        }
+        if (filters.minReturnDate || filters.maxReturnDate) {
+            whereConditions.return_date = {
+                ...(filters.minReturnDate && { gte: new Date(filters.minReturnDate) }),
+                ...(filters.maxReturnDate && { lte: new Date(filters.maxReturnDate) })
+            };
+        }
+
+        // Additional Filters
+        if (filters.dueStatus) {
+            whereConditions.due_status = filters.dueStatus === "Overdue";
+        }
+        if (filters.minDueFees || filters.maxDueFees) {
+            whereConditions.due_fees = {
+                ...(filters.minDueFees && { gte: parseFloat(filters.minDueFees) }),
+                ...(filters.maxDueFees && { lte: parseFloat(filters.maxDueFees) })
+            };
+        }
+
+        // Fetch filtered rent histories
         const rentHistories = await prisma.rent_history.findMany({
+            where: whereConditions,
             include: {
                 users: {
                     select: {
                         id: true,
                         name: true,
-                        email: true
+                        email: true,
+                        address: true,
+                        dob: true
+                    }
+                },
+                book: {
+                    select: {
+                        id: true,
+                        book_name: true,
+                        author: true,
+                        description: true,
+                        no_of_copies: true,
+                        available_copies: true
                     }
                 }
+            },
+            orderBy: {
+                start_date: filters.sortOrder === 'asc' ? 'asc' : 'desc'
             }
         });
 
-        // Log the data for debugging
-        console.log("Retrieved Rent History Records:", rentHistories);
+        // Check if any data was found
+        if (rentHistories.length === 0) {
+            throw new Error('No rent histories found!');
+        }
 
-        // Format and return the data
         return rentHistories;
     } catch (error) {
-        // Log error details
         console.error("Error retrieving rent histories:", error.message);
-
-        // Throw an error to be handled by the caller
         throw new Error("Failed to retrieve rent histories");
+    } finally {
+        await prisma.$disconnect();
     }
 };
 
@@ -109,7 +220,7 @@ module.exports.retrieveByUserIdIncludingReviewStatus = async (userId) => {
 
 module.exports.extendBookRental = async (historyId, userId) => {
     const rentHistory = await prisma.rent_history.findUnique({
-        where: { 
+        where: {
             id: parseInt(historyId),
             return_date: null
         }

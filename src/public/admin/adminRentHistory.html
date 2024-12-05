@@ -19,6 +19,11 @@
             font-size: large;
             font-weight: bolder;
         }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -28,39 +33,114 @@
     <div class="container mt-5">
         <h1 class="text-center mb-4">Rent History</h1>
         <div class="row mb-3">
+            <!-- User Filters -->
             <div class="col-md-3">
-                <input type="text" id="filterName" class="form-control" placeholder="Filter by User Name">
+                <label for="filterName" class="form-label">User Name</label>
+                <input type="text" id="filterName" class="form-control" placeholder="Enter user name">
             </div>
             <div class="col-md-3">
-                <input type="text" id="filterEmail" class="form-control" placeholder="Filter by User Email">
+                <label for="filterEmail" class="form-label">User Email</label>
+                <input type="text" id="filterEmail" class="form-control" placeholder="Enter user email">
             </div>
-            <div class="col-md-2">
-                <input type="text" id="filterBookId" class="form-control" placeholder="Filter by Book ID">
+            <div class="col-md-3">
+                <label for="filterAddress" class="form-label">Address</label>
+                <input type="text" id="filterAddress" class="form-control" placeholder="Enter address">
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
+                <label for="filterDob" class="form-label">Date of Birth</label>
+                <input type="date" id="filterDob" class="form-control">
+            </div>
+
+            <!-- Book Filters -->
+            <div class="col-md-3 mt-3">
+                <label for="filterBookId" class="form-label">Book ID</label>
+                <input type="text" id="filterBookId" class="form-control" placeholder="Enter book ID">
+            </div>
+            <div class="col-md-3 mt-3">
+                <label for="filterBookName" class="form-label">Book Name</label>
+                <input type="text" id="filterBookName" class="form-control" placeholder="Enter book name">
+            </div>
+            <div class="col-md-3 mt-3">
+                <label for="filterAuthor" class="form-label">Author</label>
+                <input type="text" id="filterAuthor" class="form-control" placeholder="Enter author name">
+            </div>
+            <div class="col-md-3 mt-3">
+                <label for="filterDescription" class="form-label">Description</label>
+                <input type="text" id="filterDescription" class="form-control" placeholder="Enter book description">
+            </div>
+
+            <!-- Rent Date Filters -->
+            <div class="col-md-3 mt-3">
+                <label for="filterStartDate" class="form-label">Start Date</label>
+                <input type="date" id="filterStartDate" class="form-control">
+            </div>
+            <div class="col-md-3 mt-3">
+                <label for="filterEndDate" class="form-label">End Date</label>
+                <input type="date" id="filterEndDate" class="form-control">
+            </div>
+            <div class="col-md-3 mt-3">
+                <label for="filterReturnDate" class="form-label">Return Date</label>
+                <input type="date" id="filterReturnDate" class="form-control">
+            </div>
+
+            <!-- Additional Filters -->
+            <div class="col-md-3 mt-3">
+                <label for="filterDueStatus" class="form-label">Due Status</label>
                 <select id="filterDueStatus" class="form-select">
-                    <option value="">Filter by Due Status</option>
+                    <option value="">Select due status</option>
                     <option value="Overdue">Overdue</option>
                     <option value="On Time">On Time</option>
                 </select>
             </div>
-            <div class="col-md-2">
-                <button id="applyFilters" class="btn btn-primary w-100">Apply Filters</button>
+            <div class="col-md-3 mt-3">
+                <label for="filterDueFees" class="form-label">Max Due Fees</label>
+                <input type="number" id="filterDueFees" class="form-control" placeholder="Enter max due fees">
+            </div>
+            <div class="col-md-3 mt-3">
+                <label for="filterNoOfCopies" class="form-label">No. of Copies</label>
+                <input type="number" id="filterNoOfCopies" class="form-control" placeholder="Enter no. of copies">
+            </div>
+            <div class="col-md-3 mt-3">
+                <label for="filterAvailableCopies" class="form-label">Available Copies</label>
+                <input type="number" id="filterAvailableCopies" class="form-control" placeholder="Enter available copies">
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="col-md-3 mt-3 d-flex gap-2">
+                <button id="applyFilters" class="btn btn-primary flex-grow-1">Apply Filters</button>
+                <button id="resetFilters" class="btn btn-secondary flex-grow-1">Reset</button>
             </div>
         </div>
 
+        <!-- Loading Spinner -->
+        <div class="loading-spinner">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Loading data, please wait...</p>
+        </div>
+
+        <!-- Rent History Table -->
         <div class="table-responsive">
             <table class="table table-striped table-bordered">
                 <thead class="thead-dark">
                     <tr>
-                        <th>#</th>
-                        <th>Username</th>
+                        <th>ID</th>
+                        <th>User Name</th>
                         <th>Email</th>
-                        <th>BookId</th>
+                        <th>Address</th>
+                        <th>DOB</th>
+                        <th>Book ID</th>
+                        <th>Book Name</th>
+                        <th>Author</th>
+                        <th>Description</th>
+                        <th>No. of Copies</th>
+                        <th>Available Copies</th>
                         <th>Start Date</th>
                         <th>End Date</th>
                         <th>Return Date</th>
                         <th>Due Status</th>
+                        <th>Due Fees</th>
                     </tr>
                 </thead>
                 <tbody id="rent-history-table-body">
@@ -69,6 +149,13 @@
             </table>
         </div>
         <p id="no-records-message" class="text-center text-danger mt-4" style="display: none;">No records found</p>
+
+        <!-- Pagination Controls -->
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <button id="prevPage" class="btn btn-outline-secondary" disabled>Previous</button>
+            <span id="currentPage" class="mx-2">Page 1</span>
+            <button id="nextPage" class="btn btn-outline-secondary">Next</button>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
