@@ -29,9 +29,32 @@ module.exports.retrieveRentHistory = async (req, res, next) => {
 
 module.exports.retrieveRentHistoryById = async (req, res, next) => {
     try {
-        res.locals.user_id=1;
         let userId = res.locals.user_id;
         const history = await model.retrieveByUserId(userId);
+
+        // Check if the history is empty
+        if (!history || history.length === 0) {
+            return res.status(404).json({ message: "Currently have no rented books...yet!" });
+        }
+
+        // Respond with the retrieved data
+        return res.status(200).json({history});
+    } catch (error) {
+        // Log the error for debugging
+        console.error("Error in retrieveAllBooks controller:", error);
+
+        // Return an internal server error response
+        return res.status(500).json({
+            error: "Failed to retrieve rental history",
+            details: error.message
+        });
+    }
+};
+
+module.exports.retrieveRentHistoryByIdIncludingReviewHistory = async (req, res, next) => {
+    try {
+        let userId = res.locals.user_id;
+        const history = await model.retrieveByUserIdIncludingReviewStatus(userId);
 
         // Check if the history is empty
         if (!history || history.length === 0) {

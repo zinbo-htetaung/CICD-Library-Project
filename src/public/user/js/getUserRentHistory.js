@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Function to fetch rent history from backend
     async function fetchRentHistory() {
         try {
-            const response = await fetch(`/api/rentHistory/${userId}`, {
+            const response = await fetch(`/api/rentHistory/user/review`, {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${localStorage.getItem("token")}`,
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         } catch (error) {
             console.error("Error fetching rent history:", error);
-            rentHistoryTableBody.innerHTML = `<tr><td colspan="4">Error loading rent history.</td></tr>`;
+            rentHistoryTableBody.innerHTML = `<tr><td colspan="6">Error loading rent history.</td></tr>`;
         }
     }
 
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
             let buttonHTML = '';
             if (!rent.return_date) {
                 // Book hasn't been returned, redirect to the return page
-                buttonHTML = '<button class="btn btn-warning" onclick="window.location.href=\'../../general/displaySingleBook.html?bookId=' + rent.book_id + '\'">Return Book</button>';
+                buttonHTML = '<button class="btn btn-warning" onclick="window.location.href=\'rentedBooks.html\'">Return Book</button>';
             } else {
                 // Book has been returned, redirect to the review page
                 if(reviewStatus){

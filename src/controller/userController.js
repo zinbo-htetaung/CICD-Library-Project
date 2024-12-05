@@ -171,8 +171,9 @@ module.exports.getAllUsers = (req, res, next) => {
 };
 
 module.exports.checkDuplicateEmail=(req,res,next)=>{
+    const userId = res.locals.user_id;
     const email=req.body.email
-    model.checkEmail(email)
+    model.checkEmailToUpdate(email,userId)
         .then(function (user) {
             if (user) {
                 console.log("User with this email already exist");

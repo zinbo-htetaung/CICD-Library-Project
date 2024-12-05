@@ -150,6 +150,7 @@ function renderBooksSection(title, books, showDaysKey, sectionId, badgeClass = n
     document.querySelectorAll('.extend-btn').forEach(button => {
         button.addEventListener('click', async (event) => {
             const historyId = event.target.getAttribute('data-history-id');
+            console.log(historyId)
             extendBook(historyId);
         });
     });
