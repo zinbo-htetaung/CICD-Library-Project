@@ -23,35 +23,12 @@ module.exports.retrieveRentHistory = async (req, res, next) => {
         };
         console.log(filters)
         // Fetch rental history data from the model with filters and pagination
-        const { data, totalItems } = await model.retrieveAll(filters);
-
-        // Calculate pagination details
-        const totalPages = Math.ceil(totalItems / filters.limit);
-        const currentPage = filters.page;
-
-        // If the requested page exceeds total pages, return an empty response
-        if (currentPage > totalPages) {
-            return res.status(404).json({
-                message: "No rental history found for the requested page",
-                pagination: {
-                    totalItems,
-                    totalPages,
-                    currentPage,
-                    itemsPerPage: filters.limit
-                }
-            });
-        }
+        const { data } = await model.retrieveAll(filters);
 
         // Respond with the retrieved data
         return res.status(200).json({
             message: "Rental history retrieved successfully",
-            data,
-            pagination: {
-                totalItems,
-                totalPages,
-                currentPage,
-                itemsPerPage: filters.limit
-            }
+            data
         });
     } catch (error) {
         // Log the error for debugging
