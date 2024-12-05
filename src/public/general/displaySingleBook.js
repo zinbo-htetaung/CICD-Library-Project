@@ -97,10 +97,9 @@ async function fetchFilteredReviews() {
   const dateFilter = document.getElementById('dateFilter').value;
   const startDate = document.getElementById('startDate').value;
   const endDate = document.getElementById('endDate').value;
-  const userId = localStorage.getItem("user_id");
+  let userId = localStorage.getItem("user_id");
 
   if (!userId) {
-    console.error('User ID could not be retrieved from token');
     userId = 0;
   }
 
@@ -247,10 +246,9 @@ function displayReviews(reviews) {
   const reviewsContainer = document.getElementById('reviewsContainer');
   reviewsContainer.innerHTML = ''; // Clear existing content
 
-  const currentUserId = localStorage.getItem("user_id");
+  let currentUserId = localStorage.getItem("user_id");
 
   if (!currentUserId) {
-    console.error('User ID could not be retrieved from token');
     currentUserId = 0;
   }
 
