@@ -111,6 +111,19 @@ module.exports.checkEmail = function checkEmail(email) {
     });
 };
 
+module.exports.checkEmailToUpdate = async function checkEmail(email, userId) {
+    const user = await prisma.users.findFirst({
+        where: {
+            email: email,
+            NOT: {
+                id: userId,
+            },
+        },
+    });
+    return user || null; // Return the user or null if no match
+};
+
+
 module.exports.getProfileInfo = async function getProfileInfo(userId) {
     try {
         const user = await prisma.users.findUnique({
