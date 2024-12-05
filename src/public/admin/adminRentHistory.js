@@ -1,12 +1,21 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async () => {
+
     fetch('admin_navbar.html')
         .then(response => response.text())
         .then(data => {
             document.getElementById('navbar-container').innerHTML = data;
-        });
-});
 
-document.addEventListener("DOMContentLoaded", async () => {
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', logout);
+            }
+        })
+
+    fetch('../footer.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('footer-container').innerHTML = data;
+        })
     const token = localStorage.getItem("token");
     const tableBody = document.getElementById("rent-history-table-body");
     const noRecordsMessage = document.getElementById("no-records-message");
@@ -26,12 +35,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const result = await response.json();
             rentHistoryData = result.history || []; // Save data for filtering
             console.log(rentHistoryData);
-
-            if (response.ok) {
-                populateTable(rentHistoryData);
-            } else {
-                alert(result.message || "Failed to fetch rent history.");
-            }
+            populateTable(rentHistoryData);
         } catch (error) {
             console.error("Error fetching rent history:", error);
             alert("An error occurred while fetching rent history.");
