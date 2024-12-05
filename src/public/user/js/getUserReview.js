@@ -5,7 +5,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // Function to fetch reviews from backend
     async function fetchReviews() {
         try {
-            const response = await fetch(`/api/reviews/user`); // Dynamic URL with userId
+            const response = await fetch(`/api/reviews/user`,{
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "Content-Type": "application/json",
+                },
+            }); // Dynamic URL with userId
             
             if (!response.ok) {
                 if (response.status === 404) {

@@ -29,7 +29,8 @@ async function changePassword() {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("authToken")}` // Pass token for authentication
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
+
             },
             body: JSON.stringify({ oldPassword, newPassword }),
         });

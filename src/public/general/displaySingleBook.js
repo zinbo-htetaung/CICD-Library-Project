@@ -547,3 +547,20 @@ document.addEventListener("DOMContentLoaded", function () {
     fetchFilteredReviews();
   });
 });
+
+window.onload = function() {
+  const url = new URL(window.location.href);
+  const hash = url.hash;
+
+  // Check if the hash is '#writeReviewModal'
+  if (hash === '#writeReviewModal') {
+      // Assuming you're using Bootstrap modal
+      const modal = document.getElementById('writeReviewModal');
+      
+      if (modal) {
+          // Show the modal if it's hidden
+          $(modal).modal('show');
+      }
+  }
+};
+

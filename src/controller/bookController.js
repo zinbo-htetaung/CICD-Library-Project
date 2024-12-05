@@ -227,22 +227,41 @@ module.exports.rentBook = (req, res) => {
 };
 
 module.exports.returnBook = (req, res) => {
-    const bookId  = parseInt(req.params.bookId);
-    let userId = res.locals.user_id;
+    const bookId = parseInt(req.params.bookId, 10);
+    const userId = res.locals.user_id;
 
-    if (!bookId) {
-        return res.status(400).json({ message: "Book ID is required" });
+    // Validate bookId
+    if (!bookId || isNaN(bookId)) {
+        return res.status(400).json({ message: "Invalid or missing Book ID" });
     }
+
+    // Validate userId
+    if (!userId || isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid or missing User ID" });
+    }
+
     // Call the returnBook function from the model
     model.returnBook({ bookId, userId })
         .then((result) => {
             return res.status(200).json(result);
         })
         .catch((error) => {
-            console.error(error);
-            return res.status(500).json({ error: error.message });
+            console.error("Error in returnBook controller:", error);
+
+            // Handle specific errors from the model
+            if (error.message === "No active rental record found for this user and book") {
+                return res.status(404).json({ message: error.message });
+            }
+
+            if (error.message === "User status not found") {
+                return res.status(404).json({ message: error.message });
+            }
+
+            // Generic fallback for unexpected errors
+            return res.status(500).json({ message: "Internal server error" });
         });
 };
+
 module.exports.attachCategories = (req, res) => {
     const { id: book_id } = res.locals.book; // Get book_id from the newly added book
     const { category_id } = res.locals; // Get validated category_id array
