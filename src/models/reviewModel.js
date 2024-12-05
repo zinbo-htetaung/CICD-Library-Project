@@ -158,7 +158,7 @@ module.exports.checkReadStatus = (data) => {
     return prisma.rent_history.findFirst({
         where: {
             book_id: data.bookId,
-            user_id: data.memberId,
+            user_id: data.userId,
         },
     })
         .then(rentHistory => {

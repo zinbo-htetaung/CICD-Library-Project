@@ -36,19 +36,19 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const dueTodayBooksSection = document.getElementById('dueTodayBooksSection');
                 const overdueBooksSection = document.getElementById('overdueBooksSection');
                 currentlyRentedBooksSection.innerHTML = `
-                    <h3 class="text-start mb-3">Currently Rented Books</h3>
+                    <h3 class="text-start mb-3"><i class="bi bi-journal-bookmark-fill me-2"></i>Currently Rented Books</h3>
                     <div class="alert alert-danger text-center" role="alert" style="display: inline-block;">
                         ${errorData.message}
                     </div>
                 `;
                 dueTodayBooksSection.innerHTML = `
-                    <h3 class="text-start mb-3">Books Due Today</h3>
+                    <h3 class="text-start mb-3"><i class="bi bi-hourglass-split me-2"></i>Books Due Today</h3>
                     <div class="alert alert-danger text-center" role="alert" style="display: inline-block;">
                         ${errorData.message}
                     </div>
                 `;
                 overdueBooksSection.innerHTML = `
-                    <h3 class="text-start mb-3">Overdue Books</h3>
+                    <h3 class="text-start mb-3"><i class="bi bi-x-octagon-fill me-2"></i>Overdue Books</h3>
                     <div class="alert alert-danger text-center" role="alert" style="display: inline-block;">
                         ${errorData.message}
                     </div>
@@ -82,9 +82,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
         // Render sections
-        renderBooksSection("Currently Rented Books", currentlyRented, "daysRemaining", "currentlyRentedBooksSection");
-        renderBooksSection("Books Due Today", dueToday, null, "dueTodayBooksSection", "warning", true);
-        renderBooksSection("Overdue Books", overdue, null, "overdueBooksSection", "danger", true, true);
+        renderBooksSection("<i class='bi bi bi-journal-bookmark-fill me-2'></i>Currently Rented Books", currentlyRented, "daysRemaining", "currentlyRentedBooksSection");
+        renderBooksSection("<i class='bi bi-hourglass-split me-2'></i>Books Due Today", dueToday, null, "dueTodayBooksSection", "warning", true);
+        renderBooksSection("<i class='bi bi-x-octagon-fill me-2'></i>Overdue Books", overdue, null, "overdueBooksSection", "danger", true, true);
     } catch (error) {
         alert("Failed to load data. Please try again.");
     }
@@ -98,7 +98,7 @@ function renderBooksSection(title, books, showDaysKey, sectionId, badgeClass = n
         const alert = document.createElement('div');
         alert.className = 'alert alert-danger text-center d-inline-block';
         alert.role = 'alert';
-        alert.innerText = `No books in the "${title}" section.`;
+        alert.innerText = `No books in this section.`;
         section.appendChild(alert);
         return;
     }
