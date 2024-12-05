@@ -11,26 +11,56 @@
       background-color: #fff;
       color: #000;
     }
+
     div.card {
-      border:1px solid black;
+      border: 1px solid black;
+      border-radius: 8px; /* Optional: Rounded corners */
     }
+
     .card-link {
       text-decoration: none;
       color: inherit;
     }
+
     .card-hover {
-	    transition: transform 0.3s ease, box-shadow 0.3s ease; 
-	  }
-    .card-hover:hover {
-      transform: scale(1.05); 
-      box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2); 
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    .card-img-top { 
+
+    .card-hover:hover {
+      transform: scale(1.05);
+      box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-header {
+      min-height: 80px; /* Ensures consistent header height */
+      text-align: center; /* Align titles in the center */
+      font-size: 1.2rem; /* Increase title size */
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-img-top {
       border-bottom: 1px solid black;
-      width: 100%; 
-      object-fit: cover; 
-		}
+      object-fit: cover;
+      height: 200px; /* Ensures consistent image height */
+    }
+
+    .card-body {
+      text-align: center; /* Center-align text */
+    }
+
+    .card-title {
+      margin: 0;
+    }
+
+    .card-subtitle {
+      font-size: 0.9rem;
+      color: #6c757d; /* Subtle muted text for author */
+    }
   </style>
+
 </head>
 <body>
   <div id="navbar-container"></div>
@@ -38,7 +68,7 @@
   <div class="container my-4">
     <h1 class="text-center mb-4">Manage Books</h1>
     <div class="text-center mb-4">
-      <a href="addBook.html" class="btn btn-block btn-lg btn-success">Add New Book<i class="bi bi-patch-plus ms-2"></i></a>
+      <a href="addBook.html" class="btn btn-block btn-success">Add New Book<i class="bi bi-patch-plus ms-2"></i></a>
     </div>
 
     <div class="row mb-5">
