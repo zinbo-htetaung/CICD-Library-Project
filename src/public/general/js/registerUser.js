@@ -20,14 +20,14 @@ document.getElementById('registerForm').addEventListener('submit', async (event)
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ name, email, password, address, dob, 'g-recaptcha-response': captchaToken})
+      body: JSON.stringify({ name, email, password, address, dob, 'g-recaptcha-response': captchaToken })
     });
 
     const responseData = await response.json();
 
     if (response.status === 201) {
       alert(`${responseData.message} Please log into your account.`);
-      window.location.href = 'login.html';
+      window.location.href = '../html/login.html';
     } else {
       alert(responseData.message);
     }
@@ -38,15 +38,15 @@ document.getElementById('registerForm').addEventListener('submit', async (event)
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-  fetch('navbar.html')
+  fetch('../html/navbar.html')
     .then(response => response.text())
     .then(data => {
-        document.getElementById('navbar-container').innerHTML = data;
-    })  
-    
-  fetch('../footer.html')
-  .then(response => response.text())
-  .then(data => {
-    document.getElementById('footer-container').innerHTML = data;
-  })
+      document.getElementById('navbar-container').innerHTML = data;
+    })
+
+  fetch('../../footer.html')
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById('footer-container').innerHTML = data;
+    })
 });
