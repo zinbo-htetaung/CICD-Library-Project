@@ -66,9 +66,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td class="text-center">${new Date(rent.start_date).toLocaleDateString()}</td>
                 <td class="text-center">${rent.return_date ? new Date(rent.return_date).toLocaleDateString() : "N/A"}</td>
                 <td class="text-center">
-                    ${rent.due_status
-                    ? '<i class="bi bi-check-circle-fill text-danger"></i>'
-                    : '<i class="bi bi-x-circle-fill text-success"></i>'}
+                    ${
+                        rent.due_status!=null
+                    ? rent.due_status? '<i class="bi bi-check-circle-fill text-danger"></i>'
+                    : '<i class="bi bi-x-circle-fill text-success"></i>':'-'}
                 </td>
                 <td>
                 <div class="d-flex justify-content-center"> ${buttonHTML}</div>
