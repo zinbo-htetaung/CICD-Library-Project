@@ -87,7 +87,7 @@ module.exports.returnBook = (data) => {
     return prisma.rent_history.findFirst({
         where: {
             book_id: bookId,
-            user_id: userId,
+            user_id: 1,
             return_date: null // Ensuring this is an active rental
         }
     })
@@ -95,9 +95,20 @@ module.exports.returnBook = (data) => {
             if (!rentalRecord) {
                 throw new Error("No active rental record found for this user and book");
             }
-
-            const isDue = today > new Date(rentalRecord.end_date);
-            const daysOverdue = isDue ? Math.ceil((today - new Date(rentalRecord.end_date)) / (1000 * 60 * 60 * 24)) : 0;
+            const endDate = rentalRecord.end_date.setHours(23, 59, 0, 0);
+            const end_date = (endDate).toLocaleString("en-US", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false, // 24-hour format
+            });
+            const isDue = today >= new Date(end_date);
+            console.log(today);
+            console.log(end_date);
+            const daysOverdue = isDue ? Math.ceil((today - new Date(end_date)) / (1000 * 60 * 60 * 24)) : 0;
             const dueFee = daysOverdue * 5; // $5 per day if overdue
 
             // Fetch the user status
@@ -145,7 +156,7 @@ module.exports.returnBook = (data) => {
                     // Update the book's no_of_copies
                     prisma.book.update({
                         where: { id: bookId },
-                        data: { no_of_copies: { increment: 1 } }
+                        data: { available_copies: { increment: 1 } }
                     }),
 
                     // Update the user's status
@@ -291,7 +302,7 @@ module.exports.rentBook = (data) => {
             }
 
             // Check if the book is out of stock
-            if (book.no_of_copies <= 0) {
+            if (book.available_copies <= 0) {
                 throw new Error("This book is currently out of stock");
             }
 
@@ -340,7 +351,7 @@ module.exports.rentBook = (data) => {
                 }),
                 prisma.book.update({
                     where: { id: bookId },
-                    data: { no_of_copies: { decrement: 1 } }
+                    data: { available_copies: { decrement: 1 } }
                 }),
                 prisma.rent_history.create({
                     data: {
