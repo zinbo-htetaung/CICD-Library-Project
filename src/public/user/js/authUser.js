@@ -2,16 +2,16 @@
 if (localStorage.getItem('token')) {
     if (localStorage.getItem('role') !== 'user') { 
         alert("Access Not Granted!");
-        window.location.href ='/user/html/home.html'  ; 
+        window.location.href ='../../general/html/home.html'  ; 
     }
 } else {
     alert("Please log in to access these webpages");
-    window.location.href = '/general/home.html';   
+    window.location.href = '../../general/html/home.html';   
 }
 
 function logout() {
     localStorage.clear();
     alert("Logged out successfully!");
-    window.location.href = '/general/login.html';
+    window.location.href = '../../general/html/login.html';
 };
 window.logout = logout;

@@ -50,14 +50,14 @@ document.addEventListener("DOMContentLoaded", () => {
             let buttonHTML = '';
             if (!rent.return_date) {
                 // Book hasn't been returned, redirect to the return page
-                buttonHTML = '<button class="btn btn-warning border-1 border-black" onclick="window.location.href=\'rentedBooks.html\'">Return Book</button>';
+                buttonHTML = '<button class="btn btn-warning border-1 border-black" onclick="window.location.href=\'../html/rentedBooks.html\'">Return Book</button>';
             } else {
                 // Book has been returned, redirect to the review page
                 if(reviewStatus){
                     buttonHTML = '<button class="btn btn-secondary border-1 border-black">Review Given</button>';
                 }
                 else{
-                    buttonHTML = '<button class="btn border-1 border-black" onclick="window.location.href=\'../../general/displaySingleBook.html?bookId=' + rent.book_id + '#writeReviewModal\'" style="background-color: #DBE2EF;">Give Review</button>';
+                    buttonHTML = '<button class="btn border-1 border-black" onclick="window.location.href=\'../html/displaySingleBook.html?bookId=' + rent.book_id + '#writeReviewModal\'" style="background-color: #DBE2EF;">Give Review</button>';
                 }
             } 
             row.innerHTML = `

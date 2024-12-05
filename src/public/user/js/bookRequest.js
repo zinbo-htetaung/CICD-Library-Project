@@ -1,5 +1,18 @@
 // bookRequests.js
 document.addEventListener("DOMContentLoaded", () => {
+
+    fetch('../html/user_navbar.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('navbar-container').innerHTML = data;
+        })
+
+    fetch('../../footer.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('footer-container').innerHTML = data;
+        })
+
     fetchBookRequests(); // Load existing book requests
 
     // Handle form submission for adding a new book request
@@ -10,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const bookName = document.getElementById("bookName").value.trim();
         const author = document.getElementById("author").value.trim();
 
-        if (!bookName ) {
+        if (!bookName) {
             alert("Please fill in book name at least.");
             return;
         }
@@ -29,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 alert("Book request submitted successfully!");
                 fetchBookRequests(); // Refresh book requests table
                 document.getElementById("bookRequestForm").reset(); // Reset form fields
-                
+
             } else {
                 const errorData = await response.json();
                 alert(errorData.message || "Error submitting book request.");
@@ -45,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const userId = localStorage.getItem("user_id");
         const filters = {
             sort_order: sortOrder,
-            user_id:userId
+            user_id: userId
         };
         fetchFilteredBookRequests(filters);
     });
@@ -66,9 +79,9 @@ async function fetchFilteredBookRequests(filters) {
             const data = await response.json();
             displayBookRequests(data);
         } else {
-            if(response.status==404){
+            if (response.status == 404) {
                 alert("No data found");
-            }else{
+            } else {
                 console.error("Failed to fetch filtered book requests.");
                 alert("Failed to load filtered book requests. Please try again later.");
             }
@@ -92,14 +105,14 @@ async function fetchBookRequests() {
 
         if (response.ok) {
             const data = await response.json();
-            
+
             displayBookRequests(data);
         } else {
             const tableBody = document.getElementById("bookRequestTableBody");
-                tableBody.innerHTML="";
-                const row = document.createElement("tr");
-                 row.innerHTML = `<td colspan="4" class="text-center">No request found.</td>`;  // Add center alignment to the message
-                 tableBody.appendChild(row);
+            tableBody.innerHTML = "";
+            const row = document.createElement("tr");
+            row.innerHTML = `<td colspan="4" class="text-center">No request found.</td>`;  // Add center alignment to the message
+            tableBody.appendChild(row);
             const errorData = await response.json();
         }
     } catch (error) {
@@ -112,15 +125,15 @@ async function fetchBookRequests() {
 function displayBookRequests(data) {
     const tableBody = document.getElementById("bookRequestTableBody");
     tableBody.innerHTML = ""; // Clear previous content
-        data.requests.forEach((request) => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
+    data.requests.forEach((request) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
                 <td>${request.id}</td>
                 <td>${request.book_name}</td>
-                <td>${request.author?request.author:" - "}</td>
+                <td>${request.author ? request.author : " - "}</td>
                 <td>${new Date(request.requested_on).toLocaleDateString()}</td>
             `;
-            tableBody.appendChild(row);
-        });
+        tableBody.appendChild(row);
+    });
 }
 
