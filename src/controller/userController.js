@@ -170,7 +170,21 @@ module.exports.getAllUsers = (req, res, next) => {
     });
 };
 
+module.exports.checkDuplicateEmail=(req,res,next)=>{
+    const email=req.body.email
+    model.checkEmail(email)
+        .then(function (user) {
+            if (user) {
+                console.log("User with this email already exist");
+                return res.status(401).json({ message: 'User with this email already exist' });
+            }
 
+            next();
+        })
+        .catch(function (error) {
+            return res.status(500).json({ message: error.message });
+        });
+}
 
 module.exports.updateProfileInfo = (req, res) => {
     const userId = res.locals.user_id;
@@ -257,6 +271,8 @@ module.exports.hashPassword = function (req, res, next) {
     };
     bcrypt.hash(req.body.newPassword, saltRounds, callback);
 };
+
+
 
 module.exports.updatePassword = (req, res) => {
     const data={

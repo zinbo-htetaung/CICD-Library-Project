@@ -43,13 +43,22 @@ document.addEventListener("DOMContentLoaded", () => {
         rentHistory.forEach((rent) => {
             const row = document.createElement("tr");
             console.log(rent.due_status);
+            let reviewStatus=false;
+            if(rent.book.review.length>0){
+                reviewStatus=true
+            }
             let buttonHTML = '';
             if (!rent.return_date) {
                 // Book hasn't been returned, redirect to the return page
                 buttonHTML = '<button class="btn btn-warning" onclick="window.location.href=\'../../general/displaySingleBook.html?bookId=' + rent.book_id + '\'">Return Book</button>';
             } else {
                 // Book has been returned, redirect to the review page
-                buttonHTML = '<button class="btn btn-success" onclick="window.location.href=\'../../general/displaySingleBook.html?bookId=' + rent.book_id + '#writeReviewModal\'">Give Review</button>';
+                if(reviewStatus){
+                    buttonHTML = '<button class="btn btn-secondary">Review Given</button>';
+                }
+                else{
+                    buttonHTML = '<button class="btn btn-success" onclick="window.location.href=\'../../general/displaySingleBook.html?bookId=' + rent.book_id + '#writeReviewModal\'">Give Review</button>';
+                }
             } 
             row.innerHTML = `
                 <td  class="text-center">${rent.id}</td>

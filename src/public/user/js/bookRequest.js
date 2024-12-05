@@ -10,8 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const bookName = document.getElementById("bookName").value.trim();
         const author = document.getElementById("author").value.trim();
 
-        if (!bookName || !author) {
-            alert("Please fill in all fields.");
+        if (!bookName ) {
+            alert("Please fill in book name at least.");
             return;
         }
 
@@ -29,8 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 alert("Book request submitted successfully!");
                 fetchBookRequests(); // Refresh book requests table
                 document.getElementById("bookRequestForm").reset(); // Reset form fields
-                const modal = new bootstrap.Modal(document.getElementById("bookRequestModal"));
-                modal.hide(); // Close modal after submission
+                
             } else {
                 const errorData = await response.json();
                 alert(errorData.message || "Error submitting book request.");
@@ -118,7 +117,7 @@ function displayBookRequests(data) {
             row.innerHTML = `
                 <td>${request.id}</td>
                 <td>${request.book_name}</td>
-                <td>${request.author}</td>
+                <td>${request.author?request.author:" - "}</td>
                 <td>${new Date(request.requested_on).toLocaleDateString()}</td>
             `;
             tableBody.appendChild(row);

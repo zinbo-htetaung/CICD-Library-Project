@@ -110,31 +110,46 @@ module.exports.checkEmail = function checkEmail(email) {
         return rows[0] || null; // Return the first row or null if no match
     });
 };
-module.exports.getProfileInfo = function getProfileInfo(userId) {
-    return prisma.users.findUnique({
-        where: {
-            id: parseInt(userId, 10)
-        },
-        include: {
-            user_status: true   // join with user_status table
-        }
-    })
-        .then(user => {
-            if (!user) {
-                throw new Error('User not found');
-            }
 
-            return {
-                name: user.name,
-                email: user.email,
-                address: user.address,
-                dob: user.dob,
-                reputation: user.user_status?.reputation || null,
-                current_book_count: user.user_status?.current_book_count || null,
-                max_book_count: user.user_status?.max_book_count || null
-            };
+module.exports.getProfileInfo = async function getProfileInfo(userId) {
+    try {
+        const user = await prisma.users.findUnique({
+            where: {
+                id: parseInt(userId, 10)
+            },
+            include: {
+                user_status: true, // join with user_status table
+                rent_history: true // include rent history to count rented books
+            }
         });
+
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        // Count the number of active rented books (i.e., books not yet returned)
+        const rentedBookCount = await prisma.rent_history.count({
+            where: {
+                user_id: parseInt(userId, 10)
+            }
+        });
+
+        return {
+            name: user.name,
+            email: user.email,
+            address: user.address,
+            dob: user.dob,
+            reputation: user.user_status?.reputation || null,
+            current_book_count: user.user_status?.current_book_count || null,
+            max_book_count: user.user_status?.max_book_count || null,
+            rented_book_count: rentedBookCount // Include the rented book count
+        };
+    } catch (error) {
+        console.error('Error fetching profile info:', error);
+        throw error;
+    }
 };
+
 
 module.exports.insertUserStatus = (userId, callback) => {
     const SQL_STATEMENT = `

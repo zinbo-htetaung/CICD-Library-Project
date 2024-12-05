@@ -27,6 +27,7 @@ function displayProfile(data) {
     document.getElementById('profileName').textContent = data.profile.name;
     document.getElementById('profileEmail').textContent = data.profile.email;
     document.getElementById('profileAddress').textContent = data.profile.address;
+    document.getElementById('rentedBookCount').textContent = data.profile.rented_book_count;
 
     // Pre-fill modal input fields
     document.getElementById('modalProfileName').value = data.profile.name;

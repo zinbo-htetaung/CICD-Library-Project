@@ -31,33 +31,34 @@ module.exports.retrieveAll = async () => {
 
 module.exports.retrieveByUserId = async (userId) => {
     try {
-        // Fetch rental history records for the given user_id
         const rentHistories = await prisma.rent_history.findMany({
             where: {
-                user_id: userId // Filter by user_id
+                user_id: userId
             },
             include: {
-                users: true, // Include all fields from the users table
-                book: true   // Include all fields from the book table
+                users: true, // Include user details
+                book: {
+                    include: {
+                        review: {
+                            where: {
+                                user_id: userId // Include only reviews written by the user
+                            }
+                        }
+                    }
+                }
             }
         });
 
-        // Log the fetched records for debugging purposes
-        console.log(`Successfully retrieved rent history records for user_id ${userId}:`, rentHistories);
+        console.log(`Successfully retrieved rental history and reviews for user_id ${userId}:`, rentHistories);
 
-        // Check if any records were found
         if (!rentHistories || rentHistories.length === 0) {
             console.warn(`No rental history records found for user_id ${userId}.`);
             return [];
         }
 
-        // Return the full rent histories
         return rentHistories;
     } catch (error) {
-        // Log the error details for debugging
-        console.error(`Error occurred while retrieving rent histories for user_id ${userId}:`, error.message);
-
-        // Throw a detailed error to the caller
-        throw new Error(`Failed to retrieve rent histories for user_id ${userId} due to a database error.`);
+        console.error(`Error retrieving rental history and reviews for user_id ${userId}:`, error.message);
+        throw new Error(`Failed to fetch rental history and reviews due to a database error.`);
     }
 };
