@@ -2,7 +2,7 @@ const model = require("../models/rentHistory.js");
 
 module.exports.retrieveRentHistory = async (req, res, next) => {
     try {
-        // Extract filters from the request query parameters
+        // Extract filters and ensure proper default values
         const filters = {
             userId: req.query.userId,
             userName: req.query.userName,
@@ -13,45 +13,39 @@ module.exports.retrieveRentHistory = async (req, res, next) => {
             bookName: req.query.bookName,
             author: req.query.author,
             bookDescription: req.query.bookDescription,
-            minNoOfCopies: req.query.minNoOfCopies,
-            maxNoOfCopies: req.query.maxNoOfCopies,
-            minAvailableCopies: req.query.minAvailableCopies,
-            maxAvailableCopies: req.query.maxAvailableCopies,
-            minRentalDate: req.query.minRentalDate,
-            maxRentalDate: req.query.maxRentalDate,
-            minEndDate: req.query.minEndDate,
-            maxEndDate: req.query.maxEndDate,
-            minReturnDate: req.query.minReturnDate,
-            maxReturnDate: req.query.maxReturnDate,
+            maxNoOfCopies: parseInt(req.query.maxNoOfCopies, 10) || null,
+            maxAvailableCopies: parseInt(req.query.maxAvailableCopies, 10) || null,
+            RentalDate: req.query.maxRentalDate,
+            EndDate: req.query.maxEndDate,
+            ReturnDate: req.query.maxReturnDate,
             dueStatus: req.query.dueStatus,
-            minDueFees: req.query.minDueFees,
-            maxDueFees: req.query.maxDueFees,
-            sortOrder: req.query.sortOrder,
-            page: parseInt(req.query.page, 10) || 1, // Default to page 1
-            limit: parseInt(req.query.limit, 10) || 10 // Default limit is 10 items per page
+            sortOrder: req.query.sortOrder || 'asc', // Default sort order
         };
-
-        // Fetch rental history data from the model with filters
-        const rentHistory = await model.retrieveAll(filters);
-
-        // Check if the history is empty
-        if (!rentHistory || rentHistory.length === 0) {
-            return res.status(404).json({ message: "No rental history found" });
-        }
+        console.log(filters)
+        // Fetch rental history data from the model with filters and pagination
+        const { data, totalItems } = await model.retrieveAll(filters);
 
         // Calculate pagination details
-        const totalItems = rentHistory.length;
         const totalPages = Math.ceil(totalItems / filters.limit);
         const currentPage = filters.page;
 
-        // Paginate data
-        const start = (currentPage - 1) * filters.limit;
-        const paginatedData = rentHistory.slice(start, start + filters.limit);
+        // If the requested page exceeds total pages, return an empty response
+        if (currentPage > totalPages) {
+            return res.status(404).json({
+                message: "No rental history found for the requested page",
+                pagination: {
+                    totalItems,
+                    totalPages,
+                    currentPage,
+                    itemsPerPage: filters.limit
+                }
+            });
+        }
 
         // Respond with the retrieved data
         return res.status(200).json({
             message: "Rental history retrieved successfully",
-            data: paginatedData,
+            data,
             pagination: {
                 totalItems,
                 totalPages,
@@ -106,7 +100,7 @@ module.exports.retrieveRentHistoryByIdIncludingReviewHistory = async (req, res, 
         }
 
         // Respond with the retrieved data
-        return res.status(200).json({history});
+        return res.status(200).json({ history });
     } catch (error) {
         // Log the error for debugging
         console.error("Error in retrieveAllBooks controller:", error);
