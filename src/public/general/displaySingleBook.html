@@ -15,9 +15,12 @@
 <body>
   <div id="navbar-container"></div>
 
-  <div class="container my-2">
-    <a href="displayAllBooks.html" class="btn btn-secondary"><i class="bi bi-arrow-left ms-2"></i>Go Back</a>
-  </div>
+  <div class="container my-3">
+    <a href="displayAllBooks.html" class="btn btn-secondary rounded-pill shadow-sm px-4 py-2 d-inline-flex align-items-center">
+      <i class="bi bi-arrow-left me-2"></i>
+      <span>Go Back</span>
+    </a>
+  </div>  
 
   <div class="container">
     <div id="bookDetailsContainer"></div>
@@ -25,8 +28,14 @@
 
   <div class="container my-4">
     <div class="d-flex justify-content-between">
-      <button id="writeReview" data-bs-toggle="modal" data-bs-target="#writeReviewModal">Write Review</button>
-      <button id="displayReviews" data-bs-toggle="modal" data-bs-target="#reviewsModal">Show More Reviews</button>
+      <button id="writeReview" class="btn btn-primary btn-lg rounded-pill px-4" data-bs-toggle="modal"
+        data-bs-target="#writeReviewModal">
+        <i class="bi bi-pencil-square me-2"></i>Write Review
+      </button>
+      <button id="displayReviews" class="btn btn-outline-primary btn-lg rounded-pill px-4" data-bs-toggle="modal"
+        data-bs-target="#reviewsModal">
+        <i class="bi bi-chat-dots me-2"></i>Show All Reviews
+      </button>
     </div>
   </div>
 
@@ -105,29 +114,39 @@
   </div>
 
   <div class="modal fade" id="writeReviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="reviewModalLabel">Submit Your Review</h5>
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="reviewModalLabel"><i class="bi bi-pencil-square me-2"></i>Submit Your Review</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form id="reviewForm">
-            <div class="mb-3">
-              <label for="rating" class="form-label">Rating</label>
-              <input type="number" class="form-control" id="rating" min="0" max="5" required>
+          <form id="reviewForm" class="needs-validation" novalidate>
+            <div class="mb-4">
+              <label for="rating" class="form-label fw-bold">Rating</label>
+              <div class="input-group">
+                <span class="input-group-text border-0 bg-transparent px-0">
+                  <i class="bi bi-star-fill text-warning"></i>
+                </span>
+                <input type="number" class="form-control" id="rating" min="0" max="5" placeholder="Enter a rating (0-5)"
+                  required>
+              </div>
+              <div class="invalid-feedback">Please provide a valid rating between 0 and 5.</div>
             </div>
-            <div class="mb-3">
-              <label for="reviewText" class="form-label">Review Text</label>
-              <textarea class="form-control" id="reviewText" rows="3" required></textarea>
+            <div class="mb-4">
+              <label for="reviewText" class="form-label fw-bold">Review Text</label>
+              <textarea class="form-control" id="reviewText" rows="4" placeholder="Share your thoughts..."
+                required></textarea>
+              <div class="invalid-feedback">Please provide a review text.</div>
             </div>
-            <button type="submit" class="btn btn-primary">Submit Review</button>
+            <button type="submit" class="btn btn-primary w-100 rounded-pill py-2">Submit Review</button>
           </form>
-          <div id="errorMessage" class="text-danger mt-2"></div>
+          <div id="errorMessage" class="text-danger mt-3 text-center"></div>
         </div>
       </div>
     </div>
-  </div>
+  </div>  
+
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
     integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"

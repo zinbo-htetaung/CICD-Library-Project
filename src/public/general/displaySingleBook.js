@@ -188,7 +188,7 @@ async function displayBookDetails(book) {
         break;
       default:
         statusIcon = '<i class="bi bi-question-lg"></i>';
-        feedbackMessage = "You are not logged in.";
+        feedbackMessage = "User is not logged in.";
     }
 
     container.innerHTML = `
@@ -244,7 +244,7 @@ async function displayBookDetails(book) {
 // Function to display reviews in the modal
 function displayReviews(reviews) {
   const reviewsContainer = document.getElementById('reviewsContainer');
-  reviewsContainer.innerHTML = ''; // Clear existing content
+  reviewsContainer.innerHTML = '';
 
   let currentUserId = localStorage.getItem("user_id");
 
@@ -258,10 +258,8 @@ function displayReviews(reviews) {
   }
 
   reviews.forEach(review => {
-    // Generate star ratings
     const stars = generateStars(review.rating);
 
-    // Check if the review belongs to the current user
     const isCurrentUserReview = review.user_id == currentUserId;
     
     const reviewCard = `
@@ -272,14 +270,14 @@ function displayReviews(reviews) {
               <i class="bi bi-person-circle me-2"></i>
               <strong>${review.review_owner || 'Anonymous'}</strong>
             </div>
-            <span class="badge bg-primary">Rating Given: ${stars}</span>
+            <span class="badge" style="background-color: #6b98db; color: white;">Rating Given: ${stars}</span>
           </div>
           <p class="mt-3">${review.review_text || 'No review text provided.'}</p>
           <small class="text-muted">Posted On: ${new Date(review.posted_on).toLocaleString()}</small>
           ${isCurrentUserReview
         ? `<div class="d-flex justify-content-end mt-3">
-                  <button class="btn btn-outline-primary btn-sm me-2 update-review-btn" data-review-id="${review.id}">Edit</button>
-                  <button class="btn btn-outline-danger btn-sm delete-review-btn" data-review-id="${review.id}">Delete</button>
+                  <button class="btn btn-outline-primary btn-md me-2 update-review-btn" data-review-id="${review.id}">Edit</button>
+                  <button class="btn btn-outline-danger btn-md delete-review-btn" data-review-id="${review.id}">Delete</button>
                 </div>`
         : ''
       }
@@ -349,7 +347,7 @@ function updateReview(reviewId, rating, reviewText) {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${localStorage.getItem('token')}` // Include JWT
+      Authorization: `Bearer ${localStorage.getItem('token')}`
     },
     body: JSON.stringify({ rating, reviewText })
   })
@@ -357,7 +355,7 @@ function updateReview(reviewId, rating, reviewText) {
     .then(data => {
       if (data.message) {
         alert(data.message);
-        fetchReviews(); // Reload reviews
+        location.reload();
       }
     })
     .catch(error => console.error('Error updating review:', error));
@@ -368,14 +366,14 @@ function deleteReview(reviewId) {
   fetch(`/api/reviews/${reviewId}`, {
     method: 'DELETE',
     headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}` // Include JWT
+      Authorization: `Bearer ${localStorage.getItem('token')}`
     }
   })
     .then(response => response.json())
     .then(data => {
       if (data.message) {
         alert(data.message);
-        fetchReviews(); // Reload reviews
+        location.reload();
       }
     })
     .catch(error => console.error('Error deleting review:', error));
@@ -403,17 +401,15 @@ document.getElementById('displayReviews').addEventListener('click', () => {
 });
 
 document.getElementById('reviewForm').addEventListener('submit', (event) => {
-  event.preventDefault(); // Prevent form from submitting the traditional way
+  event.preventDefault();
   const bookId = getBookIdFromURL();
 
   const rating = parseInt(document.getElementById('rating').value);
   const reviewText = document.getElementById('reviewText').value;
 
-  // Clear any previous error messages
   const errorMessage = document.getElementById('errorMessage');
   errorMessage.textContent = '';
 
-  // Validate input
   if (isNaN(rating) || rating < 0 || rating > 5) {
     errorMessage.textContent = 'Please provide a valid rating between 0 and 5.';
     return;
@@ -430,11 +426,8 @@ document.getElementById('reviewForm').addEventListener('submit', (event) => {
     errorMessage.textContent = 'Please login or create an account first to give a review.';
     return;
   }
-
-  // Proceed with submitting the review
   const reviewData = { rating, reviewText };
 
-  // Perform the review creation request
   fetch(`/api/reviews/${bookId}`, {
     method: 'POST',
     headers: {
@@ -462,8 +455,9 @@ document.getElementById('reviewForm').addEventListener('submit', (event) => {
     });
 });
 
+ // Get today's date in YYYY-MM-DD format
 document.addEventListener('DOMContentLoaded', function () {
-  const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split('T')[0];
   document.getElementById('startDate').setAttribute('max', today);
   document.getElementById('endDate').setAttribute('max', today);
 });
@@ -485,6 +479,22 @@ document.addEventListener("DOMContentLoaded", function () {
   const ratingFilter = document.getElementById("ratingFilter");
   const ratingOrder = document.getElementById("ratingOrder");
 
+  const reviewType = document.getElementById("reviewType");
+
+  const initializeFilterDefaults = () => {
+    reviewType.value = "all";
+    ratingFilter.value = "";
+    ratingOrder.value = "";
+    dateFilter.value = "";
+    startDate.value = "";
+    endDate.value = "";
+
+    // const today = new Date().toISOString().split("T")[0];
+    // startDate.setAttribute("max", today);
+    // endDate.setAttribute("max", today);
+  };
+
+  // Functions to handle mutual exclusivity
   const handleDateFilterChange = () => {
     const dateSortSelected = dateFilter.value !== "";
     startDate.disabled = dateSortSelected;
@@ -519,16 +529,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 
+  // Attach event listeners for mutual exclusivity
   dateFilter.addEventListener("change", handleDateFilterChange);
   startDate.addEventListener("change", handleDateRangeChange);
   endDate.addEventListener("change", handleDateRangeChange);
 
   ratingOrder.addEventListener("change", handleRatingFilterChange);
   ratingFilter.addEventListener("change", handleRatingSortChange);
-});
 
-// Attach an event listener to the "Apply Filters" button
-document.getElementById('applyFilters').addEventListener('click', (event) => {
-  event.preventDefault();
-  fetchFilteredReviews(); // Trigger the filter fetch process
+  // Initialize filter defaults when modal is shown
+  const reviewsModal = document.getElementById("reviewsModal");
+  reviewsModal.addEventListener("show.bs.modal", initializeFilterDefaults);
+
+  // Attach an event listener to the "Apply Filters" button
+  document.getElementById("applyFilters").addEventListener("click", (event) => {
+    event.preventDefault();
+    fetchFilteredReviews();
+  });
 });
