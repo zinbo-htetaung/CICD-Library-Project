@@ -77,7 +77,7 @@
                                 <h5 class="card-title">Explore Our Books</h5>
                                 <p class="card-text">Browse our vast collection of books across various genres. Find
                                     your next great read!</p>
-                                <a href="books.html" class="btn btn-primary mb-2">Browse Now</a>
+                                <a href="displayAllBooks.html" class="btn btn-primary mb-2">Browse Now</a>
                             </div>
                         </div>
                     </div>
@@ -90,7 +90,8 @@
                                 <h5 class="card-title">Request a Book</h5>
                                 <p class="card-text">Looking for a book that isn't available? Let us know, and we'll
                                     request it for you.</p>
-                                <a href="book-requests.html" class="btn btn-primary mb-2">Request Book</a>
+                                <a href="login.html" class="btn btn-primary mb-2"
+                                    onclick="alert('Please login to continue');">Request Book</a>
                             </div>
                         </div>
                     </div>
@@ -103,7 +104,8 @@
                                 <h5 class="card-title">Return a Book</h5>
                                 <p class="card-text">Have books to return? Drop them off at your convenience and keep
                                     the cycle going.</p>
-                                <a href="return-book.html" class="btn btn-primary mb-2">Return Now</a>
+                                <a href="login.html" class="btn btn-primary mb-2"
+                                    onclick="alert('Please login to continue');">Request Book</a>
                             </div>
                         </div>
                     </div>
@@ -272,25 +274,6 @@
         }
 
         // Function to generate bot responses
-        // function generateBotResponse(userInput) {
-        //     userInput = userInput.toLowerCase();
-
-        //     if (userInput.includes('hours') || userInput.includes('open')) {
-        //         return "We are open from 9 AM to 6 PM every day!";
-        //     } else if (userInput.includes('books') || userInput.includes('collection')) {
-        //         return 'We have a large collection of books available for borrowing! <a href="displayAllBooks.html" target="_blank">Explore more ^^</a>';
-        //     } else if (userInput.includes('membership')) {
-        //         return "You can sign up for a membership on our website or by visiting the library.";
-        //     } else if (userInput.includes('agent') || userInput.includes('help') || userInput.includes('contact') || userInput.includes('agree')) {
-        //         return "I will connect you to a live agent shortly.";
-        //     } else if (userInput.includes('search') && !searchInProgress) {
-        //         searchInProgress = true; // Prevent repeating the search request
-        //         return "Please enter the book name you want to search for.";
-        //     } else {
-        //         return "I'm not sure how to respond to that. Press \"Agree\" to contact a live agent.";
-        //     }
-        // }
-
         function generateBotResponse(userInput) {
             let doc = nlp(userInput.toLowerCase());
 
@@ -342,7 +325,7 @@
                     let i = 1;
                     if (data.books.length > 0) {
                         data.books.forEach(book => {
-                            let bookMessage = `Found book: (${i})  ${book.book_name} by ${book.author}. <a href="displaySingleBook.html?id=${book.id}" target="_blank">Click here to view details ^^</a>`;
+                            let bookMessage = `Found book: (${i})  ${book.book_name} by ${book.author}. <a href="displaySingleBook.html?bookId=${book.id}" target="_blank">Click here to view details ^^</a>`;
                             displayMessage(bookMessage, 'bot');
                             i++;
                         });
