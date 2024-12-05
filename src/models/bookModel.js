@@ -95,7 +95,9 @@ module.exports.returnBook = (data) => {
             if (!rentalRecord) {
                 throw new Error("No active rental record found for this user and book");
             }
-            const endDate = rentalRecord.end_date.setHours(23, 59, 0, 0);
+            const endDate = rentalRecord.end_date;
+            endDate.setHours(23, 59, 0, 0);
+            today.setHours(23, 59, 0, 0);
             const end_date = (endDate).toLocaleString("en-US", {
                 year: "numeric",
                 month: "2-digit",
@@ -105,10 +107,18 @@ module.exports.returnBook = (data) => {
                 second: "2-digit",
                 hour12: false, // 24-hour format
             });
-            const isDue = today >= new Date(end_date);
-            console.log(today);
-            console.log(end_date);
-            const daysOverdue = isDue ? Math.ceil((today - new Date(end_date)) / (1000 * 60 * 60 * 24)) : 0;
+
+            const today_date = today.toLocaleString("en-US", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false, // 24-hour format
+            });
+            const isDue = today_date > end_date
+            const daysOverdue = isDue ? Math.ceil((today - new Date(rentalRecord.end_date)) / (1000 * 60 * 60 * 24)) : 0;
             const dueFee = daysOverdue * 5; // $5 per day if overdue
 
             // Fetch the user status
