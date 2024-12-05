@@ -10,20 +10,69 @@ module.exports.retrieveReviewsByBookId = (data) => {
         include: {
             users: {
                 select: {
-                    name: true 
+                    name: true
                 }
             }
         }
     })
-    .then(reviews => {
-        console.log(reviews);
-        return reviews;
-    })
-    .catch(error => {
-        console.error(error);
-        throw error;
-    });
+        .then(reviews => {
+            console.log(reviews);
+            return reviews;
+        })
+        .catch(error => {
+            console.error(error);
+            throw error;
+        });
 };
+
+module.exports.filterReviews = async (filters) => {
+    const whereClause = {
+      book_id: filters.bookId,
+    };
+  
+    // Filter by review type (user-specific or all)
+    if (filters.reviewType === 'my') {
+      whereClause.user_id = filters.userId;
+    }
+  
+    // Filter by rating
+    if (filters.rating) {
+      whereClause.rating = filters.rating;
+    }
+  
+    // Filter by date range
+    if (filters.startDate && filters.endDate) {
+      whereClause.posted_on = {
+        gte: new Date(filters.startDate),
+        lte: new Date(filters.endDate),
+      };
+    }
+  
+    // Build sorting order
+    const orderBy = [];
+    if (filters.ratingOrder) {
+      orderBy.push({ rating: filters.ratingOrder });
+    }
+    if (filters.dateOrder) {
+      orderBy.push({ posted_on: filters.dateOrder });
+    }
+  
+    try {
+      return await prisma.review.findMany({
+        where: whereClause,
+        orderBy: orderBy.length > 0 ? orderBy : undefined,
+        include: {
+          users: {
+            select: { name: true },
+          },
+        },
+      });
+    } catch (error) {
+      console.error('Error in filterReviews model:', error);
+      throw new Error('Failed to filter reviews.');
+    }
+  };
+  
 
 module.exports.getAverageRatingForBook = (data) => {
     return prisma.review.aggregate({
@@ -34,13 +83,13 @@ module.exports.getAverageRatingForBook = (data) => {
             rating: true
         }
     })
-    .then(result => {
-        return result._avg.rating;
-    })
-    .catch(error => {
-        console.error(error);
-        throw error;
-    });
+        .then(result => {
+            return result._avg.rating;
+        })
+        .catch(error => {
+            console.error(error);
+            throw error;
+        });
 };
 
 module.exports.retrieveReviewsByUserId = async (data) => {
@@ -81,13 +130,13 @@ module.exports.checkBookExists = (bookId) => {
             id: bookId,
         },
     })
-    .then((book) => {
-        return !!book;
-    })
-    .catch((error) => {
-        console.error(error);
-        throw error;
-    });
+        .then((book) => {
+            return !!book;
+        })
+        .catch((error) => {
+            console.error(error);
+            throw error;
+        });
 };
 
 module.exports.checkRentHistory = (data) => {
@@ -102,6 +151,31 @@ module.exports.checkRentHistory = (data) => {
         })
         .catch(error => {
             console.error(error);
+        });
+};
+
+module.exports.checkReadStatus = (data) => {
+    return prisma.rent_history.findFirst({
+        where: {
+            book_id: data.bookId,
+            user_id: data.memberId,
+        },
+    })
+        .then(rentHistory => {
+            if (!rentHistory) {
+                return { status: "not_read", message: "The user has not read the book." };
+
+            } else if (rentHistory.return_date === null) {
+                return { status: "reading", message: "The user is still reading the book." };
+
+            } else {
+                return { status: "read", message: "The user has finished reading the book." };
+
+            }
+        })
+        .catch(error => {
+            console.error("Error in checkRentHistory:", error);
+            throw error;
         });
 };
 
@@ -182,14 +256,14 @@ module.exports.deleteReview = (data) => {
             id: data.reviewId
         }
     })
-    .then(deletedReview => {
-        return deletedReview;
-    })
-    .catch(error => {
-        console.error("Error in deleteReview:", error);
-        if (error.code === 'P2025') {
-            return null;
-        }
-        throw new Error("Failed to delete the review.");
-    });
+        .then(deletedReview => {
+            return deletedReview;
+        })
+        .catch(error => {
+            console.error("Error in deleteReview:", error);
+            if (error.code === 'P2025') {
+                return null;
+            }
+            throw new Error("Failed to delete the review.");
+        });
 };
