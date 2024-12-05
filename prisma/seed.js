@@ -124,6 +124,57 @@ const users = [
   },
 ];
 
+const reviews = [
+  { book_id: 1, user_id: 1, rating: 5, review_text: 'A masterpiece!', posted_on: new Date('2022-05-15') },
+  { book_id: 2, user_id: 2, rating: 4, review_text: 'A great read, but a bit too dark for me.', posted_on: new Date('2022-03-22') },
+  { book_id: 3, user_id: 3, rating: 4, review_text: 'An American classic.', posted_on: new Date('2021-09-10') },
+  { book_id: 1, user_id: 2, rating: 3, review_text: 'Good, but a bit slow-paced in the middle.', posted_on: new Date('2022-07-12') },
+  { book_id: 4, user_id: 3, rating: 5, review_text: 'Amazing storyline and unforgettable characters!', posted_on: new Date('2020-11-02') },
+  { book_id: 5, user_id: 1, rating: 2, review_text: 'The plot was weak, didn’t connect with me.', posted_on: new Date('2021-05-18') },
+  { book_id: 2, user_id: 1, rating: 4, review_text: 'A great and thought-provoking book.', posted_on: new Date('2022-04-01') },
+  { book_id: 3, user_id: 2, rating: 5, review_text: 'One of the best books I have read in a while.', posted_on: new Date('2020-06-15') },
+  { book_id: 4, user_id: 1, rating: 3, review_text: 'Interesting but not as gripping as I expected.', posted_on: new Date('2021-03-10') },
+  { book_id: 5, user_id: 3, rating: 4, review_text: 'Very informative and well-written.', posted_on: new Date('2019-11-25') },
+];
+
+// Seed Rent History
+const rentHistory = [
+  { book_id: 1, user_id: 1, start_date: new Date('2021-06-15'), end_date: new Date('2021-07-15'), return_date: new Date('2021-07-14'), due_status: false },
+  { book_id: 2, user_id: 2, start_date: new Date('2020-03-10'), end_date: new Date('2020-04-10'), return_date: new Date('2020-04-08'), due_status: false },
+  { book_id: 3, user_id: 3, start_date: new Date('2019-05-20'), end_date: new Date('2019-06-20'), return_date: new Date('2019-06-25'), due_status: true },
+  { book_id: 4, user_id: 2, start_date: new Date('2021-08-01'), end_date: new Date('2021-09-01'), return_date: new Date('2021-09-05'), due_status: true },
+  { book_id: 5, user_id: 3, start_date: new Date('2022-03-05'), end_date: new Date('2022-04-05'), return_date: new Date('2022-04-02'), due_status: false },
+  { book_id: 1, user_id: 2, start_date: new Date('2021-11-15'), end_date: new Date('2021-12-15'), return_date: new Date('2021-12-12'), due_status: false },
+  { book_id: 2, user_id: 3, start_date: new Date('2020-01-15'), end_date: new Date('2020-02-15'), return_date: new Date('2020-02-16'), due_status: true },
+  { book_id: 3, user_id: 1, start_date: new Date('2021-06-20'), end_date: new Date('2021-07-20'), return_date: new Date('2021-07-18'), due_status: false },
+  { book_id: 4, user_id: 1, start_date: new Date('2022-02-25'), end_date: new Date('2022-03-25'), return_date: new Date('2022-03-22'), due_status: false },
+  { book_id: 5, user_id: 2, start_date: new Date('2022-01-01'), end_date: new Date('2022-02-01'), return_date: new Date('2022-01-30'), due_status: false },
+  { book_id: 2, user_id: 1, start_date: new Date('2019-07-15'), end_date: new Date('2019-08-15'), return_date: new Date('2019-08-10'), due_status: false },
+  { book_id: 4, user_id: 3, start_date: new Date('2020-05-01'), end_date: new Date('2020-06-01'), return_date: new Date('2020-06-05'), due_status: true },
+  { book_id: 3, user_id: 2, start_date: new Date('2020-09-10'), end_date: new Date('2020-10-10'), return_date: new Date('2020-10-05'), due_status: false },
+  { book_id: 1, user_id: 3, start_date: new Date('2021-03-15'), end_date: new Date('2021-04-15'), return_date: new Date('2021-04-12'), due_status: false },
+  { book_id: 5, user_id: 1, start_date: new Date('2021-10-20'), end_date: new Date('2021-11-20'), return_date: new Date('2021-11-22'), due_status: true },
+  { book_id: 2, user_id: 2, start_date: new Date('2022-04-05'), end_date: new Date('2022-05-05'), return_date: new Date('2022-05-03'), due_status: false },
+  { book_id: 4, user_id: 3, start_date: new Date('2022-06-01'), end_date: new Date('2022-07-01'), return_date: new Date('2022-07-02'), due_status: true },
+  { book_id: 3, user_id: 1, start_date: new Date('2022-08-10'), end_date: new Date('2022-09-10'), return_date: new Date('2022-09-09'), due_status: false },
+  { book_id: 5, user_id: 2, start_date: new Date('2022-10-01'), end_date: new Date('2022-11-01'), return_date: new Date('2022-11-05'), due_status: true },
+  { book_id: 1, user_id: 3, start_date: new Date('2023-01-05'), end_date: new Date('2023-02-05'), return_date: new Date('2023-02-02'), due_status: false },
+];
+
+// Seed Book Requests
+const bookRequests = [
+  { user_id: 1, author: 'Harper Lee', book_name: 'To Kill a Mockingbird', requested_on: new Date('2022-05-10') },
+  { user_id: 2, author: 'George Orwell', book_name: '1984', requested_on: new Date('2021-11-20') },
+  { user_id: 3, author: 'F. Scott Fitzgerald', book_name: 'The Great Gatsby', requested_on: new Date('2020-06-15') },
+  { user_id: 1, author: 'J.K. Rowling', book_name: 'Harry Potter and the Sorcerer\'s Stone', requested_on: new Date('2021-07-25') },
+  { user_id: 2, author: 'Jane Austen', book_name: 'Pride and Prejudice', requested_on: new Date('2019-04-10') },
+  { user_id: 3, author: 'Yuval Noah Harari', book_name: 'Sapiens', requested_on: new Date('2021-02-05') },
+  { user_id: 1, author: 'J.R.R. Tolkien', book_name: 'The Hobbit', requested_on: new Date('2022-08-15') },
+  { user_id: 2, author: 'J.R.R. Tolkien', book_name: 'The Lord of the Rings', requested_on: new Date('2021-05-30') },
+  { user_id: 3, author: 'Dan Brown', book_name: 'The Da Vinci Code', requested_on: new Date('2020-03-12') },
+  { user_id: 1, author: 'Stephen King', book_name: 'It', requested_on: new Date('2021-09-01') },
+];
+
 const userStatuses = [];
 
 async function main() {
@@ -144,6 +195,7 @@ async function main() {
   const insertedUsers = await prisma.users.createManyAndReturn({
     data: users,
   });
+
 
   console.log(insertedPersons, insertedStatuses);
 
@@ -207,6 +259,19 @@ async function main() {
     data: userStatuses,
   });
 
+  const insertedReviews = await prisma.review.createMany({
+    data: reviews,
+  });
+
+  // Insert Rent History
+  const insertedRent_history = await prisma.rent_history.createMany({
+    data: rentHistory,
+  });
+
+  // Insert Book Requests
+  const insertedBook_request = await prisma.book_request.createMany({
+    data: bookRequests,
+  });
 
   console.log('Seed data inserted successfully');
 }

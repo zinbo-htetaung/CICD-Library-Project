@@ -10,6 +10,7 @@ const reviewRoute = require('./routers/reviewRoute');
 const bookRequestRoute = require('./routers/bookRequestRoute');
 const rentHistoryRoute = require('./routers/rentHistoryRoute');
 const sendEmailRoute = require('./routers/sendEmailRoute');
+const adminInsightsRoute = require('./routers/adminInsightsRoute')
 const path = require('path');
 
 const app = express();
@@ -26,6 +27,7 @@ app.use('/api/requests',bookRequestRoute);
 app.use('/api/reviews',reviewRoute);
 app.use('/api/rentHistory', rentHistoryRoute);
 app.use('/api/sendEmail', sendEmailRoute);
+app.use('/api/insights', adminInsightsRoute);
 
 app.use((req, res, next) => {
   next(createError(404, `Unknown resource ${req.method} ${req.originalUrl}`));
