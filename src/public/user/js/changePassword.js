@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const saveButton = document.querySelector("#chgPwModal .btn-success");
+    const saveButton = document.querySelector("#chgPwButton");
     saveButton.addEventListener("click", async (event) => {
         event.preventDefault(); // Prevent default form submission
         console.log("hi")
