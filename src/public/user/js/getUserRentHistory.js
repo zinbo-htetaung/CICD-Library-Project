@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!response.ok) {
                 if (response.status === 404) {
-                    rentHistoryTableBody.innerHTML = `<tr><td colspan="4">No rent history found for this user.</td></tr>`;
+                    rentHistoryTableBody.innerHTML = `<tr><td colspan="6">No rent history found for this user.</td></tr>`;
                 } else {
                     throw new Error("Failed to fetch rent history. Please try again later.");
                 }
@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (data) {
                 appendRentHistoryToTable(data); // Append rent history to the table
             } else {
-                rentHistoryTableBody.innerHTML = `<tr><td colspan="4">No rent history found for this user.</td></tr>`;
+                rentHistoryTableBody.innerHTML = `<tr><td colspan="6">No rent history found for this user.</td></tr>`;
             }
         } catch (error) {
             console.error("Error fetching rent history:", error);
@@ -50,14 +50,14 @@ document.addEventListener("DOMContentLoaded", () => {
             let buttonHTML = '';
             if (!rent.return_date) {
                 // Book hasn't been returned, redirect to the return page
-                buttonHTML = '<button class="btn btn-warning border-1 border-black" onclick="window.location.href=\'../html/rentedBooks.html\'">Return Book</button>';
+                buttonHTML = '<button class="btn btn-warning border-1 border-black w-75" onclick="window.location.href=\'../html/rentedBooks.html\'">Return Book</button>';
             } else {
                 // Book has been returned, redirect to the review page
                 if(reviewStatus){
-                    buttonHTML = '<button class="btn btn-secondary border-1 border-black">Review Given</button>';
+                    buttonHTML = '<button class="btn btn-secondary border-1 border-black w-75">Review Given</button>';
                 }
                 else{
-                    buttonHTML = '<button class="btn border-1 border-black" onclick="window.location.href=\'../html/displaySingleBook.html?bookId=' + rent.book_id + '#writeReviewModal\'" style="background-color: #DBE2EF;">Give Review</button>';
+                    buttonHTML = '<button class="btn border-1 border-black w-75" onclick="window.location.href=\'../html/displaySingleBook.html?bookId=' + rent.book_id + '#writeReviewModal\'" style="background-color: #DBE2EF;">Give Review</button>';
                 }
             } 
             row.innerHTML = `

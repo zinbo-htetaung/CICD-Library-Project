@@ -289,7 +289,7 @@ module.exports.deleteAccount = async (data) => {
         });
 
         // Now delete the user account using deleteUnique (which targets a unique field)
-        await prisma.users.deleteUnique({
+        await prisma.users.delete({
             where: { id: user_id }, // Specify the unique identifier (user_id)
         });
 

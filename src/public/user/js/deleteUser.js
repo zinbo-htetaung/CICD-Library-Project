@@ -25,10 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
 
             if (response.ok) {
-                // Successfully deleted the account
-                alert(data.message || "Account deleted successfully.");
-                // Optionally, redirect to a login page or log the user out
-                window.location.href = "../../general/login.html"; // Redirect to login page or homepage
+                localStorage.clear();
+                alert("Logged out successfully!");
+                window.location.href = '../../general/html/login.html';
             } else {
                 // Handle error from backend
                 alert(data.message || "Something went wrong. Please try again.");
