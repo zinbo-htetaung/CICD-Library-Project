@@ -19,6 +19,53 @@
       font-size: large;
       font-weight: bolder;
     }
+    div.card {
+      border: 1px solid black;
+      border-radius: 8px; /* Optional: Rounded corners */
+    }
+
+    .card-link {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .card-hover {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card-hover:hover {
+      transform: scale(1.05);
+      box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-header {
+      min-height: 80px; /* Ensures consistent header height */
+      text-align: center; /* Align titles in the center */
+      font-size: 1.2rem; /* Increase title size */
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-img-top {
+      border-bottom: 1px solid black;
+      object-fit: cover;
+      height: 200px; /* Ensures consistent image height */
+    }
+
+    .card-body {
+      text-align: center; /* Center-align text */
+    }
+
+    .card-title {
+      margin: 0;
+    }
+
+    .card-subtitle {
+      font-size: 0.9rem;
+      color: #6c757d; /* Subtle muted text for author */
+    }
   </style>
 </head>
 
@@ -27,6 +74,30 @@
 
   <div class="container my-4">
     <h1 class="text-center mb-4">Books For Rent</h1>
+
+    <div class="row mb-5">
+      <div class="col-md-3">
+        <label for="filterTarget" class="form-label">Filter Target:</label>
+        <select id="filterTarget" class="form-select">
+          <option value="name" selected>By Book Name</option>
+          <option value="author">By Author Name</option>
+          <option value="category">By Category Name</option>
+        </select>
+      </div>
+      <div class="col-md-5">
+        <label for="filterKeyword" class="form-label">Enter Keyword:</label>
+        <input type="text" id="filterKeyword" class="form-control">
+      </div>
+      <div class="col-md-2 d-flex align-items-end">
+        <button id="filterSubmit" class="btn btn-primary w-100">Search<i class="bi bi-search ms-2"></i></button>
+      </div>
+      <div class="col-md-2 d-flex align-items-end">
+        <a href="displayAllBooks.html" class="btn btn-secondary btn-block w-100">Reset Filter<i class="bi bi-arrow-counterclockwise ms-2"></i></a>
+      </div>
+    </div>
+  
+    <div id="filterMessage" class="mb-4"></div>
+
     <div class="row" id="bookCardsContainer">
       <!-- Books display here -->
     </div>
