@@ -87,7 +87,7 @@ module.exports.returnBook = (data) => {
     return prisma.rent_history.findFirst({
         where: {
             book_id: bookId,
-            user_id: 1,
+            user_id: userId,
             return_date: null // Ensuring this is an active rental
         }
     })
