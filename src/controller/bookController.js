@@ -62,7 +62,7 @@ module.exports.searchBookByCategory = (req, res, next) => {
         categoryName: req.params.categoryName
     }
     model.searchByCategory(data)
-    .then(books => {
+        .then(books => {
             if (books.length == 0) {
                 return res.status(404).json({ message: "No book found" })
             }
@@ -125,9 +125,9 @@ module.exports.addBook = (req, res, next) => {
 
     model.insertSingle(data)
         .then(book => {
-            res.locals.book = book; 
-            res.locals.category_id = category_id; 
-            next(); 
+            res.locals.book = book;
+            res.locals.category_id = category_id;
+            next();
         })
         .catch(error => {
             console.error("Error adding book:", error);
@@ -135,32 +135,32 @@ module.exports.addBook = (req, res, next) => {
         });
 };
 
-module.exports.updateBook=(req,res,next)=>{
-    if (!req.params.bookId || !req.body.book_name || !req.body.author || !req.body.description || !req.body.copies ) {
+module.exports.updateBook = (req, res, next) => {
+    if (!req.params.bookId || !req.body.book_name || !req.body.author || !req.body.description || !req.body.copies) {
         console.log("Missing required data for updating book");
         return res.status(400).json({ message: "Please provide input data for new book" });
     }
-    
-    const data={
+
+    const data = {
         id: req.params.bookId,
         book_name: req.body.book_name,
         author: req.body.author,
         description: req.body.description,
         copies: req.body.copies
     }
-    
+
     model.updateSingle(data)
-    .then(book=>{
-        res.status(200).json({message: "Book details successfully updated"});
-    })
-    .catch(error => {
-        if (error.message === 'Book not found') {
-            console.log("Book not found for ID:", data.id);
-            return res.status(404).json({ message: "Book not found" });
-        }
-        console.error("Error updating book:", error);
-        return res.status(500).json({ error: "An unexpected error occurred" });
-    });
+        .then(book => {
+            res.status(200).json({ message: "Book details successfully updated" });
+        })
+        .catch(error => {
+            if (error.message === 'Book not found') {
+                console.log("Book not found for ID:", data.id);
+                return res.status(404).json({ message: "Book not found" });
+            }
+            console.error("Error updating book:", error);
+            return res.status(500).json({ error: "An unexpected error occurred" });
+        });
 }
 
 module.exports.deleteBook = (req, res, next) => {
@@ -209,8 +209,10 @@ module.exports.retrieveSingleBook = (req, res, next) => {
 };
 
 module.exports.rentBook = (req, res) => {
-    const { bookId } = req.body;
-    let userId = res.locals.user_id
+    const bookId = parseInt(req.body.bookId, 10); // Parse bookId as an integer
+    const userId = res.locals.user_id; // Retrieve userId from res.locals
+
+    console.log("Book ID:", bookId); // Debugging log
 
     if (!bookId) {
         return res.status(400).json({ message: "Book ID is required" });
@@ -221,7 +223,7 @@ module.exports.rentBook = (req, res) => {
             return res.status(200).json(result);
         })
         .catch((error) => {
-            console.error(error);
+            console.error("Error renting book:", error);
             return res.status(500).json({ error: error.message });
         });
 };
