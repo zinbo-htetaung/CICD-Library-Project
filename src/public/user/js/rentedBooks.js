@@ -140,19 +140,19 @@ function renderBooksSection(title, books, showDaysKey, sectionId, badgeClass = n
     
     section.appendChild(row);
     
-    document.querySelectorAll('.return-btn').forEach(button => {
-        button.addEventListener('click', async (event) => {
-            const bookId = event.target.getAttribute('data-book-id');
-            returnBook(bookId);
-        });
-    });
-    
-    document.querySelectorAll('.extend-btn').forEach(button => {
-        button.addEventListener('click', async (event) => {
-            const historyId = event.target.getAttribute('data-history-id');
-            console.log(historyId)
-            extendBook(historyId);
-        });
+    // Attach event listeners via delegation
+    section.addEventListener('click', async (event) => {
+        const target = event.target;
+
+        if (target.classList.contains('return-btn')) {
+            const bookId = target.getAttribute('data-book-id');
+            await returnBook(bookId);
+        }
+
+        if (target.classList.contains('extend-btn')) {
+            const historyId = target.getAttribute('data-history-id');
+            await extendBook(historyId);
+        }
     });
 }
 
