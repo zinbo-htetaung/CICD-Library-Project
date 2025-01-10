@@ -2,7 +2,7 @@
 if (localStorage.getItem('token')) {
     if (localStorage.getItem('role') !== 'admin') { 
         alert("Access Not Granted!");
-        window.location.href ='/user/html/html/home.html'  ; 
+        window.location.href ='/user/html/home.html'  ; 
     }
 } else {
     alert("Please log in to access these webpages");
