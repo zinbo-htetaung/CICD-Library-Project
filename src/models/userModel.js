@@ -65,7 +65,7 @@ module.exports.insertSingle = (data, callback) => {
                 const userId = userResult.rows[0].id;
                 console.log("User inserted successfully with ID:", userId);
 
-                const USER_STATS_VALUES = [userId, 100, 0, 5];
+                const USER_STATS_VALUES = [userId, 100, 0, 4];
 
                 console.log("Inserting into user_status table...");
 
@@ -163,16 +163,6 @@ module.exports.getProfileInfo = async function getProfileInfo(userId) {
     }
 };
 
-
-module.exports.insertUserStatus = (userId, callback) => {
-    const SQL_STATEMENT = `
-    INSERT INTO user_status (user_id, current_book_count, max_book_count)
-    VALUES ($1, $2, $3);
-    `;
-    const VALUES = [userId, 0, 4];
-
-    pool.query(SQL_STATEMENT, VALUES, callback);
-};
 
 module.exports.getUserIdByEmail = (email, callback) => {
     const SQL_STATEMENT = `SELECT id FROM users WHERE email = $1;`;

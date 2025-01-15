@@ -10,6 +10,9 @@ const pool = new pg.Pool({
     host: process.env.DB_HOST,
     database: process.env.DB_DATABASE,
     max: process.env.DB_CONNECTION_LIMIT,
+    // ssl: {
+    //     rejectUnauthorized: false, // Required for Neon SSL connections
+    // },
 });
 
 // Monkey patch .query(...) method to console log all queries before executing it

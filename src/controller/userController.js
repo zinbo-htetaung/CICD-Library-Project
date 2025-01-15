@@ -54,8 +54,8 @@ module.exports.register = (req, res, next) => {
                 return res.status(404).json({ message: "User not found after insertion" });
             }
 
-            res.locals.user_id = resId.rows[0].id;
-            next();
+            console.log("Registration successful");
+            return res.status(201).json({ message: "Account created successfully" });
         });
     });
 };
@@ -102,24 +102,6 @@ module.exports.getProfileInfo = (req, res) => {
             console.error("Error fetching profile info:", error);
             return res.status(500).json({ error: "An unexpected error occurred" });
         });
-};
-
-module.exports.addUserStatus = (req, res) => {
-    const userId = res.locals.user_id;
-
-    if (!userId) {
-        return res.status(400).json({ message: "User ID is missing" });
-    }
-
-    model.insertUserStatus(userId, (error) => {
-        if (error) {
-            console.error("Error inserting user status:", error);
-            return res.status(500).json({ message: "Internal server error" });
-        }
-
-        console.log("Registration successful");
-        res.status(201).json({ message: "Account created successfully" });
-    });
 };
 
 module.exports.verifyCaptcha = async (req, res, next) => {
