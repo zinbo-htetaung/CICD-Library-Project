@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('http://localhost:3000');
+  await page.goto('http://localhost:3001');
 });
 
 const NEW_TASKS = ['buy some cheese', 'feed the cat', 'delete me'];
