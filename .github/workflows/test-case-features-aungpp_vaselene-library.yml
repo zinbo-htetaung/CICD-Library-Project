@@ -21,11 +21,16 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: npm install, build, and test
-        run: |
-          npm install
-          npm run build --if-present
-          npm run test --if-present
+      - name: Install dependencies
+          run: npm install
+
+      - name: Load environment variables
+          run: |
+            echo "PORT=3001" >> $GITHUB_ENV
+            echo "DATABASE_URL = postgresql://neondb_owner:RoDv2BAYLT5q@ep-fancy-flower-a18x58nl.ap-southeast-1.aws.neon.tech/neondb?sslmode=require" >> $GITHUB_ENV
+
+      - name: Run tests
+          run: npm run test
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
