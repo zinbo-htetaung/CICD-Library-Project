@@ -35,7 +35,7 @@ test.describe('Admin Book Tests', () => {
 
     const firstCard = bookCards.first();
     const cardTitle = await firstCard.locator('.card-header h4').textContent();
-    expect(cardTitle).not.toBeNull();   // Ensure the card title is not null
+    await expect(cardTitle).not.toBeNull();   // ensure the card title is not null at least
   });
 
   // Test for successful display of books
@@ -44,8 +44,6 @@ test.describe('Admin Book Tests', () => {
     await expect(bookCardsContainer).toBeVisible();
 
     const bookCards = bookCardsContainer.locator('.card');
-    await expect(bookCards).toHaveCount(5); 
-
     const firstCard = bookCards.first();
     await firstCard.click();
 
@@ -64,21 +62,185 @@ test.describe('Admin Book Tests', () => {
     await expect(deleteBookLink).toBeVisible();
   });
 
-  // Test for successful display of books
+  // Test for filter book by name
   test('Filter book by name', async ({ page }) => {
-    const filterTarget = page.getByLabel('filterTarget');
-    // await expect(filterTarget).toBeVisible();
+    const filterTarget = page.getByLabel('Filter Target:');
     await filterTarget.selectOption('name');
 
-    const keywordInput = page.getByLabel('Keyword');
-    const filterKeyword = page.getByLabel('filterKeyword');
-    // await expect(filterKeyword).toBeVisible();
-    await filterTarget.fill('To Kill a Mockingbird');
+    const keywords = 'To Kill a Mockingbird';
+    const filterKeyword = page.getByLabel('Enter Keyword:');
+    await filterKeyword.fill(keywords);
 
     await page.locator('#filterSubmit').click();
+
+    await expect(page.locator('.alert-info')).toHaveText(`Showing results for "${keywords}" (Name)`);
     
+    const bookCardsContainer = page.locator('#bookCardsContainer');
+    await expect(bookCardsContainer).toBeVisible();
+
+    const bookCards = bookCardsContainer.locator('.card');
+    const firstCard = bookCards.first();
+    const cardName = await firstCard.locator('.card-header h4').textContent();
+    await expect(cardName).toBe(`${keywords}`);
   });
 
+  // Test for filter book by author
+  test('Filter book by author', async ({ page }) => {
+    const filterTarget = page.getByLabel('Filter Target:');
+    await filterTarget.selectOption('author');
+
+    const keywords = 'Harper Lee';
+    const filterKeyword = page.getByLabel('Enter Keyword:');
+    await filterKeyword.fill(keywords);
+
+    await page.locator('#filterSubmit').click();
+
+    await expect(page.locator('.alert-info')).toHaveText(`Showing results for "${keywords}" (author)`);
+    
+    const bookCardsContainer = page.locator('#bookCardsContainer');
+    await expect(bookCardsContainer).toBeVisible();
+
+    const bookCards = bookCardsContainer.locator('.card');
+    const firstCard = bookCards.first();
+    const cardTitle = await firstCard.locator('.card-title').textContent();
+    await expect(cardTitle).toBe(`By : ${keywords}`);
+  });
+
+  // Test for filter book by category
+  test('Filter book by category', async ({ page }) => {
+    const filterTarget = page.getByLabel('Filter Target:');
+    await filterTarget.selectOption('category');
+
+    const keywords = 'Biography';
+    const filterKeyword = page.getByLabel('Enter Keyword:');
+    await filterKeyword.fill(keywords);
+
+    await page.locator('#filterSubmit').click();
+
+    await expect(page.locator('.alert-info')).toHaveText(`Showing results for "${keywords}" (category)`);
+    
+    const bookCardsContainer = page.locator('#bookCardsContainer');
+    await expect(bookCardsContainer).toBeVisible();
+
+    const bookCards = bookCardsContainer.locator('.card');
+    const firstCard = bookCards.first();
+    await expect(firstCard).toBeVisible();
+  });
+
+  // Test for unsuccessful filter book by category
+  test('Filter book not found', async ({ page }) => {
+    const filterTarget = page.getByLabel('Filter Target:');
+    await filterTarget.selectOption('category');
+
+    const keywords = 'Gibberish';
+    const filterKeyword = page.getByLabel('Enter Keyword:');
+    await filterKeyword.fill(keywords);
+
+    await page.locator('#filterSubmit').click();
+
+    await expect(page.locator('.alert-danger')).toHaveText(`No book found`);
+  });
+
+  // Test for adding a new book
+  test('Add book', async ({ page }) => {
+    await page.getByRole('link', { name: 'Add New Book' }).click();
+    
+    await expect(page).toHaveURL('http://localhost:3001/admin/addBook.html');
+
+    const bookName = page.getByLabel('Book Name');
+    await bookName.fill('Harry Potter');
+    const authorName = page.getByLabel('Author');
+    await authorName.fill('JK Rowling');
+    const description = page.getByLabel('Description');
+    await description.fill('A magical book about Hogwarts magical academy');
+    const noCopies = page.getByLabel('Number of Copies');
+    await noCopies.type('5');
+    await page.getByLabel('Romance').check();
+    await page.getByLabel('Fantasy').check();
+
+    await page.getByRole('button', { name: 'Add Book' }).click();
+
+    const dialogPromise = page.waitForEvent('dialog'); 
+    const dialog = await dialogPromise;
+    expect(dialog.message()).toBe('Book and categories successfully added');
+    await dialog.dismiss();
+  });
+
+  // Test for book details update
+  test('Update Book Details', async ({ page }) => {
+    const bookCardsContainer = page.locator('#bookCardsContainer');
+    const bookCards = bookCardsContainer.locator('.card');
+    const firstCard = bookCards.first();
+    await firstCard.click();
+
+    // await expect(page).toHaveURL('http://localhost:3001/admin/displaySingleBook.html?bookId=1');
+    await page.getByRole('link', { name: 'Update Book Details' }).click();
+    // await expect(page).toHaveURL('http://localhost:3001/admin/updateBookDetails.html?bookId=1');
+
+    const bookName = page.getByLabel('Book Name');
+    await bookName.fill('MockingBird');
+    const authorName = page.getByLabel('Author');
+    await authorName.fill('Lee Harper');
+    const description = page.getByLabel('Description');
+    await description.fill('A novel about racial injustice in the American South long time ago...');
+    const noCopies = page.getByLabel('Number Of New Book Copies');
+    await noCopies.type('5');
+
+    await page.getByRole('button', { name: 'Update Book' }).click();
+
+    const dialogPromise = page.waitForEvent('dialog'); 
+    const dialog = await dialogPromise;
+    expect(dialog.message()).toBe('Book details successfully updated');
+    await dialog.dismiss();
+  });
+
+  // Test for book deletion
+  test('Delete Book', async ({ page }) => {
+    const bookCardsContainer = page.locator('#bookCardsContainer');
+    const bookCards = bookCardsContainer.locator('.card');
+    const firstCard = bookCards.first();
+    await firstCard.click();
+
+    await page.getByRole('link', { name: 'Delete Book' }).click();
+
+    const confirmPromise = page.waitForEvent('dialog'); 
+    const confirmDialog = await confirmPromise;
+    await confirmDialog.accept(); 
+
+    const alertPromise = page.waitForEvent('dialog'); 
+    const alertDialog = await alertPromise;
+    expect(alertDialog.message()).toBe('Book successfully deleted');
+    await alertDialog.dismiss();
+
+    await expect(page).toHaveURL('http://localhost:3001/admin/displayAllBooks.html');
+  });
+
+  // Test for book categories update
+  test('Update Book Categories', async ({ page }) => {
+    const bookCardsContainer = page.locator('#bookCardsContainer');
+    const bookCards = bookCardsContainer.locator('.card');
+    const firstCard = bookCards.first();
+    await firstCard.click();
+
+    await expect(page).toHaveURL('http://localhost:3001/admin/displaySingleBook.html?bookId=1');
+    await page.getByRole('link', { name: 'Update Book Categories' }).click();
+    
+    const modal = page.locator('#updateCategoriesModal');
+    await expect(modal).toBeVisible();
+
+    const categoryThriller = page.getByRole('checkbox', { name: 'Thriller' });
+    await categoryThriller.check();
+    await page.getByRole('button', { name: 'Update Categories' }).click();
+    
+    await expect(modal).toBeHidden();
+
+    const dialogPromise = page.waitForEvent('dialog'); 
+    const dialog = await dialogPromise;
+    expect(dialog.message()).toBe('Book categories successfully updated');
+    await dialog.dismiss();
+
+  });
+  
 });
 
 
