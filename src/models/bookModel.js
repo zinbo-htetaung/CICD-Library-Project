@@ -371,24 +371,17 @@ module.exports.rentBook = (data) => {
                         end_date: endDate,
                         return_date: null,
                         due_status: false
-                    }
+                    },
+                    select: { id: true }
                 })
             ]);
         })
-        .then(() => {
-            // Fetch the updated book data with the latest `no_of_copies`
-            return prisma.book.findUnique({
-                where: { id: bookId },
-                select: {
-                    id: true,
-                    book_name: true,
-                    no_of_copies: true,
-                    available_copies: true
-                }
-            });
-        })
-        .then((updatedBook) => {
-            return { message: "Book rented successfully", book: updatedBook };
+        .then((transactionResults) => {
+            const [_, __, createdRentHistory] = transactionResults;
+            return {
+                rent_history_id: createdRentHistory.id,
+                book_id: bookId
+            };
         })
         .catch((error) => {
             console.error(error);
