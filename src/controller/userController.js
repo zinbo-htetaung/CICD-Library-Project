@@ -106,7 +106,7 @@ module.exports.getProfileInfo = (req, res) => {
 
 module.exports.verifyCaptcha = async (req, res, next) => {
     const captchaToken = req.body['g-recaptcha-response']; // Token sent from the frontend
-    const secretKey = "6LfclI4qAAAAANZJNamoflbSsdPpwZzOrjAKmGt7"; 
+    const secretKey = "6LfMGboqAAAAAPXLtwKP9GUaVE9Ly2eqJKsHQLYw"; 
 
     if (!captchaToken) {
         return res.status(400).json({ message: "Captcha verification failed. Please try again." });
