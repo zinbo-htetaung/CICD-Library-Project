@@ -93,6 +93,19 @@ module.exports.checkOwnership = (bookProgressId, userId) => {
     });
 };
 
+module.exports.checkExistence = (bookProgressId, userId) => {
+    return prisma.book_progress.findFirst({
+        where: {
+            id: bookProgressId,
+        }
+    }).then((record) => {
+        return !!record;    // check existence of record and return boolean
+    }).catch((error) => {
+        console.error("Error checking book progress record:", error);
+        throw new Error("Failed to check book progress record existence.");
+    });
+};
+
 module.exports.insertSingle = (data) => {
     return prisma.book_progress.create({
         data: {
@@ -119,5 +132,20 @@ module.exports.getBookDetails = (bookId) => {
     }).catch((error) => {
         console.error("Error fetching book details:", error);
         throw new Error("Failed to fetch book details.");
+    });
+};
+
+module.exports.updateProgress = (bookProgressId, progress, status) => {
+    return prisma.book_progress.update({
+        where: {
+            id: bookProgressId
+        },
+        data: {
+            progress,
+            status
+        }
+    }).catch((error) => {
+        console.error("Error updating book progress:", error);
+        throw new Error("Failed to update book progress.");
     });
 };

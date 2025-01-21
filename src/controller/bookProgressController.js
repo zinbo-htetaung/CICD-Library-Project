@@ -61,6 +61,26 @@ module.exports.checkOwner = (req, res, next) => {
         });
 };
 
+module.exports.checkExistence = (req, res, next) => {
+    const bookProgressId = parseInt(req.params.id, 10);
+
+    if (isNaN(bookProgressId)) {
+        return res.status(400).json({ message: "Invalid book progress ID." });
+    }
+
+    model.checkExistence(bookProgressId)
+        .then((result) => {
+            if (!result) {
+                return res.status(403).json({ message: "Book progress record does not exist." });
+            }
+            next(); 
+        })
+        .catch((error) => {
+            console.error("Error checking ownership:", error);
+            res.status(500).json({ message: "Failed to verify book progress existence." });
+        });
+};
+
 module.exports.updateBookProgress = (req, res) => {
     const bookProgressId = parseInt(req.params.id, 10);
     const { progress } = req.body;
@@ -111,5 +131,43 @@ module.exports.addBookProgress = (req, res) => {
         .catch((error) => {
             console.error("Error adding book progress:", error);
             res.status(500).json({ message: "Failed to add book progress." });
+        });
+};
+
+module.exports.completeBookProgress = (req, res) => {
+    const bookProgressId = parseInt(req.params.id, 10);
+    const progress = 100;
+    const status = "Completed";
+
+    if (isNaN(progress) || progress < 0 || progress > 100) {
+        return res.status(400).json({ message: "Invalid progress value. Must be a number between 0 and 100." });
+    }
+
+    model.updateProgress(bookProgressId, progress, status)
+        .then(() => {
+            res.status(200).json({ message: `Book status set to completed` });
+        })
+        .catch((error) => {
+            console.error("Error updating book progress:", error);
+            res.status(500).json({ message: "Failed to update book progress." });
+        });
+};
+
+module.exports.resetBookProgress = (req, res) => {
+    const bookProgressId = parseInt(req.params.id, 10);
+    const progress = 0;
+    const status = "Unread";
+
+    if (isNaN(progress) || progress < 0 || progress > 100) {
+        return res.status(400).json({ message: "Invalid progress value. Must be a number between 0 and 100." });
+    }
+
+    model.updateProgress(bookProgressId, progress, status)
+        .then(() => {
+            res.status(200).json({ message: `Book status set to unread` });
+        })
+        .catch((error) => {
+            console.error("Error updating book progress:", error);
+            res.status(500).json({ message: "Failed to update book progress." });
         });
 };
