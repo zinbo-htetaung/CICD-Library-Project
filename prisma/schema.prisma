@@ -50,6 +50,7 @@ model book {
   book_category    book_category[]
   rent_history     rent_history[]
   review           review[]
+  book_progress    book_progress[] 
 }
 
 model book_category {
@@ -85,6 +86,7 @@ model rent_history {
   due_status  Boolean?  
   book        book      @relation(fields: [book_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   users       users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  book_progress book_progress[] 
 }
 
 model review {
@@ -119,7 +121,24 @@ model users {
   rent_history rent_history[]
   review       review[]
   user_status  user_status[]
+  book_progress book_progress[]
   messages     Message[] @relation("UserMessages")
+
+}
+
+model book_progress {
+  id              Int         @id @default(autoincrement())
+  rent_history_id Int
+  user_id         Int
+  book_id         Int
+  progress        Float       @default(0)
+  status          String      @default("Unread") @db.VarChar
+  last_updated    DateTime    @default(now()) @updatedAt
+  rent_history    rent_history @relation(fields: [rent_history_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users           users       @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  book            book        @relation(fields: [book_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([rent_history_id]) 
 }
 
 model Message {
@@ -135,3 +154,4 @@ model Message {
   parentMessage  Message? @relation("Thread", fields: [replyToId], references: [id], onDelete: Cascade)
   replies        Message[] @relation("Thread")
 }
+
