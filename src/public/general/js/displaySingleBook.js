@@ -169,8 +169,6 @@ async function displayBookDetails(book) {
 
     const readStatus = await fetchReadStatus(getBookIdFromURL());
 
-    console.log(readStatus);
-
     let statusIcon = '';
     let feedbackMessage = '';
     switch (readStatus) {

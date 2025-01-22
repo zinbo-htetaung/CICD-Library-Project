@@ -115,6 +115,14 @@ const users = [
     role: 'user',
   },
   {
+    name: 'test',
+    email: 'test@gmail.com',
+    password: 'password', // Plain text password, will be hashed
+    address: '2 Canberra',
+    dob: new Date('2004-04-04'),
+    role: 'user',
+  },
+  {
     name: 'admin',
     email: 'admin@gmail.com',
     password: 'password', // Plain text password, will be hashed
