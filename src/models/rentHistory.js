@@ -152,7 +152,7 @@ module.exports.retrieveByUserId = async (userId) => {
         });
 
         // Log the fetched records for debugging purposes
-        console.log("Successfully retrieved rent history records for user_id ${userId}:, rentHistories");
+        // console.log("Successfully retrieved rent history records for user_id ${userId}:, rentHistories");
 
         // Check if any records were found
         if (!rentHistories || rentHistories.length === 0) {
@@ -200,7 +200,7 @@ module.exports.retrieveByUserIdIncludingReviewStatus = async (userId) => {
 
         });
 
-        console.log(`Successfully retrieved rental history and reviews for user_id ${userId}:`, rentHistories);
+        // console.log(`Successfully retrieved rental history and reviews for user_id ${userId}:`, rentHistories);
 
         if (!rentHistories || rentHistories.length === 0) {
             console.warn(`No rental history records found for user_id ${userId}.`);
