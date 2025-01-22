@@ -381,15 +381,15 @@ function deleteReview(reviewId) {
 
 document.addEventListener('DOMContentLoaded', () => {
   fetch('../html/user_navbar.html')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('navbar-container').innerHTML = data;
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById('navbar-container').innerHTML = data;
 
-            const logoutButton = document.getElementById('logout-button');
-            if (logoutButton) {
-                logoutButton.addEventListener('click', logout);
-            }
-        })
+      const logoutButton = document.getElementById('logout-button');
+      if (logoutButton) {
+        logoutButton.addEventListener('click', logout);
+      }
+    })
 
   fetch('../../footer.html')
     .then(response => response.text())
@@ -528,6 +528,9 @@ document.addEventListener("DOMContentLoaded", () => {
       // Handle success response
       alert(`Book rented successfully! Rented Book: ${result.book.book_name || "N/A"}`);
       console.log("Rental Result:", result);
+      // Refresh the page
+      location.reload();
+
     } catch (error) {
       // Handle API errors or unexpected issues
       console.error("Error renting book:", error);
