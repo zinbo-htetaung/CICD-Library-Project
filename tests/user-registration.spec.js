@@ -5,7 +5,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Registration Page Tests', () => {
-  // Test for successful registration
+  // Test for successful registration - NEEDS A LOT OF WORK
   test('Successful registration', async ({ page, request }) => {
     // const nameInput = page.locator('#name');
     // await nameInput.fill('doe');

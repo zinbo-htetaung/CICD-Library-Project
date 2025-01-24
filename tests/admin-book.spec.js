@@ -1,5 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
+test.describe.configure({ mode: 'serial' });
+
 test.beforeEach(async ({ page }) => {
     await page.goto('http://localhost:3001/general/html/login.html');
 
@@ -43,9 +45,8 @@ test.describe('Admin Book Tests', () => {
     const bookCardsContainer = page.locator('#bookCardsContainer');
     await expect(bookCardsContainer).toBeVisible();
 
-    const bookCards = bookCardsContainer.locator('.card');
-    const firstCard = bookCards.first();
-    await firstCard.click();
+    const specificBookCard = page.locator('.card-link[href*="bookId=1"]');
+    await specificBookCard.click();
 
     await expect(page).toHaveURL('http://localhost:3001/admin/displaySingleBook.html?bookId=1');
 
@@ -170,8 +171,9 @@ test.describe('Admin Book Tests', () => {
   test('Update Book Details', async ({ page }) => {
     const bookCardsContainer = page.locator('#bookCardsContainer');
     const bookCards = bookCardsContainer.locator('.card');
-    const firstCard = bookCards.first();
-    await firstCard.click();
+    
+    const specificBookCard = page.locator('.card-link[href*="bookId=1"]');
+    await specificBookCard.click();
 
     // await expect(page).toHaveURL('http://localhost:3001/admin/displaySingleBook.html?bookId=1');
     await page.getByRole('link', { name: 'Update Book Details' }).click();
@@ -195,37 +197,13 @@ test.describe('Admin Book Tests', () => {
 
   });
 
-  // Test for book deletion
-  test('Delete Book', async ({ page }) => {
-    const bookCardsContainer = page.locator('#bookCardsContainer');
-    const bookCards = bookCardsContainer.locator('.card');
-    const firstCard = bookCards.first();
-    await firstCard.click();
-
-    await page.getByRole('button', { name: 'Delete Book' }).click();
-
-    page.on('dialog', async (dialog) => {
-      if (dialog.message() === 'Are you sure you want to delete this book?') {
-        await dialog.accept(); // Confirm deletion
-      } else {
-        expect(dialog.message()).toBe('Book successfully deleted'); // Success alert
-        await dialog.dismiss();
-      }
-    });
-    page.on('dialog', async (dialog) => {
-      expect(dialog.message()).toBe('Book successfully deleted');
-      await dialog.dismiss(); 
-    });
-
-    // await expect(page).toHaveURL('http://localhost:3001/admin/displayAllBooks.html');
-  });
-
   // Test for book categories update
   test('Update Book Categories', async ({ page }) => {
     const bookCardsContainer = page.locator('#bookCardsContainer');
-    const bookCards = bookCardsContainer.locator('.card');
-    const firstCard = bookCards.first();
-    await firstCard.click();
+    await expect(bookCardsContainer).toBeVisible();
+
+    const specificBookCard = page.locator('.card-link[href*="bookId=1"]');
+    await specificBookCard.click();
 
     // await expect(page).toHaveURL('http://localhost:3001/admin/displaySingleBook.html?bookId=1');
     await page.getByRole('button', { name: 'Update Book Categories' }).click();
@@ -244,6 +222,32 @@ test.describe('Admin Book Tests', () => {
       await dialog.dismiss(); 
     });
 
+  });
+
+  test('Delete Book', async ({ page }) => {
+    const bookCardsContainer = page.locator('#bookCardsContainer');
+    await expect(bookCardsContainer).toBeVisible();
+  
+    const specificBookCard = page.locator('.card-link[href*="bookId=1"]');
+    await specificBookCard.click();
+  
+    page.on('dialog', async (dialog) => {
+      if (dialog.message() === 'Are you sure you want to delete this book?') {
+        await dialog.accept(); // Accept the confirmation dialog
+      } else if (dialog.message() === 'Book successfully deleted') {
+        await dialog.dismiss(); // Dismiss the success alert 
+      } else {
+        throw new Error(`Unexpected dialog message: ${dialog.message()}`);
+      }
+    });
+  
+    await page.getByRole('button', { name: 'Delete Book' }).click();
+
+    await page.waitForTimeout(1000);  // Give the dialogs a moment to appear
+  
+    await page.waitForURL('http://localhost:3001/admin/displayAllBooks.html');
+    await expect(page).toHaveURL('http://localhost:3001/admin/displayAllBooks.html');
+  
   });
   
 });
