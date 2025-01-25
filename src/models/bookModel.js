@@ -181,6 +181,7 @@ module.exports.returnBook = (data) => {
                 ]).then(() => {
                     // Return the result with due fee information
                     return {
+                        rent_history_id: rentalRecord.id,
                         message: "Book returned successfully",
                         dueFee: isDue ? `$${dueFee} (Overdue by ${daysOverdue} days)` : "$0 (No overdue)",
                         daysOverdue: daysOverdue,

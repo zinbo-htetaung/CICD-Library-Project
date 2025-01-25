@@ -231,7 +231,7 @@ module.exports.rentBook = (req, res, next) => {
         });
 };
 
-module.exports.returnBook = (req, res) => {
+module.exports.returnBook = (req, res, next) => {
     const bookId = parseInt(req.params.bookId, 10);
     const userId = res.locals.user_id;
 
@@ -248,7 +248,10 @@ module.exports.returnBook = (req, res) => {
     // Call the returnBook function from the model
     model.returnBook({ bookId, userId })
         .then((result) => {
-            return res.status(200).json(result);
+            res.locals.rent_history_id = result.rent_history_id;
+            res.locals.returnResponse = result;
+            next();
+            // return res.status(200).json(result);
         })
         .catch((error) => {
             console.error("Error in returnBook controller:", error);

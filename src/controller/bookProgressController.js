@@ -171,3 +171,22 @@ module.exports.resetBookProgress = (req, res) => {
             res.status(500).json({ message: "Failed to update book progress." });
         });
 };
+
+module.exports.deleteBookProgress = (req, res, next) => {
+    const rentHistoryId = res.locals.rent_history_id;
+
+    if (!rentHistoryId) {
+        console.error("Missing rent history ID.");
+        return res.status(404).json({ message: "Rent history ID is required." });
+    }
+
+    model.deleteByRentHistoryId(rentHistoryId)
+        .then(() => {
+            console.log(`Book progress for rent_history_id ${rentHistoryId} deleted successfully.`);
+            res.status(200).json(res.locals.returnResponse); // Return the original response
+        })
+        .catch((error) => {
+            console.error("Error deleting book progress:", error);
+            res.status(200).json(res.locals.returnResponse); // Still return the original response even if deletion fails
+        });
+};

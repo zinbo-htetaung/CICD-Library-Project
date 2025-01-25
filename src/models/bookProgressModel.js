@@ -149,3 +149,12 @@ module.exports.updateProgress = (bookProgressId, progress, status) => {
         throw new Error("Failed to update book progress.");
     });
 };
+
+module.exports.deleteByRentHistoryId = (rentHistoryId) => {
+    return prisma.book_progress.deleteMany({
+        where: { rent_history_id: rentHistoryId }
+    }).catch((error) => {
+        console.error(`Error deleting book progress for rent_history_id ${rentHistoryId}:`, error);
+        throw new Error("Failed to delete book progress.");
+    });
+};
