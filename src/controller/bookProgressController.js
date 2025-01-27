@@ -99,7 +99,7 @@ module.exports.updateBookProgress = (req, res) => {
 
     model.updateProgress(bookProgressId, progress, status)
         .then(() => {
-            res.status(200).json({ message: `Book progress updated. Now at progress: ${progress}` });
+            res.status(200).json({ message: `Book progress now at: ${progress}` });
         })
         .catch((error) => {
             console.error("Error updating book progress:", error);

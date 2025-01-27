@@ -5,7 +5,7 @@ const bookProgressController = require('../controller/bookProgressController');
 const jwtMiddleware = require('../middleware/jwtMiddleware');
 
 router.get('/', jwtMiddleware.verifyToken, bookProgressController.retrieveAllBookProgress);
-router.get('/:id', jwtMiddleware.verifyToken , bookProgressController.retrieveSingleBookProgress);
+router.get('/:id', jwtMiddleware.verifyToken , bookProgressController.checkOwner, bookProgressController.retrieveSingleBookProgress);
 router.put('/update/:id', jwtMiddleware.verifyToken, bookProgressController.checkExistence, bookProgressController.checkOwner, bookProgressController.updateBookProgress);
 router.put('/complete/:id', jwtMiddleware.verifyToken, bookProgressController.checkExistence, bookProgressController.checkOwner, bookProgressController.completeBookProgress);
 router.put('/reset/:id', jwtMiddleware.verifyToken, bookProgressController.checkExistence, bookProgressController.checkOwner, bookProgressController.resetBookProgress);

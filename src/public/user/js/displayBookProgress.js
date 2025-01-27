@@ -53,9 +53,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Group books into sections
         const unread = bookProgresses.filter((book) => book.status === "Unread");
         const reading = bookProgresses.filter((book) => book.status === "Reading");
-        const completed = bookProgresses.filter(
-            (book) => book.status === "Completed"
-        );
+        const completed = bookProgresses.filter((book) => book.status === "Completed");
 
         renderBookProgressSection("Unread Books", unread, "unreadBookSection", false, true);
         renderBookProgressSection(
@@ -113,19 +111,19 @@ function renderBookProgressSection(
   
       const buttons = `
         <div class="mt-3 d-flex gap-2">
-          <button class="btn btn-warning btn-sm read-btn" data-id="${book.id}">
+          <button class="btn btn-warning read-btn" data-id="${book.id}">
             Read
           </button>
           ${
             showReset
-              ? `<button class="btn btn-danger btn-sm reset-btn" data-id="${book.id}">
+              ? `<button class="btn btn-danger reset-btn" data-id="${book.id}">
                   Reset
                 </button>`
               : ""
           }
           ${
             showFinish
-              ? `<button class="btn btn-primary btn-sm finish-btn" data-id="${book.id}">
+              ? `<button class="btn btn-primary finish-btn" data-id="${book.id}">
                   Finish Reading
                 </button>`
               : ""
