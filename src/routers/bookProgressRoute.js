@@ -9,4 +9,5 @@ router.get('/:id', jwtMiddleware.verifyToken , bookProgressController.checkOwner
 router.put('/update/:id', jwtMiddleware.verifyToken, bookProgressController.checkExistence, bookProgressController.checkOwner, bookProgressController.updateBookProgress);
 router.put('/complete/:id', jwtMiddleware.verifyToken, bookProgressController.checkExistence, bookProgressController.checkOwner, bookProgressController.completeBookProgress);
 router.put('/reset/:id', jwtMiddleware.verifyToken, bookProgressController.checkExistence, bookProgressController.checkOwner, bookProgressController.resetBookProgress);
+router.get('/share/:id', jwtMiddleware.verifyToken, bookProgressController.checkExistence, bookProgressController.checkOwner, bookProgressController.checkCompleteProgress);
 module.exports=router;

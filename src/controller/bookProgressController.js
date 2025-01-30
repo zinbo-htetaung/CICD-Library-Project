@@ -1,3 +1,4 @@
+const { encode } = require("punycode");
 const model = require("../models/bookProgressModel.js");
 
 module.exports.retrieveAllBookProgress = (req, res) => {
@@ -189,4 +190,55 @@ module.exports.deleteBookProgress = (req, res, next) => {
             console.error("Error deleting book progress:", error);
             res.status(200).json(res.locals.returnResponse); // Still return the original response even if deletion fails
         });
+};
+
+module.exports.checkCompleteProgress = (req, res, next) => {
+    const bookProgressId = parseInt(req.params.id, 10);
+
+    if (isNaN(bookProgressId)) {
+        return res.status(400).json({ message: "Invalid book progress ID." });
+    }
+
+    model.retrieveSingle(bookProgressId)
+        .then((bookProgress) => {
+            if (!bookProgress) {
+                return res.status(404).json({ message: "Book progress record not found." });
+            }
+            if (bookProgress.status != "Completed") {
+                return res.status(403).json({ message: "Please read your book fully before you can share" });
+            }
+            return res.status(200).json({ bookProgress });
+        })
+        .catch((error) => {
+            console.error("Error fetching book progress record:", error);
+            res.status(500).json({ message: "Failed to retrieve the book progress record." });
+        });
+};
+
+module.exports.shareProgressOnTwitter = (req, res) => {
+    console.log(res.locals.bookProgress);
+    const bookProgress = res.locals.bookProgress;
+    const bookName = encodeURIComponent(bookProgress.book_name);
+    const bookId = encodeURIComponent(bookProgress.id);
+    const author = encodeURIComponent(bookProgress.author);
+    const appName = encodeURIComponent("Vaselene Library");
+
+    const shareUrl = `https://x.com/intent/tweet?text=I just completed reading "${bookName}" by ${author}! Check it out on ${appName}.&url=https://vaselene-library-bragatg9f4d6e3cu.southeastasia-01.azurewebsites.net/general/html/displaySingleBook.html?bookId=${bookId}`;
+    res.redirect(shareUrl);
+};
+
+module.exports.shareProgressOnGamil = (req,res) => {
+    const bookProgress = res.locals.bookProgress;
+    const bookName = encodeURIComponent(bookProgress.book_name);
+    const bookId = encodeURIComponent(bookProgress.id);
+    const author = encodeURIComponent(bookProgress.author);
+    const appName = encodeURIComponent("Vaselene Library");
+
+    const body = encodeURIComponent(
+      `I just completed reading "${bookName}" by ${author}! Check it out here ${appName} - https://vaselene-library-bragatg9f4d6e3cu.southeastasia-01.azurewebsites.net/general/html/displaySingleBook.html?bookId=${bookId}`
+    );
+    const subject = encodeURIComponent("I Finished a Great Book!");
+    const shareUrl = `https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=&su=${subject}&body=${body}`;
+  
+    res.redirect(shareUrl);
 };
