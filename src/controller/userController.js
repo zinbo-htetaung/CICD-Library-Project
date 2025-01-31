@@ -36,9 +36,9 @@ module.exports.register = (req, res, next) => {
         password: res.locals.hash,
         address: req.body.address,
         dob: req.body.dob,
-        avatar: "https://api.dicebear.com/9.x/initials/svg?seed="+(req.body.name).toString().toUpperCase()+"&scale=50&radius=50"
+        avatar: "https://api.dicebear.com/9.x/initials/svg?seed="+(req.body.name.replace(/\s+/g, '')).toString().toUpperCase()+"&scale=50&radius=50"
     };
-
+    console.log(data)
     model.insertSingle(data, (error, result) => {
         if (error) {
             console.error("Error during registration:", error);

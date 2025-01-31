@@ -31,7 +31,7 @@ async function fetchProfileData() {
 // Display the fetched profile data in the DOM
 function displayProfile(data) {
     const profile = data.profile;
-
+    console.log(profile)
     // Update visible profile fields
     document.getElementById('profileName').textContent = profile.name;
     document.getElementById('profileEmail').textContent = profile.email;
@@ -41,6 +41,9 @@ function displayProfile(data) {
     // Update profile picture
     const pfpImages = document.getElementsByClassName('pfpImg');
     Array.from(pfpImages).forEach(img => img.setAttribute('src', profile.avatar));
+
+    const initImg = document.getElementById('initImg');
+    initImg.setAttribute('src', "https://api.dicebear.com/9.x/initials/svg?seed="+(profile.name.replace(/\s+/g, '')).toString().toUpperCase()+"&scale=50&radius=50")
 
     // Pre-fill the update modal with current profile values
     document.getElementById('modalProfileName').value = profile.name;

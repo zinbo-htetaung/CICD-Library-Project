@@ -2,12 +2,12 @@ const { test, expect } = require('@playwright/test');
 
 const appBaseURL = 'http://localhost:3001'; // Replace with your actual base URL if different
 const loginURL = appBaseURL + '/general/html/login.html';
-const defaultUserNamePsw = {name:"tester",address:'address', email: 'tester@gmail.com', password: 'tester' };
+const defaultUserNamePsw = {name:"bobb@gmail.com",address:'bobb@gmail.com', email: 'bobb@gmail.com', password: 'bobb@gmail.com' };
 const updatedInfo = {
-    name: 'update-name',
-    email: 'updated@gmail.com',
-    address: 'updated address',
-    password: 'updated',
+    name: 'bobb@gmail.com',
+    email: 'bobb@gmail.com',
+    address: 'bobb@gmail.com',
+    password: 'bobb@gmail.com',
 };
 
 
