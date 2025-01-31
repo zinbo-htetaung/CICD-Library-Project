@@ -51,6 +51,7 @@ model book {
   book_progress    book_progress[]
   rent_history     rent_history[]
   review           review[]
+  Queue Queue[]
 }
 
 model book_category {
@@ -123,6 +124,19 @@ model users {
   rent_history  rent_history[]
   review        review[]
   user_status   user_status[]
+  Queue Queue[]
+}
+
+model Queue {
+  id            Int       @id @default(autoincrement())
+  user_id       Int
+  book_id       Int
+  queue_number  Int
+  is_next       Boolean  @default(false)
+  created_at    DateTime @default(now())
+  users          users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  book          book     @relation(fields: [book_id], references: [id], onDelete: Cascade)
+  @@unique([book_id, queue_number]) // Ensures queue numbers are unique per book
 }
 
 model book_progress {
