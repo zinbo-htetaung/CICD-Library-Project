@@ -127,3 +127,37 @@ module.exports.removeQueueByUserIdAndQueueId = async (userId, queueId) => {
         throw new Error(`Failed to remove queue record and update queue numbers due to a database error.`);
     }
 };
+
+module.exports.retrieveQueueByBookId = async (bookId) => {
+    try {
+        // Fetch queue records for the given book_id
+        const queueEntries = await prisma.queue.findMany({
+            where: { book_id: bookId },
+            include: {
+                user: true, // Include user details
+            },
+            orderBy: {
+                queue_number: 'asc', // Order by queue position
+            },
+        });
+
+        // Check if any records were found
+        if (!queueEntries || queueEntries.length === 0) {
+            console.warn(`No queue records found for book_id ${bookId}.`);
+            return [];
+        }
+
+        // Map to return the desired fields
+        return queueEntries.map((queue) => ({
+            queue_id: queue.id,
+            user_id: queue.user.id,
+            user_name: queue.user.name,
+            queue_number: queue.queue_number,
+            is_next: queue.is_next, // Boolean flag indicating if the user is next
+            created_at: queue.created_at,
+        }));
+    } catch (error) {
+        console.error(`Error occurred while retrieving queue records for book_id ${bookId}:`, error.message);
+        throw new Error(`Failed to retrieve queue records for book_id ${bookId} due to a database error.`);
+    }
+};
