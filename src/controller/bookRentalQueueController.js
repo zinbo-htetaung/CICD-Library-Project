@@ -3,8 +3,8 @@ module.exports.createQueueEntry = async (req, res, next) => {
     try {
         let userId = res.locals.user_id;
         // let userId = parseInt(req.params.id); // Get user_id from URL params
-        let book_id  = parseInt(req.body.book_id)1; // Extract book_id from request body
-
+        let book_id  = parseInt(req.body.bookId); // Extract book_id from request body
+        console.log(book_id);
         if (!book_id) {
             return res.status(400).json({ message: "Book ID is required to join the queue." });
         }
@@ -46,7 +46,7 @@ module.exports.retrieveQueueByUserId = async (req, res, next) => {
 module.exports.removeQueueByUserIdAndQueueId = async (req, res, next) => {
     try {
         let userId = res.locals.user_id;
-        let { queue_id } = req.params; // Get queue_id from URL params
+        let queue_id  = req.body.queueId; // Get queue_id from URL params
 
         if (!queue_id) {
             return res.status(400).json({ message: "Queue ID is required to remove a queue entry." });
@@ -67,6 +67,7 @@ module.exports.removeQueueByUserIdAndQueueId = async (req, res, next) => {
 
 module.exports.retrieveQueueByBookId = async (req, res, next) => {
     try {
+        console.log("queue");
         let bookId = parseInt(req.params.book_id); // Get book_id from URL params
 
         if (!bookId) {
@@ -78,7 +79,8 @@ module.exports.retrieveQueueByBookId = async (req, res, next) => {
         if (!queue || queue.length === 0) {
             return res.status(404).json({ message: "No queue records found for this book." });
         }
-
+        console.log(queue);
+        console.log("queue");
         return res.status(200).json({ queue });
     } catch (error) {
         console.error("Error in retrieveQueueByBookId controller:", error);

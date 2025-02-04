@@ -11,7 +11,7 @@ const bookRequestRoute = require('./routers/bookRequestRoute');
 const rentHistoryRoute = require('./routers/rentHistoryRoute');
 const sendEmailRoute = require('./routers/sendEmailRoute');
 const adminInsightsRoute = require('./routers/adminInsightsRoute')
-const bookRentalQueueRoute=require('./routers/bookRentalQueueRouter');
+const bookRentalQueueRoute=require('./routers/bookRentalQueueRoute');
 const path = require('path');
 
 const app = express();

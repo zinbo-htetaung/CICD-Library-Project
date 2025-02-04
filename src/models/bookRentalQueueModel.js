@@ -134,7 +134,7 @@ module.exports.retrieveQueueByBookId = async (bookId) => {
         const queueEntries = await prisma.queue.findMany({
             where: { book_id: bookId },
             include: {
-                user: true, // Include user details
+                users: true, // Include user details
             },
             orderBy: {
                 queue_number: 'asc', // Order by queue position
@@ -150,8 +150,8 @@ module.exports.retrieveQueueByBookId = async (bookId) => {
         // Map to return the desired fields
         return queueEntries.map((queue) => ({
             queue_id: queue.id,
-            user_id: queue.user.id,
-            user_name: queue.user.name,
+            user_id: queue.users.id,
+            user_name: queue.users.name,
             queue_number: queue.queue_number,
             is_next: queue.is_next, // Boolean flag indicating if the user is next
             created_at: queue.created_at,
