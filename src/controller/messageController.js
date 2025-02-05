@@ -26,16 +26,18 @@ module.exports.getMessageById = async (req, res) => {
     }
 };
 
+
 module.exports.createMessage = async (req, res) => {
     const { userId, sender, message, replyToId } = req.body;
 
     if (!userId || !sender || !message) {
         return res.status(400).json({ message: 'Required fields are missing' });
     }
-
+    let intUserId = parseInt(userId);
+    console.log(intUserId);
     try {
         const newMessage = await model.createMessage({
-            userId,
+            intUserId,
             sender,
             message,
             replyToId,
@@ -69,5 +71,16 @@ module.exports.deleteMessage = async (req, res) => {
     } catch (error) {
         console.error('Error deleting message:', error);
         res.status(500).json({ error: error.message });
+    }
+};
+
+module.exports.getMessageByUserId = async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const message = await model.getMessageByUserId(parseInt(userId));
+        res.status(200).json({ message });
+    } catch (error) {
+        console.error('Error retrieving message by ID:', error);
+        res.status(404).json({ error: error.message });
     }
 };

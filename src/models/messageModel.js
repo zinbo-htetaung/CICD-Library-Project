@@ -40,13 +40,24 @@ module.exports.getMessageById = async (id) => {
 };
 
 module.exports.createMessage = async (data) => {
+    const user = await prisma.users.findMany({ where: { id: data.intUserId } });
+
+    if (!user) {
+        throw new Error("User not found!");
+    }
     try {
         const newMessage = await prisma.message.create({
-            data,
+            data: {
+                userId: parseInt(data.intUserId), // ✅ Ensure `userId` is an integer
+                sender: data.sender,
+                message: data.message,
+                replyToId: data.replyToId || null, // ✅ Ensure `replyToId` is set properly
+            }
         });
+
         return newMessage;
     } catch (error) {
-        console.error('Error creating message:', error);
+        console.error("Error creating message:", error);
         throw error;
     }
 };
@@ -72,6 +83,19 @@ module.exports.deleteMessage = async (id) => {
         return { message: 'Message deleted successfully' };
     } catch (error) {
         console.error('Error deleting message:', error);
+        throw error;
+    }
+};
+
+module.exports.getMessageByUserId = async (userId) => {
+    try {
+        const messages = await prisma.message.findMany({
+            where: { userId },
+            orderBy: { createdAt: "asc" }, // Order messages chronologically
+        });
+        return messages;
+    } catch (error) {
+        console.error("Error fetching messages:", error);
         throw error;
     }
 };
