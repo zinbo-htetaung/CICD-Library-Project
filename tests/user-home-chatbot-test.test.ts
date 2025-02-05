@@ -56,7 +56,7 @@ test.describe('Library System Flow', () => {
   });
 
   test('Should be able to login as a user', async ({ page }) => {
-    expect(page).toHaveURL('http://localhost:3001/user/html/home.html');
+    await expect(page).toHaveURL('http://localhost:3001/user/html/home.html');
   });
 
   test('Should open chatbot, interact, and navigate to book details', async ({ page }) => {
