@@ -39,6 +39,15 @@
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="profileActionsDropdown">
                             <li>
+                                <button type="button" data-bs-toggle="modal" data-bs-target="#updateModal"
+                        class="dropdown-item" >Update Info</button>
+                            </li>
+                            <li>
+                                <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#chgPfpPic">
+                                    Change Profile picture
+                                </button>
+                            </li>
+                            <li>
                                 <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#chgPwModal">
                                     Change Password
                                 </button>
@@ -54,7 +63,8 @@
                 </div>
                 <div class="px-2 py-2">
                     <div class="d-flex justify-content-center">
-                        <img src="https://api.dicebear.com/9.x/adventurer/svg?hair=long01,long02,long03"
+                        <img class="pfpImg rounded-circle border border-2"
+                            src="https://api.dicebear.com/9.x/icons/svg?seed=Vivian&backgroundColor=9fa8da&icon=book&radius=50"
                             class="img-fluid rounded-circle border border-2" alt="avatar.jpg" style="width: 150px;">
                     </div>
                     <div class=" mt-4">
@@ -103,12 +113,6 @@
 
                     </div>
 
-                </div>
-                <div class="d-flex justify-content-center align-items-center mt-4 mb-2">
-                    <button type="button" data-bs-toggle="modal" data-bs-target="#updateModal"
-                        class="btn border-2 border-black p-2 fw-bold mx-3  text-center"
-                        style="width: 200px;background-color: #DBE2EF;">Update Profile <i
-                            class="bi bi-pen-fill ms-1"></i></button>
                 </div>
             </div>
         </div>
@@ -181,6 +185,69 @@
 
         </div>
 
+        <!-- Modal for Change Profile Picture -->
+        <div class="modal fade" id="chgPfpPic" tabindex="-1" aria-labelledby="chgPfpPicLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="chgPfpPicLabel">Change Profile Picture</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-center fs-6">Select a new profile picture</p>
+                        <div class="d-flex flex-wrap gap-2 justify-content-center">
+                            <!-- Images for selection -->
+                            <div class="container">
+                                <div class="row mb-3">
+                                    <!-- Row 1 -->
+                                    <div class="col-md-4 d-flex justify-content-center">
+                                        <img class="profile-pic-option rounded-circle border border-2" src="https://api.dicebear.com/9.x/adventurer/svg?seed=Kingston&scale=80&radius=50&hairProbability=85&backgroundColor=c0aede" alt="Profile Pic 1"
+                                            style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent;"
+                                            onclick="selectProfilePic(this)">
+                                    </div>
+                                    <div class="col-md-4 d-flex justify-content-center">
+                                        <img class="profile-pic-option rounded-circle border border-2" src="https://api.dicebear.com/9.x/adventurer/svg?seed=Jocelyn&scale=80&radius=50&featuresProbability=15&hairProbability=85&backgroundColor=c0aede,b6e3f4,d1d4f9" alt="Profile Pic 2"
+                                            style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent;"
+                                            onclick="selectProfilePic(this)">
+                                    </div>
+                                    <div class="col-md-4 d-flex justify-content-center">
+                                        <img class="profile-pic-option rounded-circle border border-2" src="https://api.dicebear.com/9.x/adventurer/svg?seed=Vivian&scale=80&radius=50&featuresProbability=15&hairProbability=85&backgroundColor=c0aede,b6e3f4,d1d4f9" alt="Profile Pic 3"
+                                            style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent;"
+                                            onclick="selectProfilePic(this)">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <!-- Row 2 -->
+                                    <div class="col-md-4 d-flex justify-content-center">
+                                        <img class="profile-pic-option rounded-circle border border-2" src="https://api.dicebear.com/9.x/adventurer/svg?seed=Aidan&scale=80&radius=50&featuresProbability=15&hairProbability=85&backgroundColor=c0aede,b6e3f4,d1d4f9" alt="Profile Pic 4"
+                                            style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent;"
+                                            onclick="selectProfilePic(this)">
+                                    </div>
+                                    <div class="col-md-4 d-flex justify-content-center">
+                                        <img class="profile-pic-option rounded-circle border border-2" src="https://api.dicebear.com/9.x/adventurer/svg?seed=Maria&scale=80&radius=50&backgroundColor=c0aede" alt="Profile Pic 5"
+                                            style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent;"
+                                            onclick="selectProfilePic(this)">
+                                    </div>
+                                    <div class="col-md-4 d-flex justify-content-center">
+                                        <img class="profile-pic-option  rounded-circle border border-2" src="" alt="Profile Pic 6"
+                                            style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent;" id="initImg"
+                                            onclick="selectProfilePic(this)">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="submitProfilePicBtn"
+                            >Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <!-- Update Modal -->
         <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -189,25 +256,27 @@
                         <h5 class="modal-title" id="updateModalLabel">Update Profile</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="modalProfileName" class="form-label">Name:</label>
-                            <input type="text" class="form-control" id="modalProfileName">
+                    <form>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="modalProfileName" class="form-label" required>Name:</label>
+                                <input type="text" class="form-control" id="modalProfileName">
+                            </div>
+                            <div class="mb-3">
+                                <label for="modalProfileEmail" class="form-label" required>Email:</label>
+                                <input type="email" class="form-control" id="modalProfileEmail">
+                            </div>
+                            <div class="mb-3">
+                                <label for="modalProfileAddress" class="form-label" required>Address:</label>
+                                <textarea class="form-control" id="modalProfileAddress"></textarea>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="modalProfileEmail" class="form-label">Email:</label>
-                            <input type="email" class="form-control" id="modalProfileEmail">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn border-2 border-black" id="updateButton"
+                                style="background-color: #DBE2EF !important;">Save Changes</button>
                         </div>
-                        <div class="mb-3">
-                            <label for="modalProfileAddress" class="form-label">Address:</label>
-                            <textarea class="form-control" id="modalProfileAddress"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn border-2 border-black" id="updateButton"
-                            style="background-color: #DBE2EF !important;">Save Changes</button>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -275,15 +344,17 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
         integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
         crossorigin="anonymous"></script>
+      
 
     <script src="../js/authUser.js"></script>
+    <script src="../js/updateProfile.js" type="text/javascript"></script>
+    <script src="../js/changeProfilePic.js" type="text/javascript"></script>
     <script src="../js/getProfileInfo.js" type="text/javascript"></script>
     <script src="../js/changePassword.js" type="text/javascript"></script>
     <script src="../js/deleteUser.js" type="text/javascript"></script>
     <script src="../js/getUserRentHistory.js" type="text/javascript"></script>
     <script src="../js/getUserReview.js" type="text/javascript"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <script src="../js/updateProfile.js" type="text/javascript"></script>
     <div id="footer-container"></div>
 </body>
 

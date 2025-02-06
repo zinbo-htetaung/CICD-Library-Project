@@ -48,17 +48,18 @@ model book {
   no_of_copies     Int
   available_copies Int
   book_category    book_category[]
+  book_progress    book_progress[]
   rent_history     rent_history[]
   review           review[]
-  book_progress    book_progress[] 
+  Queue Queue[]
 }
 
 model book_category {
   id          Int      @id @default(autoincrement())
   book_id     Int
   category_id Int
-  book        book     @relation(fields: [book_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  category    category @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  book        book     @relation(fields: [book_id], references: [id], onDelete: Cascade)
+  category    category @relation(fields: [category_id], references: [id], onDelete: Cascade)
 }
 
 model book_request {
@@ -67,7 +68,7 @@ model book_request {
   author       String?  @db.VarChar
   book_name    String   @db.VarChar
   requested_on DateTime @default(now()) @db.Timestamp(6)
-  users        users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users        users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model category {
@@ -77,16 +78,16 @@ model category {
 }
 
 model rent_history {
-  id          Int       @id @default(autoincrement())
-  book_id     Int
-  user_id     Int
-  start_date  DateTime  @db.Date
-  end_date    DateTime  @db.Date
-  return_date DateTime? @db.Date
-  due_status  Boolean?  
-  book        book      @relation(fields: [book_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  users       users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  book_progress book_progress[] 
+  id            Int            @id @default(autoincrement())
+  book_id       Int
+  user_id       Int
+  start_date    DateTime       @db.Date
+  end_date      DateTime       @db.Date
+  return_date   DateTime?      @db.Date
+  due_status    Boolean?
+  book_progress book_progress?
+  book          book           @relation(fields: [book_id], references: [id], onDelete: Cascade)
+  users         users          @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model review {
@@ -96,8 +97,8 @@ model review {
   rating      Int
   review_text String?   @db.VarChar
   posted_on   DateTime? @default(now()) @db.Timestamp(6)
-  book        book      @relation(fields: [book_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  users       users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  book        book      @relation(fields: [book_id], references: [id], onDelete: Cascade)
+  users       users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model user_status {
@@ -106,39 +107,50 @@ model user_status {
   reputation         Int   @default(100)
   current_book_count Int
   max_book_count     Int
-  users              users @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users              users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model users {
-  id           Int            @id @default(autoincrement())
-  name         String         @db.VarChar @unique
-  email        String         @db.VarChar @unique
-  password     String         @db.VarChar
-  address      String         @db.VarChar
-  dob          DateTime       @db.Date
-  role         String
-  book_request book_request[]
-  rent_history rent_history[]
-  review       review[]
-  user_status  user_status[]
+  id            Int             @id @default(autoincrement())
+  name          String          @unique @db.VarChar
+  email         String          @unique @db.VarChar
+  password      String          @db.VarChar
+  address       String          @db.VarChar
+  dob           DateTime        @db.Date
+  role          String?
+  avatar        String?
   book_progress book_progress[]
-  messages     Message[] @relation("UserMessages")
+  book_request  book_request[]
+  rent_history  rent_history[]
+  review        review[]
+  user_status   user_status[]
+  Queue Queue[]
+   messages     Message[] @relation("UserMessages")
+}
 
+model Queue {
+  id            Int       @id @default(autoincrement())
+  user_id       Int
+  book_id       Int
+  queue_number  Int
+  is_next       Boolean  @default(false)
+  created_at    DateTime @default(now())
+  users          users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  book          book     @relation(fields: [book_id], references: [id], onDelete: Cascade)
+  @@unique([book_id, queue_number]) // Ensures queue numbers are unique per book
 }
 
 model book_progress {
-  id              Int         @id @default(autoincrement())
-  rent_history_id Int
+  id              Int          @id @default(autoincrement())
+  rent_history_id Int          @unique
   user_id         Int
   book_id         Int
-  progress        Float       @default(0)
-  status          String      @default("Unread") @db.VarChar
-  last_updated    DateTime    @default(now()) @updatedAt
-  rent_history    rent_history @relation(fields: [rent_history_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  users           users       @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  book            book        @relation(fields: [book_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-  @@unique([rent_history_id]) 
+  progress        Float        @default(0)
+  status          String       @default("Unread") @db.VarChar
+  last_updated    DateTime     @default(now()) @updatedAt
+  book            book         @relation(fields: [book_id], references: [id], onDelete: Cascade)
+  rent_history    rent_history @relation(fields: [rent_history_id], references: [id], onDelete: Cascade)
+  users           users        @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model Message {

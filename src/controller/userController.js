@@ -37,7 +37,11 @@ module.exports.register = (req, res, next) => {
         password: res.locals.hash,
         address: req.body.address,
         dob: req.body.dob,
+        avatar: "https://api.dicebear.com/9.x/initials/svg?seed="+(req.body.name.replace(/\s+/g, '')).toString().toUpperCase()+"&scale=50&radius=50"
     };
+
+    console.log(data)
+
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;        // validate email regex
 
@@ -46,6 +50,7 @@ module.exports.register = (req, res, next) => {
     if (!emailRegex.test(data.email) || !isValidDate) {
         return res.status(400).json({ message: "Please input correct type of data" });
     }
+
 
     model.insertSingle(data, (error, result) => {
         if (error) {
@@ -178,14 +183,27 @@ module.exports.checkDuplicateEmail = (req, res, next) => {
                 return res.status(401).json({ message: 'User with this email already exist' });
             }
 
-            next();
-        })
-        .catch(function (error) {
-            return res.status(500).json({ message: error.message });
-        });
-}
+    console.log("User ID:", userId);
+    console.log("Email to check:", email);
 
-module.exports.updateProfileInfo = (req, res) => {
+    try {
+        const user = await model.checkEmailToUpdate(email, userId);
+
+        if (user) {
+            console.log("User with this email already exists");
+            return res.status(401).json({ message: "User with this email already exists" });
+        }
+
+        console.log("No duplicate email found");
+        next(); // Proceed to the next middleware
+    } catch (error) {
+        console.error("Error checking duplicate email:", error);
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+
+module.exports.updateProfileInfo = async (req, res) => {
     const userId = res.locals.user_id;
 
 
@@ -201,9 +219,13 @@ module.exports.updateProfileInfo = (req, res) => {
         email: req.body.email,
         address: req.body.address
     }
-    model.updateProfileInfo(data)
+    console.log(data)
+    await model.updateProfileInfo(data)
         .then(() => {
-            res.status(200).json({ message: "Profile updated successfully" });
+
+            console.log("updated")
+            return res.status(200).json({ message:"Profile updated successfully" });
+
         })
         .catch(error => {
             if (error.message === 'User not found') {
@@ -332,6 +354,43 @@ module.exports.banUser = (req, res) => {
             console.error("Error deleting user:", error);
             return res.status(500).json({ message: "Internal server error" });
         });
+};
+
+
+module.exports.updateProfilePicture = async (req, res) => {
+    const userId = res.locals.user_id; // Assuming user ID is extracted from auth middleware or session
+
+    if (!userId) {
+        return res.status(400).json({ message: "User ID not found in token" });
+    }
+
+    const { avatar } = req.body;
+
+    // Validate the avatar URL
+    if (!avatar || typeof avatar !== 'string') {
+        return res.status(400).json({ message: "Invalid avatar URL" });
+    }
+
+    try {
+        // Data to pass to the model
+        const data = { user_id: userId, avatar };
+
+        // Call the model function to update the profile picture
+        const result = await model.updateProfilePicture(data);
+        console.log("updated pfp")
+        // Respond with success
+        return res.status(200).json({
+            message: "Profile picture updated successfully",
+            profile: result, // Assuming the model returns the updated user profile
+        });
+    } catch (error) {
+        console.log("updated pfp---error")
+
+        if (error.message === 'User not found') {
+            return res.status(404).json({ message: "User not found" });
+        }
+        return res.status(500).json({ error: "An unexpected error occurred" });
+    }
 };
 
 module.exports.getUserByID = async  (req, res) => {

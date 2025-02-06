@@ -26,13 +26,13 @@ module.exports.checkExistence = (data, callback) => {
 
 module.exports.insertSingle = (data, callback) => {
     const SQL_USER_INSERT = `
-    INSERT INTO users (name, email, password, address, dob, role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id;
+    INSERT INTO users (name, email, password, address, dob, role,avatar) VALUES ($1, $2, $3, $4, $5, $6,$7) RETURNING id;
     `;
     const SQL_USER_STATS_INSERT = `
     INSERT INTO user_status (user_id, reputation, current_book_count, max_book_count) VALUES ($1, $2, $3, $4);
     `;
 
-    const USER_VALUES = [data.name, data.email, data.password, data.address, data.dob, "user"];
+    const USER_VALUES = [data.name, data.email, data.password, data.address, data.dob, "user",data.avatar];
 
     // Use a single connection for the transaction
     pool.connect((err, client, release) => {
@@ -123,6 +123,19 @@ module.exports.checkEmailToUpdate = async function checkEmail(email, userId) {
     return user || null; // Return the user or null if no match
 };
 
+module.exports.checkNameToUpdate = async function checkEmail(name, userId) {
+    const user = await prisma.users.findFirst({
+        where: {
+            name: name,
+            NOT: {
+                id: userId,
+            },
+        },
+    });
+    return user || null; // Return the user or null if no match
+};
+
+
 
 module.exports.getProfileInfo = async function getProfileInfo(userId) {
     try {
@@ -135,7 +148,6 @@ module.exports.getProfileInfo = async function getProfileInfo(userId) {
                 rent_history: true // include rent history to count rented books
             }
         });
-
         if (!user) {
             throw new Error('User not found');
         }
@@ -152,6 +164,7 @@ module.exports.getProfileInfo = async function getProfileInfo(userId) {
             email: user.email,
             address: user.address,
             dob: user.dob,
+            avatar:user.avatar,
             reputation: user.user_status?.reputation || null,
             current_book_count: user.user_status?.current_book_count || null,
             max_book_count: user.user_status?.max_book_count || null,
@@ -182,28 +195,30 @@ module.exports.getAllUsers = (callback) => {
     pool.query(SQL_STATEMENT, [], callback);
 };
 
-module.exports.updateProfileInfo=(data)=>{
-    return prisma.users.update({
-        where: {
-            id: parseInt(data.user_id,10), 
-        },
-        data: {
-            name: data.name,
-            email: data.email,
-            address: data.address
-        }
-    })
-    .then(updateProfile  => {
-        console.log("Updated book:", updateProfile);
-        return updateProfile; 
-    })
-    .catch(error => {
+module.exports.updateProfileInfo = async (data) => {
+    try {
+        const updatedProfile = await prisma.users.update({
+            where: {
+                id: parseInt(data.user_id, 10),
+            },
+            data: {
+                name: data.name,
+                email: data.email,
+                address: data.address,
+            },
+        });
+
+        return updatedProfile; // Return the updated profile on success
+    } catch (error) {
         if (error.code === 'P2025') {
-            throw new Error('User not found'); 
+            // Handle case when the user is not found
+            throw new Error('User not found');
         }
-        throw error; 
-    });
-}
+        // Re-throw any other errors
+        throw error;
+    }
+};
+
 
 module.exports.getPassword = async (userId)=> {
     return prisma.users.findUnique({
@@ -303,6 +318,36 @@ module.exports.banUser = (userId) => {
             }
             throw error; // Other errors
         });
+};
+
+
+
+module.exports.updateProfilePicture = async (data) => {
+    const { user_id, avatar } = data;
+
+    try {
+        // Update the avatar for the specified user
+        const updatedUser = await prisma.users.update({
+            where: { id: user_id },
+            data: { avatar: avatar },
+        });
+
+        // Return the updated user's profile
+        return {
+            id: updatedUser.id,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            avatar: updatedUser.avatar,
+        };
+    } catch (error) {
+        // Check for "record not found" error (Prisma-specific error code)
+        if (error.code === 'P2025') {
+            throw new Error('User not found');
+        }
+
+        console.error('Error in updateProfilePicture model:', error);
+        throw new Error('Database error');
+    }
 };
 
 module.exports.getUserByID = async (userId) => {
