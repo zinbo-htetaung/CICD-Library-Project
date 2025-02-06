@@ -4,7 +4,7 @@ const reviewController = require('../controller/reviewController');
 const jwtMiddleware = require('../middleware/jwtMiddleware');
 
 router.post('/:bookId', jwtMiddleware.verifyToken, reviewController.checkBookExists, reviewController.checkRentHistory, reviewController.checkExistingReview, reviewController.createReview);
-router.get('/user', reviewController.retrieveReviewsByUserId);
+router.get('/user',jwtMiddleware.verifyToken, reviewController.retrieveReviewsByUserId);
 router.get('/:bookId/filter', reviewController.filterReviews);
 router.get('/checkReadStatus/:bookId', jwtMiddleware.verifyToken, reviewController.checkReadStatus);
 router.get('/:bookId', reviewController.retrieveReviewsByBookId);

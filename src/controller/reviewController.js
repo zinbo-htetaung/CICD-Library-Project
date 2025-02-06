@@ -97,8 +97,7 @@ module.exports.getAverageRatingForBook = (req, res, next) => {
 };
 
 module.exports.retrieveReviewsByUserId = (req, res, next) => {
-    res.locals.user_id = 1; // Simulated user ID for example
-    const userId = res.locals.user_id;
+    const userId =res.locals.user_id;
 
     if (!userId) {
         return res.status(400).json({ message: "User ID not found in token" });

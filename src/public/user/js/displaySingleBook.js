@@ -159,6 +159,7 @@ function fetchAverageRating(bookId) {
 }
 
 // Modified function to display book details
+// Modified function to display book details
 async function displayBookDetails(book) {
   const container = document.getElementById('bookDetailsContainer');
   try {
@@ -168,7 +169,6 @@ async function displayBookDetails(book) {
       .join('');
 
     const readStatus = await fetchReadStatus(getBookIdFromURL());
-
     console.log(readStatus);
 
     let statusIcon = '';
@@ -191,8 +191,30 @@ async function displayBookDetails(book) {
         feedbackMessage = "User is not logged in.";
     }
 
+    let availableCopiesStyle = book.available_copies === 0 ? "color: red;" : "";
+    let queueInfo = "";
+    let userId = localStorage.getItem("user_id");
+    let userQueueId = null;
+
+    if (book.available_copies === 0) {
+      const queueData = await fetchQueueInfo(getBookIdFromURL());
+      const userQueueEntry = queueData.queue.find(person => person.user_id == userId);
+      userQueueId = userQueueEntry ? userQueueEntry.queue_id : null;
+      
+      queueInfo = `<div class="d-inline-flex align-items-center mb-2" data-bs-toggle="modal" data-bs-target="#queueModal" style="cursor: pointer;">
+                      <p class="text-black font-bold fs-5 bg-white border border-danger border-3 rounded-circle d-flex justify-content-center align-items-center m-0" style="width: 30px; height: 30px;">
+                        ${queueData.queue.length}
+                      </p>
+                      <p class="d-inline m-0 ms-2 text-decoration-underline">people in queue!</p>
+                   </div>`;
+      
+      queueInfo += userQueueId
+        ? `<p class='m-0'>Leave the queue now!</p><button type="button" class="btn btn-danger d-block" id="leaveQueueButton" data-queue-id="${userQueueId}">Leave Queue</button>`
+        : `<p class="m-0">Join queue now before anyone else does!</p><button type="button" class="btn btn-primary d-block" id="joinQueueButton">Join Queue</button>`;
+    }
+
     container.innerHTML = `
-      <div class="card mb-4" id ="bookDetailsCard">
+      <div class="card mb-4" id="bookDetailsCard">
         <div class="row g-0" id="innerBookDetails">
           <div class="col-md-8">
             <div class="card-body">
@@ -200,7 +222,7 @@ async function displayBookDetails(book) {
               <h6 class="card-subtitle mb-2 text-muted">By: ${book.author}</h6><br>
               <p class="card-text"><strong>Description:</strong> ${book.description}</p>
               <p class="card-text"><strong>Total Copies:</strong> ${book.no_of_copies}</p>
-              <p class="card-text"><strong>Available Copies:</strong> ${book.available_copies}</p>
+              <p class="card-text" style="${availableCopiesStyle}"><strong>Available Copies:</strong> ${book.available_copies}${queueInfo}</p>
               <p class="card-text"><strong>Average Rating:</strong> ${averageRating}</p>
               <p class="card-text"><strong>Categories:</strong></p>
               <ul>${categoriesList}</ul>
@@ -216,30 +238,94 @@ async function displayBookDetails(book) {
       </div>
     `;
 
-    const iconContainer = document.getElementById('iconContainer');
-    iconContainer.addEventListener('mouseover', () => {
-      const tooltip = document.createElement('div');
-      tooltip.id = 'statusTooltip';
-      tooltip.style.position = 'absolute';
-      tooltip.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-      tooltip.style.color = 'white';
-      tooltip.style.padding = '5px 10px';
-      tooltip.style.borderRadius = '5px';
-      tooltip.style.top = `${iconContainer.offsetTop - 30}px`;
-      tooltip.style.left = `${iconContainer.offsetLeft}px`;
-      tooltip.textContent = feedbackMessage;
-      container.appendChild(tooltip);
+    document.getElementById("joinQueueButton")?.addEventListener("click", async () => {
+      await joinQueue(getBookIdFromURL());
     });
-
-    iconContainer.addEventListener('mouseout', () => {
-      const tooltip = document.getElementById('statusTooltip');
-      if (tooltip) tooltip.remove();
+    
+    document.getElementById("leaveQueueButton")?.addEventListener("click", async (event) => {
+      const queueId = event.target.getAttribute("data-queue-id");
+      if (queueId) {
+        await leaveQueue(queueId);
+      }
     });
-
   } catch (error) {
     console.error("Error displaying book details:", error);
   }
 }
+
+// Function to leave the queue using queue ID
+async function leaveQueue(queueId) {
+  try {
+    const response = await fetch(`/api/queue`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({ queueId })
+    });
+    if (response.ok) {
+      alert('Successfully left the queue!');
+      location.reload();
+    } else {
+      const errorData = await response.json();
+      alert(errorData.message || 'Failed to leave queue');
+    }
+  } catch (error) {
+    console.error('Error leaving queue:', error);
+    alert('An unexpected error occurred. Please try again.');
+  }
+}
+
+
+
+
+// Function to fetch queue information
+async function fetchQueueInfo(bookId) {
+  try {
+    const response = await fetch(`/api/queue/${bookId}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Queue data fetched successfully", data);
+      return data;
+    } else {
+      console.error('Failed to fetch queue data');
+      return { queue: [] };
+    }
+  } catch (error) {
+    console.error('Error fetching queue data:', error);
+    return { queue: [] };
+  }
+}
+
+
+// Function to join the queue
+async function joinQueue(bookId) {
+  try {
+    const response = await fetch(`/api/queue`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({ bookId })
+    });
+    if (response.ok) {
+      alert('Successfully joined the queue!');
+      location.reload();
+    } else {
+      const errorData = await response.json();
+      alert(errorData.message || 'Failed to join queue');
+    }
+  } catch (error) {
+    console.error('Error joining queue:', error);
+    alert('An unexpected error occurred. Please try again.');
+  }
+}
+
 
 // Function to display reviews in the modal
 function displayReviews(reviews) {
@@ -517,7 +603,6 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         body: JSON.stringify({ bookId }), // Send the book ID as the payload
       });
-
       if (!response.ok) {
         const errorResponse = await response.json(); // Parse the error response
         throw new Error(errorResponse.error || "Failed to rent the book. Please try again.");
@@ -629,3 +714,31 @@ window.onload = function () {
   }
 };
 
+document.addEventListener("DOMContentLoaded", async function () {
+  const queueModal = document.getElementById("queueModal");
+
+  queueModal.addEventListener("show.bs.modal", async function () {
+    const bookId = getBookIdFromURL();
+    const queueData = await fetchQueueInfo(bookId);
+    const queueTableBody = document.getElementById("queueTableBody");
+
+    queueTableBody.innerHTML = ""; // Clear previous data
+
+    if (queueData.queue.length === 0) {
+      queueTableBody.innerHTML = `<tr><td colspan="4" class="text-muted">No one in queue.</td></tr>`;
+      return;
+    }
+
+    queueData.queue.forEach((person, index) => {
+      const row = `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${person.user_name}</td>
+          <td>${person.queue_number}</td>
+          <td>${person.is_next ? '<span class="badge bg-success">Next</span>' : '<span class="badge bg-secondary">Waiting</span>'}</td>
+        </tr>
+      `;
+      queueTableBody.insertAdjacentHTML("beforeend", row);
+    });
+  });
+});
