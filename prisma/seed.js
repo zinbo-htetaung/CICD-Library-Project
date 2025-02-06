@@ -212,9 +212,6 @@ async function main() {
     data: messages,
   });
   
-  console.log('Inserted messages:', insertedMessages);
-  console.log(insertedPersons, insertedStatuses);
-
   const insertedTasks = await prisma.task.createManyAndReturn({
     data: [
       { name: 'Seed 1', statusId: insertedStatuses[0].id },
