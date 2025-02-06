@@ -24,6 +24,9 @@ document.getElementById('loginForm').addEventListener('submit', async (event) =>
         window.location.href = "../../admin/adminHome.html";
       } else
         window.location.href = '../../user/html/home.html';
+    } else if (response.status === 400) {
+      const responseData = await response.json();
+      alert(responseData.message);
     } else {
       alert('Login attempt failed. Please check your credentials.');
     }

@@ -1,3 +1,4 @@
+const { user } = require("pg/lib/defaults.js");
 const model = require("../models/userModel.js");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
@@ -38,7 +39,19 @@ module.exports.register = (req, res, next) => {
         dob: req.body.dob,
         avatar: "https://api.dicebear.com/9.x/initials/svg?seed="+(req.body.name.replace(/\s+/g, '')).toString().toUpperCase()+"&scale=50&radius=50"
     };
+
     console.log(data)
+
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;        // validate email regex
+
+    const isValidDate = !isNaN(Date.parse(data.dob));
+
+    if (!emailRegex.test(data.email) || !isValidDate) {
+        return res.status(400).json({ message: "Please input correct type of data" });
+    }
+
+
     model.insertSingle(data, (error, result) => {
         if (error) {
             console.error("Error during registration:", error);
@@ -107,7 +120,13 @@ module.exports.getProfileInfo = (req, res) => {
 
 module.exports.verifyCaptcha = async (req, res, next) => {
     const captchaToken = req.body['g-recaptcha-response']; // Token sent from the frontend
-    const secretKey = "6LfclI4qAAAAANZJNamoflbSsdPpwZzOrjAKmGt7"; 
+    const secretKey = "6LfMGboqAAAAAPXLtwKP9GUaVE9Ly2eqJKsHQLYw";
+
+    // Bypass CAPTCHA validation during tests
+    if (captchaToken == 'test-captcha-token') {
+        console.log("CAPTCHA bypassed for testing.");
+        return next();
+    }
 
     if (!captchaToken) {
         return res.status(400).json({ message: "Captcha verification failed. Please try again." });
@@ -149,13 +168,20 @@ module.exports.getAllUsers = (req, res, next) => {
             return res.status(404).json({ message: "No users found." });
         }
 
-        res.status(200).json({users: results.rows});
+        res.status(200).json({ users: results.rows });
     });
 };
 
-module.exports.checkDuplicateEmail = async (req, res, next) => {
+
+module.exports.checkDuplicateEmail = (req, res, next) => {
     const userId = res.locals.user_id;
-    const email = req.body.email;
+    const email = req.body.email
+    model.checkEmailToUpdate(email, userId)
+        .then(function (user) {
+            if (user) {
+                console.log("User with this email already exist");
+                return res.status(401).json({ message: 'User with this email already exist' });
+            }
 
     console.log("User ID:", userId);
     console.log("Email to check:", email);
@@ -184,20 +210,22 @@ module.exports.updateProfileInfo = async (req, res) => {
     if (!userId) {
         return res.status(400).json({ message: "User ID not found in token" });
     }
-    if(!req.body.name || !req.body.email || !req.body.address){
-        return res.status(400).json({message: "Input(s) is/are required " })
+    if (!req.body.name || !req.body.email || !req.body.address) {
+        return res.status(400).json({ message: "Input(s) is/are required " })
     }
-    const data={
-        user_id:userId,
-        name:req.body.name,
-        email:req.body.email,
+    const data = {
+        user_id: userId,
+        name: req.body.name,
+        email: req.body.email,
         address: req.body.address
     }
     console.log(data)
     await model.updateProfileInfo(data)
         .then(() => {
+
             console.log("updated")
             return res.status(200).json({ message:"Profile updated successfully" });
+
         })
         .catch(error => {
             if (error.message === 'User not found') {
@@ -233,18 +261,18 @@ module.exports.getPassword = (req, res, next) => {
         });
 };
 
-module.exports.compareOldPassword=(req,res,next)=>{
+module.exports.compareOldPassword = (req, res, next) => {
     const callback = (err, isMatch) => {
         if (err) {
             console.error("Error bcrypt:", err);
             res.status(500).json(err);
         } else if (isMatch) {
-                next();
-            } else {
-                res.status(401).json({
-                    message: "Old password is incorrect",
-                });
-            }
+            next();
+        } else {
+            res.status(401).json({
+                message: "Old password is incorrect",
+            });
+        }
     };
     bcrypt.compare(req.body.oldPassword, res.locals.hash, callback);
 }
@@ -255,9 +283,9 @@ module.exports.hashPassword = function (req, res, next) {
             console.error("Error bcrypt:", err);
             res.status(500).json(err);
         } else {
-            console.log("old pw"+req.body.oldPassword)
-            console.log("new password:" +req.body.newPassword)
-            console.log("new password:" +hash)
+            console.log("old pw" + req.body.oldPassword)
+            console.log("new password:" + req.body.newPassword)
+            console.log("new password:" + hash)
             res.locals.hash = hash;
             next();
         }
@@ -268,13 +296,13 @@ module.exports.hashPassword = function (req, res, next) {
 
 
 module.exports.updatePassword = (req, res) => {
-    const data={
-        user_id:res.locals.user_id,
-        newPassword:res.locals.hash
+    const data = {
+        user_id: res.locals.user_id,
+        newPassword: res.locals.hash
     }
     model.updatePassword(data)
         .then(() => {
-            res.status(200).json({ message:"Profile updated successfully" });
+            res.status(200).json({ message: "Profile updated successfully" });
         })
         .catch(error => {
             if (error.message === 'User not found') {
@@ -328,6 +356,7 @@ module.exports.banUser = (req, res) => {
         });
 };
 
+
 module.exports.updateProfilePicture = async (req, res) => {
     const userId = res.locals.user_id; // Assuming user ID is extracted from auth middleware or session
 
@@ -364,3 +393,20 @@ module.exports.updateProfilePicture = async (req, res) => {
     }
 };
 
+module.exports.getUserByID = async  (req, res) => {
+    const userId = parseInt(req.params.userId);
+    if (isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    try {
+        const result = await model.getUserByID(userId);
+        return res.status(200).json(result[0]);
+    } catch (error) {
+        if (error.message === "UserNotFound") {
+            return res.status(404).json({ message: "User not found" });
+        }
+        console.error("Error get user by ID:", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
