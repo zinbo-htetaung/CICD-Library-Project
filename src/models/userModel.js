@@ -321,6 +321,7 @@ module.exports.banUser = (userId) => {
 };
 
 
+
 module.exports.updateProfilePicture = async (data) => {
     const { user_id, avatar } = data;
 
@@ -346,5 +347,18 @@ module.exports.updateProfilePicture = async (data) => {
 
         console.error('Error in updateProfilePicture model:', error);
         throw new Error('Database error');
+    }
+};
+
+module.exports.getUserByID = async (userId) => {
+    try {
+        const user = await prisma.users.findMany({
+            where: { id: parseInt(userId) }
+        });
+
+        return user; // ✅ Return user object (or null if not found)
+    } catch (error) {
+        console.error("Error fetching user:", error);
+        throw new Error("Database query failed"); // ❌ Avoid exposing raw DB errors
     }
 };

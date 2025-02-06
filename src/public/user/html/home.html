@@ -179,7 +179,7 @@
                     required></textarea>
             </div>
             <div class="col-md-3">
-                <div class="g-recaptcha" data-sitekey="6LcLaXYUAAAAAOYUvT0g3IpuM2HLnmg47B_3Wugd"></div>
+                <div class="g-recaptcha" data-sitekey="6LfMGboqAAAAAPXLtwKP9GUaVE9Ly2eqJKsHQLYw"></div>
             </div>
             <div id="form-message" style="min-height: 25px; margin-top: 10px; color: red; font-size: 14px;">&nbsp;</div>
             <button type="submit" class="btn btn-primary" style="margin-top: 3px;">Send Message</button>
@@ -210,135 +210,294 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
 
     <script>
-        let searchInProgress = false; // Flag to track search process
-        let bookName = ''; // Store book name for search
-
-        // Check if the greeting has been shown before
+        let searchInProgress = false;
+        let chatbotEnabled = false;
         let hasGreeted = false;
-        // Function to send a greeting message when the chatbot icon is clicked
+        let liveChatActive = false;
+
         function sendGreetingMessage() {
-            // Only show the greeting if it's the first time opening the chatbot
             if (!hasGreeted) {
-                let botResponse = "Hello! How can I assist you today?"; // Greeting message
-                displayMessage(botResponse, 'bot'); // Show the bot's greeting message
-                hasGreeted = true // Mark as greeted in localStorage
+                displayMessage("Hello! How can I assist you today? 😊", "bot");
+                hasGreeted = true;
             }
-            displayResponseOptions(); // Show the response options below the greeting
+            displayResponseOptions();
         }
 
-        // Function to close the chatbot
         function closeChatbot() {
-            let chatbotContainer = document.getElementById('chatbot-container');
-            chatbotContainer.style.display = 'none'; // Hide the chatbot container
+            document.getElementById('chatbot-container').style.display = 'none';
         }
 
-        // Simple chatbot logic for sending messages
         document.getElementById('chatbot-send-btn').addEventListener('click', function () {
             let userInput = document.getElementById('chatbot-input').value.trim();
-            if (userInput) {
-                // Display user message
-                displayMessage(userInput, 'user');
+            if (!userInput) return;
 
-                if (searchInProgress) {
-                    // If search is in progress, perform the book search
-                    bookName = userInput; // Save the book name entered
-                    searchBooks(bookName); // Trigger search
-                } else {
-                    // Generate bot response
-                    let botResponse = generateBotResponse(userInput);
-
-                    // Display bot response after a short delay
-                    setTimeout(function () {
-                        displayMessage(botResponse, 'bot');
-                        displayResponseOptions(); // Always show options below the conversation
-                    }, 500);
-                }
+            if (searchInProgress) {
+                searchBooks(userInput);
+            } else {
+                let botResponse = generateBotResponse(userInput);
+                setTimeout(() => {
+                    displayMessage(botResponse, 'bot');
+                    displayResponseOptions();
+                }, 500);
             }
-            document.getElementById('chatbot-input').value = ''; // Clear input field
+
+            document.getElementById('chatbot-input').value = '';
         });
 
-        // Function to display messages in the chatbox
-        // Function to display messages in the chatbox
         function displayMessage(message, sender) {
+            let chatContainer = document.getElementById('chatbot-messages');
+
+            // Get last message element
+            let lastMessage = chatContainer.lastElementChild;
+
+            // Prevent duplicate consecutive messages
+            if (lastMessage && lastMessage.innerHTML.trim() === message.trim()) {
+                return;
+            }
+
             let messageContainer = document.createElement('div');
-            messageContainer.classList.add('message');
-            messageContainer.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
-
-            // Use innerHTML to allow HTML content (like <a> tag) to be rendered correctly
+            messageContainer.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
             messageContainer.innerHTML = message;
-
-            document.getElementById('chatbot-messages').appendChild(messageContainer);
-            document.getElementById('chatbot-messages').scrollTop = document.getElementById('chatbot-messages').scrollHeight;
+            chatContainer.appendChild(messageContainer);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // Function to generate bot responses
         function generateBotResponse(userInput) {
             let doc = nlp(userInput.toLowerCase());
 
-            // Match user intent for greetings
-            if (doc.has('hello') || doc.has('hi') || doc.has('hey')) {
-                return "Hello! How can I assist you today? 😊";
-            } else if (doc.has('how are you') || doc.has('how\'s it going')) {
-                return "I'm just a bot, but I'm here to help you! How can I assist you?";
+            if (liveChatActive) {
+                sendMessageToAdmin(userInput);
+                return null;  // 🚀 Do not respond with normal chatbot messages
             }
-            // Match intent for library hours
-            else if (doc.has('hours') || doc.has('open') || doc.has('close')) {
-                return "We are open from 9 AM to 6 PM every day!";
+
+            if (doc.has('hello') || doc.has('hi') || doc.has('hey')) return "Hello! How can I assist you today? 😊";
+            if (doc.has('hours') || doc.has('open') || doc.has('close')) return "We are open from 9 AM to 6 PM every day!";
+            if (doc.has('books') || doc.has('collection')) return 'We have a large collection of books! <a href="displayAllBooks.html" target="_blank">Explore here.</a>';
+            if (doc.has('membership') || doc.has('register')) return "Sign up for membership on our website or visit the library with an ID.";
+            if (doc.has('contact') || doc.has('agent') || doc.has('help')) {
+                displayMessage("✅ Live agent chat enabled. Connecting you to an admin...", "bot");
+
+                // Wait for 2-3 seconds before calling enableLiveChat
+                setTimeout(() => {
+                    enableLiveChat();
+                }, Math.floor(Math.random() * 1000) + 2000); // Random delay between 2-3 seconds
+
+                return "⏳ Retrieving chat history..." // Empty return because the message is handled asynchronously
             }
-            // Match intent for book collection
-            else if (doc.has('books') || doc.has('collection')) {
-                return 'We have a large collection of books! <a href="displayAllBooks.html" target="_blank">Explore here.</a>';
-            }
-            // Match intent for membership
-            else if (doc.has('membership') || doc.has('register')) {
-                return "Sign up for membership on our website or visit the library with an ID.";
-            }
-            // Match intent for live agent or help
-            else if (doc.has('contact') || doc.has('agent') || doc.has('help')) {
-                return "I will connect you to a live agent shortly.";
-            }
-            // Match intent for book search
-            else if (doc.has('search') && !searchInProgress) {
+            if (doc.has('search') && !searchInProgress) {
                 searchInProgress = true;
                 return "Please type the name of the book you're searching for.";
             }
-            // Fallback response
-            else {
-                return "I'm not sure how to respond to that. Try asking about our opening hours, books, or membership. If you want to chat with a live agent, press \'Agent'. ^^ ";
-            }
+
+            return "I'm not sure how to respond to that. Try asking about our opening hours, books, or membership.";
         }
-        // Function to search for books and display the results
+
         async function searchBooks(bookName) {
             try {
                 const response = await fetch(`/api/books/name/${bookName}`, {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                 });
 
-                const container = document.getElementById('chatbot-messages');
                 if (response.status === 200) {
                     const data = await response.json();
-                    let i = 1;
                     if (data.books.length > 0) {
-                        data.books.forEach(book => {
-                            let bookMessage = `Found book: (${i})  ${book.book_name} by ${book.author}. <a href="displaySingleBook.html?bookId=${book.id}" target="_blank">Click here to view details ^^</a>`;
+                        data.books.forEach((book, index) => {
+                            let bookMessage = `📖 (${index + 1}) ${book.book_name} by ${book.author}. <a href="displaySingleBook.html?bookId=${book.id}" target="_blank">View details</a>`;
                             displayMessage(bookMessage, 'bot');
-                            i++;
                         });
                     } else {
-                        displayMessage("Sorry, no books were found matching your search. Please press \"Search Book\" again to search more. ^^", 'bot');
+                        displayMessage("❌ No books found. Try searching again.", 'bot');
                     }
                 } else {
-                    displayMessage("Sorry, no books were found matching your search. Please press \"Search Book\" again to search more. ^^", 'bot');
+                    displayMessage("❌ No books found. Try searching again.", 'bot');
                 }
             } catch (error) {
-                console.error('Error searching for books:', error);
-                displayMessage("I'm sorry, I couldn't search for books at the moment. Please press \"Search Book\" again to search more. ^^", 'bot');
+                console.error('Error searching books:', error);
+                displayMessage("❌ Unable to search at the moment. Try again later.", 'bot');
+            }
+            searchInProgress = false;
+        }
+        async function enableLiveChat() {
+            chatbotEnabled = true;
+            liveChatActive = true; // Enable live chat mode
+
+            // Simulate a 2-3 second loading delay before fetching messages
+            setTimeout(async () => {
+                displayMessage("✅ Live chat enabled. You are now connected with an admin.", "bot");
+                await startAdminChat();
+
+                // Start fetching messages every 3 seconds
+                startMessagePolling();
+
+                // Start the session timeout countdown (3 minutes)
+                startChatSessionTimer();
+            }, Math.floor(Math.random() * 1000) + 2000);
+        }
+
+        async function startAdminChat() {
+            const token = localStorage.getItem("token");
+            const userId = localStorage.getItem("user_id");
+
+            if (!userId) {
+                displayMessage("⚠️ Please log in to chat with an admin.", "bot");
+                return;
             }
 
-            searchInProgress = false; // Reset searchInProgress after search completes
+            try {
+                const response = await fetch(`/api/messages/user/${userId}`, {
+                    method: "GET",
+                    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+                });
+
+                if (!response.ok) throw new Error("Failed to fetch messages");
+
+                const messages = await response.json();
+            } catch (error) {
+                console.error("Error fetching messages:", error);
+                displayMessage("⚠️ Unable to connect to admin chat. Please try again later.", "bot");
+            }
+        }
+
+        async function startChatSessionTimer() {
+            let remainingTime = 120; // 2 minutes (in seconds)
+            let warningDisplayed = false; // Flag to track if the warning has been displayed
+
+            // Update countdown every second
+            let countdownInterval = setInterval(() => {
+                remainingTime--;
+
+                // Display a warning message when 20 seconds are left
+                if (remainingTime === 20 && !warningDisplayed) {
+                    displayMessage("⚠️ This live chat session will end in 20 seconds.", "bot");
+                    warningDisplayed = true; // Ensure the message is shown only once
+                }
+
+                if (remainingTime <= 0) {
+                    clearInterval(countdownInterval);
+                    endLiveChatSession();
+                }
+            }, 1000);
+        }
+
+        // ✅ Function to display admin & user messages properly in chatbot
+        function displayAdminMessages(messages) {
+            if (!messages || messages.length === 0) {
+                displayMessage("No recent messages from the admin.", "bot");
+                return;
+            }
+
+            // Sort messages by createdAt timestamp
+            messages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+            messages.forEach(msg => {
+                let senderName = msg.sender === "admin" ? "👨‍💼 Admin" : "🧑‍💻 You";
+                let formattedTime = formatTimestamp(msg.createdAt);
+
+                let formattedMessage = `<strong>${senderName}</strong> <br> ${msg.message} <br><span style="font-size: 12px; color: gray;">${formattedTime}</span>`;
+
+                // Display messages correctly in chat
+                displayMessage(formattedMessage, msg.sender === "admin" ? "bot" : "user");
+            });
+        }
+
+        async function sendMessageToAdmin(userInput) {
+            const token = localStorage.getItem("token");
+            const userId = localStorage.getItem("user_id");
+
+            if (!userId) {
+                displayMessage("⚠️ Please log in to chat with an admin.", "bot");
+                return;
+            }
+
+            try {
+                const response = await fetch("/api/messages", {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ userId, sender: "user", message: userInput }),
+                });
+
+                if (!response.ok) throw new Error("Message failed to send");
+
+                // Fetch latest messages after sending
+                fetchMessages(userId);
+            } catch (error) {
+                console.error("Error sending message:", error);
+                displayMessage("⚠️ Failed to send message. Try again.", "bot");
+            }
+        }
+
+        function endLiveChatSession() {
+            chatbotEnabled = false;
+            liveChatActive = false;
+
+            // Stop polling messages
+            clearInterval(pollingInterval);
+
+            displayMessage("⏳ Live chat session has expired. Returning to normal chatbot mode.", "bot");
+
+            setTimeout(() => {
+                displayMessage("Hello! How can I assist you today? 😊", "bot");
+                displayResponseOptions();
+            }, 2000);
+        }
+
+        let pollingInterval; // Store the polling interval reference
+        let lastMessageTimestamp = null;
+
+        async function fetchMessages(userId) {
+            const token = localStorage.getItem("token");
+
+            try {
+                const response = await fetch(`/api/messages/user/${userId}`, {
+                    method: "GET",
+                    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+                });
+
+                if (!response.ok) throw new Error("Failed to fetch messages");
+
+                const messages = await response.json();
+                if (!messages.message || messages.message.length === 0) return;
+
+                // Filter out old messages based on the last fetched timestamp
+                let newMessages = messages.message.filter(msg => {
+                    let messageTime = new Date(msg.createdAt).getTime();
+                    return !lastMessageTimestamp || messageTime > lastMessageTimestamp;
+                });
+
+                if (newMessages.length > 0) {
+                    lastMessageTimestamp = new Date(newMessages[newMessages.length - 1].createdAt).getTime();
+                    displayAdminMessages(newMessages);
+                }
+            } catch (error) {
+                console.error("Error fetching messages:", error);
+            }
+        }
+
+        // Function to start polling messages every 3 seconds
+        function startMessagePolling() {
+            const userId = localStorage.getItem("user_id");
+            if (!userId) return;
+
+            // Fetch messages initially
+            fetchMessages(userId);
+
+            // Poll new messages every 3 seconds (but only fetch new ones)
+            pollingInterval = setInterval(() => {
+                fetchMessages(userId);
+            }, 3000);
+        }
+
+        // ✅ Function to format timestamps into readable format (e.g., "Feb 5, 2025 - 9:01 AM")
+        function formatTimestamp(timestamp) {
+            let date = new Date(timestamp);
+            return date.toLocaleString("en-US", {
+                month: "short", day: "numeric", year: "numeric",
+                hour: "numeric", minute: "2-digit", hour12: true
+            });
         }
 
         // Function to display response options (buttons)
@@ -371,22 +530,12 @@
             document.getElementById('chatbot-options').appendChild(optionsContainer);
         }
 
-        // Toggle the visibility of the chatbot
         document.getElementById('chatbot-toggle-btn').addEventListener('click', function () {
             let chatbotContainer = document.getElementById('chatbot-container');
-            if (chatbotContainer.style.display === "none" || chatbotContainer.style.display === "") {
-                chatbotContainer.style.display = "flex";
-                setTimeout(function () {
-                    chatbotContainer.style.opacity = "1";
-                }, 10); // Short delay to trigger opacity transition
-                sendGreetingMessage(); // Show greeting if it's the first time
-            } else {
-                chatbotContainer.style.opacity = "0";
-                setTimeout(function () {
-                    chatbotContainer.style.display = "none";
-                }, 300); // Delay to ensure opacity transition completes
-            }
+            chatbotContainer.style.display = chatbotContainer.style.display === "none" ? "flex" : "none";
+            if (!hasGreeted) sendGreetingMessage();
         });
+
     </script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <script src="../js/home.js" type="text/javascript"></script>

@@ -152,7 +152,9 @@ module.exports.retrieveByUserId = async (userId) => {
         });
 
         // Log the fetched records for debugging purposes
-        // console.log("Successfully retrieved rent history records for user_id ${userId}:, rentHistories");
+
+        console.log(`Successfully retrieved rent history records for user_id ${userId}:`+ rentHistories);
+
 
         // Check if any records were found
         if (!rentHistories || rentHistories.length === 0) {

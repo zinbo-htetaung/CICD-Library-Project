@@ -125,6 +125,7 @@ model users {
   review        review[]
   user_status   user_status[]
   Queue Queue[]
+   messages     Message[] @relation("UserMessages")
 }
 
 model Queue {
@@ -151,3 +152,18 @@ model book_progress {
   rent_history    rent_history @relation(fields: [rent_history_id], references: [id], onDelete: Cascade)
   users           users        @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
+
+model Message {
+  id             Int      @id @default(autoincrement())
+  userId         Int      // User who sent or received the message
+  sender         String   // 'user' or 'admin'
+  message        String   // Message content
+  createdAt      DateTime @default(now())
+  replyToId      Int?     // Parent message for threaded replies
+  isRead         Boolean  @default(false) // Indicates if the admin has read the message
+
+  user           users    @relation(fields: [userId], references: [id], onDelete: Cascade, name: "UserMessages")
+  parentMessage  Message? @relation("Thread", fields: [replyToId], references: [id], onDelete: Cascade)
+  replies        Message[] @relation("Thread")
+}
+
