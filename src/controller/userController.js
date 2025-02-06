@@ -173,7 +173,7 @@ module.exports.getAllUsers = (req, res, next) => {
 };
 
 
-module.exports.checkDuplicateEmail = (req, res, next) => {
+module.exports.checkDuplicateEmail = async (req, res, next) => {
     const userId = res.locals.user_id;
     const email = req.body.email
     model.checkEmailToUpdate(email, userId)
@@ -187,7 +187,7 @@ module.exports.checkDuplicateEmail = (req, res, next) => {
     console.log("Email to check:", email);
 
     try {
-        const user = await model.checkEmailToUpdate(email, userId);
+        const user =  model.checkEmailToUpdate(email, userId);
 
         if (user) {
             console.log("User with this email already exists");
@@ -200,7 +200,8 @@ module.exports.checkDuplicateEmail = (req, res, next) => {
         console.error("Error checking duplicate email:", error);
         return res.status(500).json({ message: error.message });
     }
-};
+    });
+}
 
 
 module.exports.updateProfileInfo = async (req, res) => {
