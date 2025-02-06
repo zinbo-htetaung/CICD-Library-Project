@@ -20,7 +20,7 @@ module.exports.sendEmail = async (req, res) => {
         }
 
         // Validate the reCAPTCHA response with Google API
-        const secretKey = '6LcLaXYUAAAAAALjkMho0ywJyylxa0kUOylNG7SU'; // Your reCAPTCHA secret key
+        const secretKey = '6LfMGboqAAAAAPXLtwKP9GUaVE9Ly2eqJKsHQLYw'; // Your reCAPTCHA secret key
         const verificationUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${captchaResponse}`;
 
         const captchaVerification = await fetch(verificationUrl, { method: 'POST' });

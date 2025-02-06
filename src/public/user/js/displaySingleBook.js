@@ -517,7 +517,6 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         body: JSON.stringify({ bookId }), // Send the book ID as the payload
       });
-
       if (!response.ok) {
         const errorResponse = await response.json(); // Parse the error response
         throw new Error(errorResponse.error || "Failed to rent the book. Please try again.");

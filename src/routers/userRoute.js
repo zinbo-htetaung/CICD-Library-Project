@@ -13,4 +13,6 @@ router.get('/profile',jwtMiddleware.verifyToken,  userController.getProfileInfo)
 router.get('/all', jwtMiddleware.verifyToken, jwtMiddleware.verifyIsAdmin, userController.getAllUsers);
 router.delete('/account',jwtMiddleware.verifyToken,  userController.deleteAccount);
 router.delete('/ban/:userId', jwtMiddleware.verifyToken, jwtMiddleware.verifyIsAdmin, userController.banUser);
+// for retrieve user info in admin chat
+router.get('/userId/:userId', jwtMiddleware.verifyToken, jwtMiddleware.verifyIsAdmin, userController.getUserByID);
 module.exports = router;
