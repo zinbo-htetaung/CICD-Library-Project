@@ -187,7 +187,7 @@ module.exports.checkDuplicateEmail = (req, res, next) => {
     console.log("Email to check:", email);
 
     try {
-        const user = await model.checkEmailToUpdate(email, userId);
+        const user =  model.checkEmailToUpdate(email, userId);
 
         if (user) {
             console.log("User with this email already exists");
@@ -199,7 +199,7 @@ module.exports.checkDuplicateEmail = (req, res, next) => {
     } catch (error) {
         console.error("Error checking duplicate email:", error);
         return res.status(500).json({ message: error.message });
-    }
+    }})
 };
 
 
