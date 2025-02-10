@@ -185,6 +185,17 @@ const bookRequests = [
   { user_id: 1, author: 'Stephen King', book_name: 'It', requested_on: new Date('2021-09-01') },
 ];
 
+const messages = [
+  { userId: 1, sender: 'user', message: 'Hello, I need help with borrowing a book.', createdAt: new Date('2023-12-01T10:00:00Z') },
+  { userId: 1, sender: 'admin', message: 'Sure! What book are you looking for?', createdAt: new Date('2023-12-01T10:05:00Z') },
+  { userId: 2, sender: 'user', message: 'Can I return a book after the due date?', createdAt: new Date('2023-12-02T15:30:00Z') },
+  { userId: 2, sender: 'admin', message: 'Yes, but there might be a late fee.', createdAt: new Date('2023-12-02T15:35:00Z') },
+  { userId: 3, sender: 'user', message: 'Do you have any recommendations for mystery books?', createdAt: new Date('2023-12-03T18:00:00Z') },
+  { userId: 3, sender: 'admin', message: 'Yes! You might like "Gone Girl" or "Sherlock Holmes".', createdAt: new Date('2023-12-03T18:10:00Z') },
+  { userId: 1, sender: 'user', message: 'How do I reset my password?', createdAt: new Date('2023-12-04T09:45:00Z') },
+  { userId: 1, sender: 'admin', message: 'Go to settings and click on "Reset Password".', createdAt: new Date('2023-12-04T09:50:00Z') },
+];
+
 const userStatuses = [];
 
 async function main() {
@@ -206,7 +217,12 @@ async function main() {
     data: users,
   });
 
-
+  // Insert Messages
+  const insertedMessages = await prisma.message.createMany({
+    data: messages,
+  });
+  
+  console.log('Inserted messages:', insertedMessages);
   console.log(insertedPersons, insertedStatuses);
 
   const insertedTasks = await prisma.task.createManyAndReturn({

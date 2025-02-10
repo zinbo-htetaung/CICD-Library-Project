@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Read Book</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+    integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous">
+    <link href="../css/home.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light body background */
+            margin: 0;
+            padding: 0;
+        }
+
+        .progress-bar-container {
+            position: relative; 
+            z-index: 1000;
+        }
+
+        .progress-bar {
+            height: 10px;
+        }
+
+        /* Sticky Effect for Progress Bar */
+        .sticky {
+            position: fixed;
+            top: 0;
+            width: 100%;
+        }
+
+        .sticky-back-arrow {
+            top: 40px !important; /* Move it closer to the top */
+        }
+
+        .back-arrow {
+            position: fixed;
+            top: 120px; 
+            left: 15px;
+            z-index: 1000;
+            font-size: 24px;
+            color: red;
+            cursor: pointer;
+            background-color: #fff;
+            border: 2px solid red;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+        }
+
+        /* Content Container */
+        .content-container {
+            background-color: #fff; 
+            padding: 30px;
+            margin: 30px auto;
+            max-width: 800px;
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        }
+
+        .content-container p {
+            margin-bottom: 10px;
+            line-height: 1.8;
+            text-align: justify;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar-container"></div>
+
+    <div id="progress-bar-container" class="progress-bar-container">
+        <div class="progress">
+            <div id="scroll-progress-bar" class="progress-bar progress-bar-striped bg-primary" role="progressbar"></div>
+        </div>
+    </div>
+
+    <div class="back-arrow" onclick="goBack()">
+        <i class="bi bi-arrow-left"></i>
+    </div>
+
+    <div class="content-container">
+        <!-- Hardcoded Text Contents -->
+        <p>
+            Lorem ipsum odor amet, consectetuer adipiscing elit. Lacinia venenatis auctor mus lectus est conubia. Dictumst parturient eget nec himenaeos mollis feugiat eget. Morbi eros ridiculus accumsan etiam egestas magna; vivamus pretium platea. Vitae habitasse sapien laoreet ac ornare nunc. Curabitur justo eu cursus aliquam placerat molestie. Commodo aliquet convallis inceptos auctor finibus ullamcorper. Ultricies blandit non congue primis himenaeos proin leo posuere? Accumsan platea nec ex molestie pellentesque sapien ac.
+
+            Rutrum sem aliquam mus convallis ultricies egestas himenaeos. Turpis etiam augue condimentum fermentum facilisis. Nulla interdum ultricies nullam condimentum maximus est. Egestas nascetur conubia augue venenatis amet tempus facilisis. Maximus purus blandit hendrerit finibus montes pulvinar cursus. Tempus nam vehicula nam dis egestas mattis. Ridiculus donec aliquet aliquet elementum elementum.
+
+            Lobortis ultricies auctor ligula risus posuere varius iaculis. Habitasse ligula lacus adipiscing per proin. Ultrices vel vestibulum mauris habitant egestas ridiculus egestas quis. Tristique arcu curae fringilla est semper fermentum non fames sapien. Elementum porta nulla consequat congue pretium cubilia curabitur dui. Luctus vulputate aliquet curae hendrerit semper ridiculus nulla dictum parturient. Faucibus penatibus purus sed, integer scelerisque ex. Justo molestie cursus risus eget mollis dictum mattis curabitur.
+
+            Lacus varius fringilla aliquam interdum bibendum eleifend suspendisse nascetur pretium. Lobortis semper nullam; bibendum vestibulum semper consectetur. Maecenas rutrum curabitur nunc magna himenaeos magnis consequat sem. Eu sem sapien dictumst, venenatis montes maecenas. Condimentum ipsum condimentum accumsan tellus hendrerit congue. Vivamus semper inceptos massa ante efficitur dictumst integer pulvinar. Ipsum consequat porta ullamcorper mus velit. Tempor sagittis congue maecenas a iaculis pulvinar aliquam. Platea mi nam vivamus aenean id fames viverra condimentum. Natoque enim eu accumsan consequat, cras ultrices sapien velit.
+
+            Montes nisi amet porta nam conubia fermentum. Porta magna semper id dui erat fusce per. Erat ultricies tellus tortor et nam. Curae metus sapien luctus egestas vehicula ullamcorper fusce parturient curae. Efficitur lacinia urna posuere luctus ante volutpat. Efficitur mauris libero porttitor finibus sem proin. Fringilla ultricies malesuada efficitur consectetur nulla sodales. Vulputate platea consequat tristique nam viverra.
+
+            Curae ultrices nunc risus enim fames enim. Quis etiam mauris; volutpat id habitant tristique. Nulla tempor felis mus blandit eget vel. Accumsan mauris ullamcorper; nisi lacus molestie diam. Rhoncus nulla inceptos in sapien fames faucibus cubilia semper. Facilisi tempor maximus commodo cras tincidunt et amet. Porttitor pellentesque nullam varius ex adipiscing neque ultricies. Vivamus amet at netus sed ultricies tempor. Pharetra conubia ac at nullam finibus vivamus.
+
+            Convallis mi vitae ut aliquet lacinia aliquam pharetra. Pretium potenti imperdiet tortor montes non. Dapibus maximus egestas varius vehicula cubilia maecenas lorem tortor. Placerat magna maecenas quam rutrum ad faucibus integer curae. Ante tristique lacus commodo maecenas; orci donec diam. Finibus eget pellentesque iaculis ex arcu sodales potenti sagittis.
+
+            Ornare ipsum nascetur elementum platea mus sociosqu venenatis. Fermentum nascetur vitae dis placerat ultrices condimentum enim quis! Lorem malesuada enim sem hendrerit metus felis eros. Mi proin at lacinia lacus cubilia. Laoreet pellentesque ac vehicula odio nostra dignissim. Vestibulum vehicula pharetra etiam sollicitudin aliquam sociosqu ante. Aptent suscipit varius suspendisse; nunc habitasse eget. Condimentum aptent ad tempor phasellus metus. Quis aenean et lacinia tincidunt mus felis amet. Vel dis cras ac felis ac mollis cursus eget suspendisse.
+
+            Varius ultrices efficitur nullam aliquam nascetur magna cubilia. Id commodo aliquam natoque; nec nisi inceptos. Maecenas rutrum elementum nec maximus praesent. Ex dapibus suspendisse accumsan odio ornare luctus nam primis. Proin ornare nisl nisi facilisi velit. Ac mauris vestibulum neque sem cursus. Tempus at litora natoque ut inceptos. Dui fringilla montes morbi neque nunc cras quisque. Magna urna nulla ligula dui gravida eu. Semper pharetra mollis eu venenatis ac suscipit.
+
+            Ut maecenas curae maecenas semper curae suscipit ultricies. Donec laoreet nostra platea efficitur aptent eget. Laoreet ultrices vel sollicitudin pulvinar lectus. Urna odio tincidunt tortor purus; inceptos condimentum. Apellentesque malesuada torquent; tristique nulla parturient. Dictum lacus id pulvinar, diam consectetur ligula ad. Fringilla dui fames mi lacinia placerat erat porttitor, libero cras. Curae donec diam purus et morbi consequat. Ullamcorper at in parturient pharetra enim enim.
+
+            Turpis metus porttitor cubilia luctus mi senectus quis. Duis accumsan sapien arcu aliquam phasellus lobortis potenti. Iaculis potenti phasellus laoreet sodales integer sollicitudin congue nulla dui. Vivamus ultrices torquent laoreet pellentesque fringilla massa rhoncus volutpat elit. Donec erat non aliquam donec id. Sed nec ultrices amet condimentum, consectetur duis sodales. Eget ridiculus rutrum proin blandit ipsum; commodo nunc!
+
+            Massa mauris potenti eros nulla habitant, habitant tempus imperdiet. Ornare lorem et, condimentum metus sodales vitae. Mus felis ultrices iaculis euismod curabitur. Dui sed consectetur augue posuere quis ante vestibulum nulla. Bibendum quis etiam purus suscipit praesent sociosqu non dapibus. Elit cubilia justo conubia tempus ridiculus duis maecenas morbi. Molestie curae sapien neque ac ac quisque. Id accumsan augue felis tellus litora placerat interdum.
+
+            Volutpat mollis eget vulputate placerat ipsum integer; aenean accumsan. Facilisi pulvinar commodo accumsan aliquet pretium suscipit finibus egestas. Dis magnis urna sed facilisi sagittis sapien in tempor molestie. Dignissim montes sapien eu fringilla auctor pharetra. Ligula tincidunt primis maecenas dui elit quisque mauris placerat. Augue gravida metus donec dignissim tincidunt dis! Cursus molestie nulla sociosqu phasellus volutpat lacus tempus convallis. Taciti platea vehicula orci sollicitudin lacus nunc maximus.
+
+            Malesuada hac taciti ad fringilla curae efficitur pharetra vivamus nulla. Auctor vivamus dui pretium amet urna conubia interdum sed. Est justo lectus posuere dignissim vehicula curae. Erat etiam pulvinar sagittis ornare penatibus. Euismod dictum sit quis aptent lacinia. Interdum porta lobortis libero semper faucibus. Lorem porttitor faucibus elit porta tristique netus. Vehicula suscipit magnis augue hac commodo varius.
+
+            Nisl laoreet dignissim sodales fusce natoque himenaeos, phasellus ac. Laoreet nunc aenean condimentum sapien netus. Natoque litora nibh ultricies ligula nullam ultrices. Ex class nunc rutrum tincidunt praesent efficitur. Non cras sollicitudin aptent rhoncus metus, lacinia pellentesque. Penatibus vehicula laoreet dis cras egestas auctor euismod sit lacinia? Dolor cras neque proin pellentesque ultricies maximus nunc ut.
+
+            Cras velit ad cras aenean eget ridiculus mattis sollicitudin purus. Quis nisl condimentum quis maximus viverra; senectus ante ligula amet. Penatibus vehicula litora vestibulum iaculis faucibus tempus viverra cras tincidunt. Eget adipiscing quis hendrerit nullam nulla, nascetur nostra volutpat. Urna enim dictum auctor nostra montes. Vulputate hendrerit semper eros fringilla sapien rutrum purus curae tempus. Nam cras fusce hac inceptos scelerisque quam aliquam. Fusce risus mattis maecenas; ad auctor adipiscing senectus eget. Lacinia pulvinar sagittis maximus tincidunt primis rhoncus velit condimentum auctor. Varius arcu arcu, finibus blandit quam blandit.
+
+            Dictum convallis luctus dictum condimentum nascetur. Vel conubia suspendisse integer lacinia vivamus. Enim congue hendrerit laoreet lobortis lacus tortor iaculis turpis. Sapien cras proin adipiscing vel blandit ad porta leo. Scelerisque duis habitant varius lorem tempor per. Porttitor congue justo natoque sodales magna senectus fermentum odio. Posuere ornare risus feugiat porttitor diam litora. Sed ultricies nisi, arcu imperdiet imperdiet varius. Rutrum egestas aenean vel; pulvinar ultricies dolor.
+
+            Magna sed nam semper duis commodo mattis. Arcu cursus eleifend interdum interdum maximus curae auctor. Luctus dis curae vehicula conubia elit consectetur orci magna. Libero lorem ultricies primis feugiat commodo viverra lacinia sapien. Efficitur et euismod leo class ullamcorper aenean vehicula. Venenatis pretium bibendum lacus faucibus dis laoreet aptent elementum. Fermentum pulvinar adipiscing aliquam, potenti tristique nostra.
+
+            Dis laoreet nisl dolor ac ullamcorper lacus amet euismod. Velit fermentum integer accumsan rhoncus metus nec habitasse id ut. Convallis fames ipsum dui congue urna, vel varius quam. Tincidunt aenean maecenas cursus etiam porta. Metus semper primis nulla, aliquam scelerisque ac tortor euismod. Netus justo scelerisque rhoncus consectetur egestas luctus suscipit. Maecenas neque hendrerit a in natoque; vel cubilia in ex. Varius purus lacinia ullamcorper hendrerit commodo habitasse consectetur fermentum. Apharetra morbi semper consectetur; dapibus montes dictumst laoreet.
+
+            Mollis faucibus litora praesent gravida per himenaeos posuere aenean malesuada. Dapibus purus facilisis rhoncus nam fermentum. Sapien nascetur torquent curabitur; volutpat faucibus quisque netus eget scelerisque. Maximus suspendisse quam lorem luctus magna fames. Felis maecenas consectetur velit donec a nulla vulputate nascetur aliquam. Auctor per tellus curae torquent imperdiet phasellus diam. Enim suscipit taciti leo primis aliquet per urna elit. Pulvinar dignissim scelerisque vehicula praesent conubia est.
+
+            Nibh integer parturient eget sapien porttitor sapien ante tellus litora. Suscipit adipiscing adipiscing felis rhoncus erat odio lorem. Curabitur facilisi nec finibus ac proin placerat. Adipiscing malesuada aliquet purus; id magna tortor. Tristique velit metus venenatis elementum mattis laoreet senectus? Aenean ante accumsan lobortis leo adipiscing metus. Nisi auctor non sit ultrices dis at.
+
+            Commodo cubilia aenean fringilla porta facilisi porttitor primis a morbi. Mi ligula penatibus vivamus hac cras. Condimentum eget cras semper eget dapibus litora litora volutpat. Praesent quisque cursus vulputate convallis penatibus sem; in finibus. Ut nulla blandit curae curae netus fringilla gravida. Fermentum turpis eros duis elit sit et facilisi justo. Ornare finibus eleifend fermentum euismod ex massa. Commodo litora penatibus non malesuada quis odio torquent?
+
+            Cras est etiam nibh pharetra ex donec ornare. Litora euismod aliquet habitant; maximus malesuada cursus primis efficitur. Habitant curabitur mus parturient platea molestie himenaeos tempor. Torquent curae suspendisse curae iaculis cubilia class orci at. Eros lacinia scelerisque malesuada vehicula morbi. Vivamus felis condimentum purus conubia tincidunt nam quisque. Ipsum eleifend dictumst praesent, penatibus vitae porttitor.
+
+            Aenean suspendisse potenti consequat justo penatibus sollicitudin felis. Parturient aliquam integer nisl auctor per donec ipsum porta. Ac euismod congue adipiscing nullam ridiculus sollicitudin placerat. Imperdiet placerat mattis iaculis magnis dis congue blandit torquent sociosqu. Tincidunt scelerisque pulvinar parturient suscipit conubia consequat congue. Mauris netus nam risus praesent orci, mauris convallis scelerisque. Gravida nullam blandit magna arcu erat egestas suspendisse turpis.
+
+            Auctor malesuada dapibus nisi curabitur lobortis torquent; cubilia torquent. Sodales leo cubilia aliquet ad suspendisse at inceptos dignissim vel. In ante amet lacus porta et cras. Nostra netus nibh sociosqu magna morbi; penatibus ullamcorper cubilia. Commodo lacus praesent mattis finibus fames et? Lorem molestie tristique massa sapien ac feugiat penatibus suscipit. Natoque quisque mauris quisque quis sollicitudin duis sed. Faucibus quam lobortis finibus tristique facilisis rhoncus.
+
+            Lorem ipsum odor amet, consectetuer adipiscing elit. Lacinia venenatis auctor mus lectus est conubia. Dictumst parturient eget nec himenaeos mollis feugiat eget. Morbi eros ridiculus accumsan etiam egestas magna; vivamus pretium platea. Vitae habitasse sapien laoreet ac ornare nunc. Curabitur justo eu cursus aliquam placerat molestie. Commodo aliquet convallis inceptos auctor finibus ullamcorper. Ultricies blandit non congue primis himenaeos proin leo posuere? Accumsan platea nec ex molestie pellentesque sapien ac.
+
+            Rutrum sem aliquam mus convallis ultricies egestas himenaeos. Turpis etiam augue condimentum fermentum facilisis. Nulla interdum ultricies nullam condimentum maximus est. Egestas nascetur conubia augue venenatis amet tempus facilisis. Maximus purus blandit hendrerit finibus montes pulvinar cursus. Tempus nam vehicula nam dis egestas mattis. Ridiculus donec aliquet aliquet elementum elementum.
+
+            Lobortis ultricies auctor ligula risus posuere varius iaculis. Habitasse ligula lacus adipiscing per proin. Ultrices vel vestibulum mauris habitant egestas ridiculus egestas quis. Tristique arcu curae fringilla est semper fermentum non fames sapien. Elementum porta nulla consequat congue pretium cubilia curabitur dui. Luctus vulputate aliquet curae hendrerit semper ridiculus nulla dictum parturient. Faucibus penatibus purus sed, integer scelerisque ex. Justo molestie cursus risus eget mollis dictum mattis curabitur.
+
+            Lacus varius fringilla aliquam interdum bibendum eleifend suspendisse nascetur pretium. Lobortis semper nullam; bibendum vestibulum semper consectetur. Maecenas rutrum curabitur nunc magna himenaeos magnis consequat sem. Eu sem sapien dictumst, venenatis montes maecenas. Condimentum ipsum condimentum accumsan tellus hendrerit congue. Vivamus semper inceptos massa ante efficitur dictumst integer pulvinar. Ipsum consequat porta ullamcorper mus velit. Tempor sagittis congue maecenas a iaculis pulvinar aliquam. Platea mi nam vivamus aenean id fames viverra condimentum. Natoque enim eu accumsan consequat, cras ultrices sapien velit.
+
+        </p>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    <script>
+        function goBack() {
+            window.location.href = "displayBookProgress.html"; 
+        }
+
+        // Sticky Progress Bar
+        const progressBar = document.getElementById('scroll-progress-bar');
+        const progressBarContainer = document.getElementById('progress-bar-container');
+        const navbarHeight = document.getElementById('navbar-container').offsetHeight;
+        const backArrow = document.querySelector('.back-arrow');
+
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+
+            // Update progress bar width
+            progressBar.style.width = scrollPercent + '%';
+
+            // Toggle sticky class based on scroll position
+            if (scrollTop > navbarHeight) {
+                progressBarContainer.classList.add('sticky');
+                backArrow.classList.add('sticky-back-arrow');
+            } else {
+                progressBarContainer.classList.remove('sticky');
+                backArrow.classList.remove('sticky-back-arrow');
+            }
+        });
+    </script>
+    <script src="../js/authUser.js" type="text/javascript"></script>
+    <script src="../js/readBook.js" type="text/javascript"></script>
+</body>
+</html>
