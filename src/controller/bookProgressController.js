@@ -175,6 +175,7 @@ module.exports.resetBookProgress = (req, res) => {
 
 module.exports.deleteBookProgress = (req, res, next) => {
     const rentHistoryId = res.locals.rent_history_id;
+    const dueStatus = res.locals.returnResponse.due_status;
 
     if (!rentHistoryId) {
         console.error("Missing rent history ID.");
@@ -184,7 +185,11 @@ module.exports.deleteBookProgress = (req, res, next) => {
     model.deleteByRentHistoryId(rentHistoryId)
         .then(() => {
             console.log(`Book progress for rent_history_id ${rentHistoryId} deleted successfully.`);
-            res.status(200).json(res.locals.returnResponse); // Return the original response
+
+            if (dueStatus == true) {
+                next();
+            } else
+                return res.status(200).json(res.locals.returnResponse); // Return the original response if not due
         })
         .catch((error) => {
             console.error("Error deleting book progress:", error);

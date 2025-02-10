@@ -20,7 +20,7 @@ module.exports.retrieveSinglePenaltyRecord = (req, res, next) => {
     const userId = res.locals.user_id; 
     const penaltyId = parseInt(req.params.id, 10); 
 
-    if (!penaltyId || isNaN(penaltyId)) {
+    if (!penaltyId ) {
         return res.status(400).json({ message: "Invalid or missing penalty fee ID" });
     }
 
@@ -87,6 +87,22 @@ module.exports.payPenaltyFees = (req, res, next) => {
 
 module.exports.insertPenaltyRecord = (req, res, next) => {
     const userId = res.locals.user_id; 
+    const rentHistoryId = res.locals.rent_history_id;
+    const returnResponse = res.locals.returnResponse;
+    const daysOverdue = res.locals.returnResponse.daysOverdue;
+
+    // Calculate penalty fees ($5 per overdue day)
+    const penaltyFee = daysOverdue * 5;
+
+    model.insertPenalty({ rentHistoryId, userId, penaltyFee })
+        .then(() => {
+            return res.status(200).json(returnResponse); 
+        })
+        .catch(error => {
+            console.error("Error inserting penalty record:", error);
+            return res.status(500).json({ error: "Failed to insert penalty fee record." });
+        });
+
     
 };
 

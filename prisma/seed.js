@@ -187,7 +187,7 @@ const messages = [
 ];
 
 const penalty_fee_data = [
-  { rent_history_id: 1, user_id: 1, fees: 15, status: true, paid_on: null },
+  { rent_history_id: 1, user_id: 1, fees: 15, status: false, paid_on: null },
   { rent_history_id: 18, user_id: 1, fees: 10, status: true, paid_on: new Date('2022-12-12')},
 ];
 

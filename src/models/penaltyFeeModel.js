@@ -9,6 +9,7 @@ module.exports.retrieveAll = (userId) => {
             id : true, 
             rent_history_id: true,
             fees: true,
+            status : true,
             rent_history: {
                 select: {
                     book: {
@@ -35,7 +36,8 @@ module.exports.retrieveAll = (userId) => {
                 end_date: record.rent_history.end_date,
                 return_date: record.rent_history.return_date,
                 days_overdue: daysOverdue,
-                fees: record.fees
+                fees: record.fees,
+                status : record.status
             };
         });
     })
@@ -104,7 +106,8 @@ module.exports.retrieveAllUnpaid = (userId) => {
                 end_date: record.rent_history.end_date,
                 return_date: record.rent_history.return_date,
                 days_overdue: daysOverdue,
-                fees: record.fees
+                fees: record.fees,
+                status : record.status
             };
         });
     })
@@ -179,6 +182,27 @@ module.exports.payAllUnpaidFees = (userId) => {
         throw new Error("Failed to update penalty fee records.");
     });
 };
+
+module.exports.insertPenalty = ({ rentHistoryId, userId, penaltyFee }) => {
+    return prisma.penalty_fees.create({
+        data: {
+            rent_history_id: rentHistoryId,
+            user_id: userId,
+            fees: penaltyFee,
+            status: false, 
+            paid_on: null 
+        }
+    })
+    .then(record => {
+        console.log(`Inserted penalty record:`, record);
+        return record;
+    })
+    .catch(error => {
+        console.error("Error inserting penalty record:", error);
+        throw new Error("Failed to insert penalty record.");
+    });
+};
+
 
 
 

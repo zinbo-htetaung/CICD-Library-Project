@@ -54,7 +54,7 @@ module.exports.verifyToken = function (req, res, next){
     }
 
     const token = authHeader.substring(7);
-    console.log(token)
+
     if (!token) {
         return res.status(401).json({ message: "No token provided" });
     }

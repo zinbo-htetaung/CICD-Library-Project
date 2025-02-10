@@ -183,6 +183,7 @@ module.exports.returnBook = (data) => {
                     return {
                         rent_history_id: rentalRecord.id,
                         message: "Book returned successfully",
+                        due_status : isDue,
                         dueFee: isDue ? `$${dueFee} (Overdue by ${daysOverdue} days)` : "$0 (No overdue)",
                         daysOverdue: daysOverdue,
                         newReputation: newReputation,
