@@ -17,10 +17,7 @@ test.beforeEach(async ({ page }) => {
     await dialog.dismiss();
 
     await expect(page).toHaveURL('http://localhost:3001/admin/adminHome.html');
-
-    const navLink = page.locator('a.nav-link[href="/admin/userManagement.html"]');
-    await navLink.click(); 
-    await page.waitForURL('http://localhost:3001/admin/userManagement.html'); 
+    await page.goto('http://localhost:3001/admin/userManagement.html');
 
 });
 

@@ -85,3 +85,8 @@ module.exports.payPenaltyFees = (req, res, next) => {
         });
 };
 
+module.exports.insertPenaltyRecord = (req, res, next) => {
+    const userId = res.locals.user_id; 
+    
+};
+

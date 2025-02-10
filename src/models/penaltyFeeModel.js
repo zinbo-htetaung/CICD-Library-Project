@@ -6,15 +6,38 @@ module.exports.retrieveAll = (userId) => {
             user_id: userId
         },
         select: {
-            id : true,
+            id : true, 
             rent_history_id: true,
             fees: true,
-            status: true,
-            paid_on: true
+            rent_history: {
+                select: {
+                    book: {
+                        select: {
+                            book_name: true 
+                        }
+                    },
+                    end_date: true,
+                    return_date: true
+                }
+            }
         }
     })
     .then(records => {
-        return records;
+        return records.map(record => {
+            const endDate = new Date(record.rent_history.end_date);
+            const returnDate = record.rent_history.return_date ? new Date(record.rent_history.return_date) : new Date();
+            const daysOverdue = Math.ceil((returnDate - endDate) / (1000 * 60 * 60 * 24));
+
+            return {
+                id: record.id,
+                rent_history_id: record.rent_history_id,
+                book_name: record.rent_history.book.book_name,
+                end_date: record.rent_history.end_date,
+                return_date: record.rent_history.return_date,
+                days_overdue: daysOverdue,
+                fees: record.fees
+            };
+        });
     })
     .catch(error => {
         console.error("Error retrieving penalty fee records:", error);
@@ -52,6 +75,7 @@ module.exports.retrieveAllUnpaid = (userId) => {
             status: false 
         },
         select: {
+            id : true, 
             rent_history_id: true,
             fees: true,
             rent_history: {
@@ -74,6 +98,7 @@ module.exports.retrieveAllUnpaid = (userId) => {
             const daysOverdue = Math.ceil((returnDate - endDate) / (1000 * 60 * 60 * 24));
 
             return {
+                id: record.id,
                 rent_history_id: record.rent_history_id,
                 book_name: record.rent_history.book.book_name,
                 end_date: record.rent_history.end_date,
@@ -96,6 +121,7 @@ module.exports.retrieveAllPaid = (userId) => {
             status: true 
         },
         select: {
+            id : true, 
             rent_history_id: true,
             fees: true,
             rent_history: {
@@ -118,6 +144,7 @@ module.exports.retrieveAllPaid = (userId) => {
             const daysOverdue = Math.ceil((returnDate - endDate) / (1000 * 60 * 60 * 24));
 
             return {
+                id : record.id,
                 rent_history_id: record.rent_history_id,
                 book_name: record.rent_history.book.book_name,
                 end_date: record.rent_history.end_date,
