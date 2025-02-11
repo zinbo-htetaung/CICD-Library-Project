@@ -2,12 +2,12 @@ const { test, expect } = require('@playwright/test');
 
 const appBaseURL = 'http://localhost:3001'; // Replace with your actual base URL if different
 const loginURL = appBaseURL + '/general/html/login.html';
-const defaultUserNamePsw = {name:"bobb@gmail.com",address:'bobb@gmail.com', email: 'bobb@gmail.com', password: 'bobb@gmail.com' };
+const defaultUserNamePsw = {name:"john",address:'123 Main St, Springfield', email: 'john@gmail.com', password: 'password' };
 const updatedInfo = {
-    name: 'bobb@gmail.com',
-    email: 'bobb@gmail.com',
-    address: 'bobb@gmail.com',
-    password: 'bobb@gmail.com',
+    name: 'john-updated',
+    email: 'john@gmail.com',
+    address: 'updated address',
+    password: 'password1',
 };
 
 
@@ -48,6 +48,7 @@ test.describe('Update Profile Info', () => {
     
     test('Should update name, email, and address with valid inputs', async ({ page }) => {
 
+        await page.getByRole('button', { name: 'Actions ' }).click();
         await page.getByRole('button', { name: 'Update Info' }).click();
         // Open the Update Info modal
 
@@ -70,6 +71,7 @@ test.describe('Update Profile Info', () => {
     test('Should show error for invalid email format', async ({ page }) => {
 
 
+        await page.getByRole('button', { name: 'Actions ' }).click();
         await page.getByRole('button', { name: 'Update Info' }).click();
 
         // Enter invalid email and try to save
@@ -86,6 +88,7 @@ test.describe('Update Profile Info', () => {
 
     test('Should show error for duplicate email', async ({ page }) => {
 
+        await page.getByRole('button', { name: 'Actions ' }).click();
         await page.getByRole('button', { name: 'Update Info' }).click();
 
         // Enter an already registered email and try to save
@@ -103,6 +106,7 @@ test.describe('Update Profile Info', () => {
 
     test('Should show error for missing fields', async ({ page }) => {
 
+        await page.getByRole('button', { name: 'Actions ' }).click();
         await page.getByRole('button', { name: 'Update Info' }).click();
 
         // Leave the name field empty and try to save

@@ -2,6 +2,20 @@ const prisma = require('./prismaClient');
 
 module.exports.createQueueEntry = async (userId, bookId) => {
     try {
+        // Check if the user is currently renting the book
+        const activeRental = await prisma.rent_history.findFirst({
+            where: {
+                user_id: userId,
+                book_id: bookId,
+                return_date: null // Means the book has not been returned yet
+            }
+        });
+
+        if (activeRental) {
+            console.warn(`User ${userId} is currently renting book ${bookId}.`);
+            throw new Error(`User is currently renting this book and cannot join the queue.`);
+        }
+
         // Find the highest queue_number for the given book_id
         const lastQueueEntry = await prisma.queue.findFirst({
             where: { book_id: bookId },
@@ -39,9 +53,12 @@ module.exports.createQueueEntry = async (userId, bookId) => {
         };
     } catch (error) {
         console.error(`Error occurred while creating queue entry for user_id ${userId} and book_id ${bookId}:`, error.message);
-        throw new Error(`Failed to create queue entry due to a database error.`);
+        
+        // Instead of overwriting the error, return the actual error message
+        throw new Error(error.message);
     }
 };
+
 
 module.exports.retrieveQueueByUserId = async (userId) => {
     try {
