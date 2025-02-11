@@ -230,6 +230,9 @@
         document.getElementById('chatbot-send-btn').addEventListener('click', function () {
             let userInput = document.getElementById('chatbot-input').value.trim();
             if (!userInput) return;
+            if (!liveChatActive) {
+                displayMessage(userInput, 'user');
+            }
 
             if (searchInProgress) {
                 searchBooks(userInput);
@@ -245,51 +248,64 @@
         });
 
         function displayMessage(message, sender) {
-            let chatContainer = document.getElementById('chatbot-messages');
+            console.log(liveChatActive);
+            if (!liveChatActive) {
+                let messageContainer = document.createElement('div');
+                messageContainer.classList.add('message');
+                messageContainer.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
 
-            // Get last message element
-            let lastMessage = chatContainer.lastElementChild;
+                // Use innerHTML to allow HTML content (like <a> tag) to be rendered correctly
+                messageContainer.innerHTML = message;
 
-            // Prevent duplicate consecutive messages
-            if (lastMessage && lastMessage.innerHTML.trim() === message.trim()) {
-                return;
+                document.getElementById('chatbot-messages').appendChild(messageContainer);
+                document.getElementById('chatbot-messages').scrollTop = document.getElementById('chatbot-messages').scrollHeight;
+            } else {
+                let chatContainer = document.getElementById('chatbot-messages');
+
+                // Get last message element
+                let lastMessage = chatContainer.lastElementChild;
+
+                // Prevent duplicate consecutive messages
+                if (lastMessage && lastMessage.innerHTML.trim() === message.trim()) {
+                    return;
+                }
+
+                let messageContainer = document.createElement('div');
+                messageContainer.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
+                messageContainer.innerHTML = message;
+                chatContainer.appendChild(messageContainer);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
             }
-
-            let messageContainer = document.createElement('div');
-            messageContainer.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
-            messageContainer.innerHTML = message;
-            chatContainer.appendChild(messageContainer);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
         function generateBotResponse(userInput) {
             let doc = nlp(userInput.toLowerCase());
-
             if (liveChatActive) {
                 sendMessageToAdmin(userInput);
                 return null;  // 🚀 Do not respond with normal chatbot messages
+            } else {
+
+                if (doc.has('hello') || doc.has('hi') || doc.has('hey')) return "Hello! How can I assist you today? 😊";
+                if (doc.has('hours') || doc.has('open') || doc.has('close')) return "We are open from 9 AM to 6 PM every day!";
+                if (doc.has('books') || doc.has('collection')) return 'We have a large collection of books! <a href="displayAllBooks.html" target="_blank">Explore here.</a>';
+                if (doc.has('membership') || doc.has('register')) return "Sign up for membership on our website or visit the library with an ID.";
+                if (doc.has('contact') || doc.has('agent') || doc.has('help')) {
+                    displayMessage("Live agent chat enabled. Connecting you to an admin...", "bot");
+
+                    // Wait for 2-3 seconds before calling enableLiveChat
+                    setTimeout(() => {
+                        enableLiveChat();
+                    }, Math.floor(Math.random() * 1000) + 2000);
+
+                    return "⏳ Retrieving chat history..."
+                }
+                if (doc.has('search') && !searchInProgress) {
+                    searchInProgress = true;
+                    return "Please type the name of the book you're searching for.";
+                }
+
+                return "I'm not sure how to respond to that. Try asking about our opening hours, books, or membership.";
             }
-
-            if (doc.has('hello') || doc.has('hi') || doc.has('hey')) return "Hello! How can I assist you today? 😊";
-            if (doc.has('hours') || doc.has('open') || doc.has('close')) return "We are open from 9 AM to 6 PM every day!";
-            if (doc.has('books') || doc.has('collection')) return 'We have a large collection of books! <a href="displayAllBooks.html" target="_blank">Explore here.</a>';
-            if (doc.has('membership') || doc.has('register')) return "Sign up for membership on our website or visit the library with an ID.";
-            if (doc.has('contact') || doc.has('agent') || doc.has('help')) {
-                displayMessage("✅ Live agent chat enabled. Connecting you to an admin...", "bot");
-
-                // Wait for 2-3 seconds before calling enableLiveChat
-                setTimeout(() => {
-                    enableLiveChat();
-                }, Math.floor(Math.random() * 1000) + 2000); // Random delay between 2-3 seconds
-
-                return "⏳ Retrieving chat history..." // Empty return because the message is handled asynchronously
-            }
-            if (doc.has('search') && !searchInProgress) {
-                searchInProgress = true;
-                return "Please type the name of the book you're searching for.";
-            }
-
-            return "I'm not sure how to respond to that. Try asking about our opening hours, books, or membership.";
         }
 
         async function searchBooks(bookName) {
@@ -303,7 +319,7 @@
                     const data = await response.json();
                     if (data.books.length > 0) {
                         data.books.forEach((book, index) => {
-                            let bookMessage = `📖 (${index + 1}) ${book.book_name} by ${book.author}. <a href="displaySingleBook.html?bookId=${book.id}" target="_blank">View details</a>`;
+                            let bookMessage = `📖 (${index + 1}) ${book.book_name} by ${book.author}.  <a href="displaySingleBook.html?bookId=${book.id}" target="_blank">Click here to view details ^^</a>`;
                             displayMessage(bookMessage, 'bot');
                         });
                     } else {

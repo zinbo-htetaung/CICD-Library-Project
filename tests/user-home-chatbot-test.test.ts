@@ -77,7 +77,7 @@ test.describe('Library System Flow', () => {
     console.log('Chatbot toggle button is stable.');
 
     console.log('Forcing click on the chatbot toggle button...');
-    await toggleButton.click({ force: true });
+    await toggleButton.dblclick({ force: true });
     console.log('Chatbot toggle button clicked.');
 
     console.log('Waiting for chatbot container to open...');
@@ -120,19 +120,20 @@ test.describe('Library System Flow', () => {
     // Step 5: Search for a book
     console.log('Initiating book search...');
     await page.locator('button:has-text("Search Book")').click();
-    await chatbotInput.fill('Gatsby');
-    await page.locator('#chatbot-send-btn').click();
-    console.log('Book search performed.');
-
     // Verify book search response
     const searchResponse = page.locator('#chatbot-messages .bot-message:last-child');
     await expect(searchResponse).toContainText('Please type the name of the book you\'re searching for.');
     console.log('Verified book search response.');
 
+    await page.waitForTimeout(2000);
+    await chatbotInput.fill('Gatsby');
+    await page.locator('#chatbot-send-btn').click();
+    console.log('Book search performed.');
+
     // Step 6: Navigate to book details
     console.log('Navigating to book details...');
     const page1Promise = page.waitForEvent('popup'); // Wait for a new page to open
-    await page.locator('a:has-text("Click here to view details ^^")').click();
+    await page.getByRole('link', { name: 'Click here to view details ^^' }).click();
     const newPage = await page1Promise;
     await newPage.waitForLoadState();
     console.log('Navigated to book details.');
@@ -159,7 +160,7 @@ test.describe('Library System Flow', () => {
     console.log('Chatbot toggle button is stable.');
 
     console.log('Forcing click on the chatbot toggle button...');
-    await toggleButton.click({ force: true });
+    await toggleButton.dblclick({ force: true });
     console.log('Chatbot toggle button clicked.');
 
     console.log('Waiting for chatbot container to open...');
