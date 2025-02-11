@@ -129,5 +129,5 @@ function startMessagePolling(userId, token) {
 
     setInterval(() => {
         fetchMessages(userId, token);
-    }, 3000); // ✅ Only appends new messages, no flickering
+    }, 10000); // ✅ Only appends new messages, no flickering
 }
