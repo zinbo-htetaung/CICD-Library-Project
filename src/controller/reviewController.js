@@ -143,8 +143,6 @@ module.exports.checkRentHistory = (req, res, next) => {
         return res.status(400).json({ message: "BookId is not provided." });
     }
 
-    console.log(res.locals.user_id);
-
     const bookId = parseInt(req.params.bookId, 10);
     const userId = parseInt(res.locals.user_id, 10);
 
@@ -162,7 +160,6 @@ module.exports.checkRentHistory = (req, res, next) => {
             if (!rentHistory) {
                 return res.status(403).json({ message: "You need to rent and read the book before being allowed to review it." });
             }
-
             next();
         })
         .catch(function (error) {
