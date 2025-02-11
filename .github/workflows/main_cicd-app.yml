@@ -9,14 +9,6 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  DATABASE_URL: ${{vars.DATABASE_URL}}
-  PORT: ${{vars.PORT}}
-  JWT_EXPIRES_IN: ${{vars.JWT_EXPIRES_IN}}
-  JWT_ALGORITHM: ${{vars.JWT_ALGORITHM}}
-  JWT_SECRET_KEY: ${{vars.JWT_SECRET_KEY}}
-
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -43,7 +35,15 @@ jobs:
           npm install
           npx playwright install                                              
           npm run build --if-present
-          npm run test --if-present
+          
+      - name: npm run test
+        env:
+          DATABASE_URL: "postgresql://cicd-app_owner:RDd3tAelf1Cz@ep-late-morning-a1bggx4t.ap-southeast-1.aws.neon.tech/cicd-app?sslmode=require"
+          JWT_SECRET_KEY: "my-secret"
+          JWT_EXPIRES_IN: "1d"
+          JWT_ALGORITHM: "HS256"
+          PORT: 3001
+        run: npm run test --if-present
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
