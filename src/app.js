@@ -15,6 +15,7 @@ const bookRentalQueueRoute=require('./routers/bookRentalQueueRoute');
 const messageRoutes = require('./routers/messageRoute');
 const bookProgressRoute = require('./routers/bookProgressRoute');
 const penaltyFeeRoute = require('./routers/penaltyFeeRoute');
+const recommendationRoute = require('./routers/recommendationRoute');
 
 const path = require('path');
 
@@ -34,7 +35,7 @@ app.use('/api/rentHistory', rentHistoryRoute);
 app.use('/api/sendEmail', sendEmailRoute);
 app.use('/api/insights', adminInsightsRoute);
 app.use('/api/queue', bookRentalQueueRoute);
-
+app.use('/api/recommendation', recommendationRoute);
 app.use('/api/messages', messageRoutes);
 app.use('/api/bookProgress', bookProgressRoute);
 app.use('/api/penaltyFees', penaltyFeeRoute);
