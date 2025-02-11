@@ -139,7 +139,7 @@ const reviews = [
 
 // Seed Rent History
 const rentHistory = [
-  { book_id: 1, user_id: 1, start_date: new Date('2021-06-15'), end_date: new Date('2021-07-15'), return_date: new Date('2021-07-14'), due_status: false },
+  { book_id: 1, user_id: 1, start_date: new Date('2021-06-15'), end_date: new Date('2021-07-15'), return_date: new Date('2021-07-18'), due_status: true },
   { book_id: 2, user_id: 2, start_date: new Date('2020-03-10'), end_date: new Date('2020-04-10'), return_date: new Date('2020-04-08'), due_status: false },
   { book_id: 3, user_id: 3, start_date: new Date('2019-05-20'), end_date: new Date('2019-06-20'), return_date: new Date('2019-06-25'), due_status: true },
   { book_id: 4, user_id: 2, start_date: new Date('2021-08-01'), end_date: new Date('2021-09-01'), return_date: new Date('2021-09-05'), due_status: true },
@@ -156,7 +156,7 @@ const rentHistory = [
   { book_id: 5, user_id: 1, start_date: new Date('2021-10-20'), end_date: new Date('2021-11-20'), return_date: new Date('2021-11-22'), due_status: true },
   { book_id: 2, user_id: 2, start_date: new Date('2022-04-05'), end_date: new Date('2022-05-05'), return_date: new Date('2022-05-03'), due_status: false },
   { book_id: 4, user_id: 3, start_date: new Date('2022-06-01'), end_date: new Date('2022-07-01'), return_date: new Date('2022-07-02'), due_status: true },
-  { book_id: 3, user_id: 1, start_date: new Date('2022-08-10'), end_date: new Date('2022-09-10'), return_date: new Date('2022-09-09'), due_status: false },
+  { book_id: 3, user_id: 1, start_date: new Date('2022-08-10'), end_date: new Date('2022-09-10'), return_date: new Date('2022-09-12'), due_status: true },
   { book_id: 5, user_id: 2, start_date: new Date('2022-10-01'), end_date: new Date('2022-11-01'), return_date: new Date('2022-11-05'), due_status: true },
   { book_id: 1, user_id: 3, start_date: new Date('2023-01-05'), end_date: new Date('2023-02-05'), return_date: new Date('2023-02-02'), due_status: false },
 ];
@@ -186,6 +186,11 @@ const messages = [
   { userId: 1, sender: 'admin', message: 'Go to settings and click on "Reset Password".', createdAt: new Date('2023-12-04T09:50:00Z') },
 ];
 
+const penalty_fee_data = [
+  { rent_history_id: 1, user_id: 1, fees: 15, status: false, paid_on: null },
+  { rent_history_id: 18, user_id: 1, fees: 10, status: true, paid_on: new Date('2022-12-12')},
+];
+
 const userStatuses = [];
 
 async function main() {
@@ -212,9 +217,6 @@ async function main() {
     data: messages,
   });
   
-  console.log('Inserted messages:', insertedMessages);
-  console.log(insertedPersons, insertedStatuses);
-
   const insertedTasks = await prisma.task.createManyAndReturn({
     data: [
       { name: 'Seed 1', statusId: insertedStatuses[0].id },
@@ -282,6 +284,10 @@ async function main() {
   // Insert Rent History
   const insertedRent_history = await prisma.rent_history.createMany({
     data: rentHistory,
+  });
+
+  const insertedPenalty_fees = await prisma.penalty_fees.createMany({
+    data: penalty_fee_data,
   });
 
   // Insert Book Requests

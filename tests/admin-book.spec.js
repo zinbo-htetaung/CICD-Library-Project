@@ -19,10 +19,7 @@ test.beforeEach(async ({ page }) => {
     await dialog.dismiss();
 
     await expect(page).toHaveURL('http://localhost:3001/admin/adminHome.html');
-
-    const navLink = page.locator('a.nav-link[href="/admin/displayAllBooks.html"]');
-    await navLink.click(); 
-    await page.waitForURL('http://localhost:3001/admin/displayAllBooks.html'); 
+    await page.goto('http://localhost:3001/admin/displayAllBooks.html');
 
 });
 
@@ -172,7 +169,7 @@ test.describe('Admin Book Tests', () => {
     const bookCardsContainer = page.locator('#bookCardsContainer');
     const bookCards = bookCardsContainer.locator('.card');
     
-    const specificBookCard = page.locator('.card-link[href*="bookId=1"]');
+    const specificBookCard = page.locator('.card-link[href*="bookId=6"]');
     await specificBookCard.click();
 
     // await expect(page).toHaveURL('http://localhost:3001/admin/displaySingleBook.html?bookId=1');
@@ -202,7 +199,7 @@ test.describe('Admin Book Tests', () => {
     const bookCardsContainer = page.locator('#bookCardsContainer');
     await expect(bookCardsContainer).toBeVisible();
 
-    const specificBookCard = page.locator('.card-link[href*="bookId=1"]');
+    const specificBookCard = page.locator('.card-link[href*="bookId=6"]');
     await specificBookCard.click();
 
     // await expect(page).toHaveURL('http://localhost:3001/admin/displaySingleBook.html?bookId=1');
@@ -228,7 +225,7 @@ test.describe('Admin Book Tests', () => {
     const bookCardsContainer = page.locator('#bookCardsContainer');
     await expect(bookCardsContainer).toBeVisible();
   
-    const specificBookCard = page.locator('.card-link[href*="bookId=1"]');
+    const specificBookCard = page.locator('.card-link[href*="bookId=6"]');
     await specificBookCard.click();
   
     page.on('dialog', async (dialog) => {

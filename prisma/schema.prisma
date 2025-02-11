@@ -88,6 +88,7 @@ model rent_history {
   book_progress book_progress?
   book          book           @relation(fields: [book_id], references: [id], onDelete: Cascade)
   users         users          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  penalty_fees penalty_fees[]
 }
 
 model review {
@@ -125,7 +126,8 @@ model users {
   review        review[]
   user_status   user_status[]
   Queue Queue[]
-   messages     Message[] @relation("UserMessages")
+  messages     Message[] @relation("UserMessages")
+  penalty_fees penalty_fees[]
 }
 
 model Queue {
@@ -165,5 +167,16 @@ model Message {
   user           users    @relation(fields: [userId], references: [id], onDelete: Cascade, name: "UserMessages")
   parentMessage  Message? @relation("Thread", fields: [replyToId], references: [id], onDelete: Cascade)
   replies        Message[] @relation("Thread")
+}
+
+model penalty_fees {
+  id              Int       @id @default(autoincrement())
+  rent_history_id Int       @unique
+  user_id         Int
+  fees            Float
+  status          Boolean   @default(false)
+  paid_on         DateTime? @db.Date
+  rent_history rent_history @relation(fields: [rent_history_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users        users        @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 

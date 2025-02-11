@@ -55,20 +55,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         const reading = bookProgresses.filter((book) => book.status === "Reading");
         const completed = bookProgresses.filter((book) => book.status === "Completed");
 
-        renderBookProgressSection("Unread Books", unread, "unreadBookSection", false, true);
+        renderBookProgressSection("Unread Books", unread, "unreadBookSection", false, true, false);
         renderBookProgressSection(
             "Currently Reading",
             reading,
             "readingBookSection",
             true,
-            true
+            true,
+            false
         );
         renderBookProgressSection(
             "Completed Books",
             completed,
             "completedBookSection",
             true,
-            false
+            false,
+            true
         );
     } catch (error) {
         console.error("Failed to fetch book progress data:", error);
@@ -82,7 +84,8 @@ function renderBookProgressSection(
     books,
     sectionId,
     showReset = false,
-    showFinish = false
+    showFinish = false,
+    showShare = false
   ) {
     const section = document.getElementById(sectionId);
 
@@ -126,6 +129,19 @@ function renderBookProgressSection(
               ? `<button class="btn btn-primary finish-btn" data-id="${book.id}">
                   Finish Reading
                 </button>`
+              : ""
+          }
+          ${
+            showShare
+              ? `<div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Share<i class="bi bi-share-fill ms-2"></i>
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      <button class="dropdown-item btn btn-light share-btn" data-id="${book.id}"><i class="bi bi-envelope-paper-fill me-3"></i>Gmail</button>
+                      <button class="dropdown-item btn btn-light share-btn" data-id="${book.id}"><i class="bi bi-twitter-x me-3"></i>X</button>
+                    </div>
+                </div>`
               : ""
           }
         </div>`;
@@ -174,35 +190,97 @@ function renderBookProgressSection(
         const progressId = target.getAttribute("data-id");
         await updateBookProgress(progressId, "reset");
       }
+
+      if (target.classList.contains("share-btn")) {
+        const progressId = target.getAttribute("data-id");
+        const shareType = target.innerText.trim();
+        await shareProgress(progressId, shareType);
+      }
     });
 }
 
 async function updateBookProgress(id, action) {
-const token = localStorage.getItem("token");
-const endpoint =
-    action === "complete"
-    ? `/api/bookProgress/complete/${id}`
-    : `/api/bookProgress/reset/${id}`;
+  const token = localStorage.getItem("token");
+  const endpoint =
+      action === "complete"
+      ? `/api/bookProgress/complete/${id}`
+      : `/api/bookProgress/reset/${id}`;
 
-try {
-    const response = await fetch(endpoint, {
-    method: "PUT",
-    headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-    },
-    });
+  try {
+      const response = await fetch(endpoint, {
+      method: "PUT",
+      headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+      },
+      });
 
-    const result = await response.json();
+      const result = await response.json();
 
-    if (response.ok) {
-        alert(result.message);
-        window.location.reload();
-    } else {
-        alert(result.message);
-    }
-} catch (error) {
-    alert("An error occurred. Please try again.");
-    console.error(error);
+      if (response.ok) {
+          alert(result.message);
+          window.location.reload();
+      } else {
+          alert(result.message);
+      }
+  } catch (error) {
+      alert("An error occurred. Please try again.");
+      console.error(error);
+  }
 }
-}
+
+async function shareProgress(id, shareType) {
+  const token = localStorage.getItem("token");
+  var bookProgressObj;
+
+  try {
+      const response = await fetch(`/api/bookProgress/share/${id}`, {
+      method: "GET",
+      headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+      },
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        bookProgressObj = result;
+      } else {
+          alert(result.message);
+      }
+  } catch (error) {
+      alert("An error occurred. Please try again.");
+      console.error(error);
+  }
+
+  // console.log(bookProgressObj);
+  const bookName = bookProgressObj.bookProgress.book_name;
+  const bookId = bookProgressObj.bookProgress.id;
+  const author = bookProgressObj.bookProgress.author;
+  const appName = "Vaselene Library";
+
+  switch (shareType) {
+    case("Gmail"):    
+      const body = encodeURIComponent(
+        `I just completed reading "${bookName}" by ${author}! Check it out here ${appName} - https://vaselene-library-bragatg9f4d6e3cu.southeastasia-01.azurewebsites.net/general/html/displaySingleBook.html?bookId=${bookId}`
+      );
+      const subject = encodeURIComponent("I Finished a Great Book!");
+      window.open(
+        `https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=&su=${subject}&body=${body}`,
+        "_blank"
+      );
+      break;
+
+    case("X"):
+      const tweetText = encodeURIComponent(
+        `I just completed reading "${bookName}" by ${author}! Check it out on ${appName} - https://vaselene-library-bragatg9f4d6e3cu.southeastasia-01.azurewebsites.net/general/html/displaySingleBook.html?bookId=${bookId}`
+      );
+
+      window.open(
+          `https://x.com/intent/tweet?text=${tweetText}`,
+          "_blank"
+      );
+      break;
+  }
+};
