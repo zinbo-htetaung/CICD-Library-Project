@@ -36,8 +36,13 @@ pgCamelCase.inject(pg);
 // Configure the pool to use DATABASE_URL
 const pool = new pg.Pool({
     connectionString: process.env.DATABASE_URL, // Use DATABASE_URL for connection
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    host: process.env.DB_HOST,
+    database: process.env.DB_DATABASE,
+    max: process.env.DB_CONNECTION_LIMIT,
     ssl: {
-        rejectUnauthorized: false, // Required for cloud databases like Neon
+        rejectUnauthorized: false, // Required for Neon SSL connections
     },
 });
 

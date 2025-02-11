@@ -6,47 +6,84 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function updateProfile() {
-    // Get input values from the profile form
-    const name = document.getElementById('modalProfileName').value.trim();
-    const email = document.getElementById('modalProfileEmail').value.trim();
-    const address = document.getElementById('modalProfileAddress').value.trim();
-
-    // Validate inputs
-    if (!name || !email || !address) {
-        alert("All fields are required!");
-        return;
-    }
-
     try {
-        // Call the backend API to update the profile
-        const response = await fetch("/api/users/updateProfile", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${localStorage.getItem("token")}` // Pass token for authentication
-            },
-            body: JSON.stringify({ name, email, address }),
-        });
+        console.log("Starting updateProfile function...");
 
+        // Fetch input values
+        const name = document.getElementById('modalProfileName').value.trim();
+        const email = document.getElementById('modalProfileEmail').value.trim();
+        const address = document.getElementById('modalProfileAddress').value.trim();
+
+        console.log("Fetched inputs:", { name, email, address });
+
+        // Validate inputs
+        if (!name || !email || !address) {
+            alert("All fields are required!");
+            console.error("Validation error: Missing fields");
+            return;
+        }
+
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailPattern.test(email)) {
+            alert("Invalid email format. Please correct it.");
+            console.error("Validation error: Invalid email format");
+            return;
+        }
+
+        const payload = JSON.stringify({ name, email, address });
+        console.log("Payload prepared:", payload);
+
+        // Timeout helper
+        const timeout = (ms) =>
+            new Promise((_, reject) => setTimeout(() => reject(new Error("Request timed out")), ms));
+
+        // API request with timeout
+        console.log("Sending API request to update profile...");
+        const response = await Promise.race([
+            fetch("/api/users/updateProfile", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`, // Include token for authentication
+                },
+                body: payload,
+            }),
+            timeout(15000), // Set a timeout of 15 seconds
+        ]);
+
+        // Handle response
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Failed to update profile");
+            let errorMessage = `Error: ${response.status}`;
+            try {
+                const errorData = await response.json();
+                errorMessage = errorData.message || errorMessage;
+            } catch (parseError) {
+                console.error("Failed to parse error response:", parseError);
+            }
+            throw new Error(errorMessage);
         }
 
         const result = await response.json();
-        console.log("Profile updated:", result.message);
+        console.log("Profile updated successfully:", result);
 
-        alert("Profile updated successfully!");
+        // Notify the user
+        alert(result.message || "Profile updated successfully!");
 
-        // Close the update modal
+        // Close the modal
+        console.log("Closing the update modal...");
         const updateModal = bootstrap.Modal.getInstance(document.getElementById("updateModal"));
-        updateModal.hide();
+        if (updateModal) {
+            updateModal.hide();
+        }
 
-        // Call fetchProfileData to refresh the profile data after the update
-        fetchProfileData();
-
+        // Refresh profile data
+        console.log("Refreshing profile data...");
+        await fetchProfileData();
+        console.log("Profile data refreshed.");
     } catch (error) {
-        console.error("Error updating profile:", error);
-        alert(error.message || "An unexpected error occurred. Please try again.");
+        console.error("Error during profile update:", error);
+        alert(error.message || "An error occurred while updating your profile. Please try again.");
+    } finally {
+        console.log("updateProfile function completed.");
     }
 }
