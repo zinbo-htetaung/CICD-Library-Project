@@ -118,8 +118,8 @@ const users = [
     name: 'test',
     email: 'test@gmail.com',
     password: 'password', // Plain text password, will be hashed
-    address: '2 Canberra',
-    dob: new Date('2004-04-04'),
+    address: '5 Canberra',
+    dob: new Date('2004-04-05'),
     role: 'user',
   },
   {
@@ -143,7 +143,7 @@ const reviews = [
   { book_id: 3, user_id: 2, rating: 5, review_text: 'One of the best books I have read in a while.', posted_on: new Date('2020-06-15') },
   { book_id: 4, user_id: 1, rating: 3, review_text: 'Interesting but not as gripping as I expected.', posted_on: new Date('2021-03-10') },
   { book_id: 5, user_id: 3, rating: 4, review_text: 'Very informative and well-written.', posted_on: new Date('2019-11-25') },
-  { book_id: 1, user_id: 4, rating: 4, review_text: 'Very informative and well-written.', posted_on: new Date('2019-11-25') },
+  { book_id: 1, user_id: 4, rating: 5, review_text: 'Life Changing Experience', posted_on: new Date('2018-11-25') },
 ];
 
 // Seed Rent History
@@ -298,7 +298,7 @@ async function main() {
   const insertedBook_request = await prisma.book_request.createMany({
     data: bookRequests,
   });
-
+  console.log('Inserted reviews:', insertedReviews);
   console.log('Seed data inserted successfully');
 }
 

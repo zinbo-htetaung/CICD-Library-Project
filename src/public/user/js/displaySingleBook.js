@@ -277,9 +277,6 @@ async function leaveQueue(queueId) {
   }
 }
 
-
-
-
 // Function to fetch queue information
 async function fetchQueueInfo(bookId) {
   try {
@@ -400,26 +397,27 @@ function generateStars(rating) {
   return stars;
 }
 
-// Attach event handlers to buttons
 function attachButtonHandlers() {
-  // Update review button handler
   document.querySelectorAll('.update-review-btn').forEach(button => {
     button.addEventListener('click', (event) => {
       const reviewId = event.target.dataset.reviewId;
-      const newRating = prompt("Enter new rating (1-5):");
-      const newReviewText = prompt("Enter new review text:");
-
-      if (newRating && newReviewText) {
-        updateReview(reviewId, newRating, newReviewText);
-      }
+      const reviewCard = event.target.closest('.card-body');
+      
+      const starElements = reviewCard.querySelectorAll('.bi-star-fill').length;
+      const reviewText = reviewCard.querySelector('p').textContent;
+      
+      document.getElementById('updateReviewId').value = reviewId;
+      document.getElementById('updateRating').value = starElements;
+      document.getElementById('updateReviewText').value = reviewText;
+      
+      const updateModal = new bootstrap.Modal(document.getElementById('updateReviewModal'));
+      updateModal.show();
     });
   });
 
-  // Delete review button handler
   document.querySelectorAll('.delete-review-btn').forEach(button => {
     button.addEventListener('click', (event) => {
       const reviewId = event.target.dataset.reviewId;
-
       if (confirm("Are you sure you want to delete this review?")) {
         deleteReview(reviewId);
       }
@@ -441,10 +439,17 @@ function updateReview(reviewId, rating, reviewText) {
     .then(data => {
       if (data.message) {
         alert(data.message);
+        // Hide the modal
+        const updateModal = bootstrap.Modal.getInstance(document.getElementById('updateReviewModal'));
+        updateModal.hide();
+        // Refresh the page
         location.reload();
       }
     })
-    .catch(error => console.error('Error updating review:', error));
+    .catch(error => {
+      console.error('Error updating review:', error);
+      document.getElementById('updateErrorMessage').textContent = 'An error occurred while updating the review. Please try again.';
+    });
 }
 
 // Make a DELETE request to delete the review
@@ -621,6 +626,32 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error renting book:", error);
       alert(error.message || "An unexpected error occurred. Please try again.");
     }
+  });
+});
+
+// Event listener for the update review form
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('updateReviewForm').addEventListener('submit', (event) => {
+    event.preventDefault();
+    
+    const reviewId = document.getElementById('updateReviewId').value;
+    const rating = document.getElementById('updateRating').value;
+    const reviewText = document.getElementById('updateReviewText').value;
+    
+    const errorMessage = document.getElementById('updateErrorMessage');
+    errorMessage.textContent = '';
+    
+    if (isNaN(rating) || rating < 0 || rating > 5) {
+      errorMessage.textContent = 'Please provide a valid rating between 0 and 5.';
+      return;
+    }
+    
+    if (!reviewText.trim()) {
+      errorMessage.textContent = 'Please provide a review text.';
+      return;
+    }
+    
+    updateReview(reviewId, rating, reviewText);
   });
 });
 

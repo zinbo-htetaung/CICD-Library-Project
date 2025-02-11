@@ -178,6 +178,40 @@
       </div>
     </div>
   </div>
+  <div class="modal fade" id="updateReviewModal" tabindex="-1" aria-labelledby="updateReviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="updateReviewModalLabel">
+            <i class="bi bi-pencil-square me-2"></i>Update Your Review
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="updateReviewForm" class="needs-validation" novalidate>
+            <input type="hidden" id="updateReviewId">
+            <div class="mb-4">
+              <label for="updateRating" class="form-label fw-bold">Rating</label>
+              <div class="input-group">
+                <span class="input-group-text border-0 bg-transparent px-0">
+                  <i class="bi bi-star-fill text-warning"></i>
+                </span>
+                <input type="number" class="form-control" id="updateRating" min="0" max="5" placeholder="Enter a rating (0-5)" required>
+              </div>
+              <div class="invalid-feedback">Please provide a valid rating between 0 and 5.</div>
+            </div>
+            <div class="mb-4">
+              <label for="updateReviewText" class="form-label fw-bold">Review Text</label>
+              <textarea class="form-control" id="updateReviewText" rows="4" placeholder="Share your thoughts..." required></textarea>
+              <div class="invalid-feedback">Please provide a review text.</div>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 rounded-pill py-2">Update Review</button>
+          </form>
+          <div id="updateErrorMessage" class="text-danger mt-3 text-center"></div>
+        </div>
+      </div>
+    </div>
+  </div>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
     integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
