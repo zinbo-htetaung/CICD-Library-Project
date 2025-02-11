@@ -9,11 +9,16 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  DATABASE_URL: ${{vars.DATABASE_URL}}
+  PORT: ${{vars.PORT}}
+
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
       contents: read #This is required for actions/checkout
+    environment: production
 
     steps:
       - uses: actions/checkout@v4
