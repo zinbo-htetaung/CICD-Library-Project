@@ -14,6 +14,8 @@ env:
   PORT: ${{vars.PORT}}
   JWT_EXPIRES_IN: ${{ vars.JWT_EXPIRES_IN}}
   JWT_ALGORITHM: ${{ vars.JWT_ALGORITHM}}
+  JWT_SECRET_KEY: ${{ vars.JWT_SECRET_KEY}}
+
 
 jobs:
   build:
