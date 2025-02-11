@@ -43,10 +43,11 @@ jobs:
       # Upload Playwright traces if any test fails
       - name: Upload Playwright Traces
         if: failure() # Upload only if tests fail
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-traces
           path: test-results/
+          retention-days: 7
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
