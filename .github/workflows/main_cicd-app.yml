@@ -31,7 +31,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
-
+          
+      - name: Debug Environment Variables
+        run: |
+          echo "JWT_SECRET_KEY=${{ vars.JWT_SECRET_KEY }}"
+          echo "All ENV:"
+          printenv
+          
       - name: npm install, build, and test
         run: |
           npm install
