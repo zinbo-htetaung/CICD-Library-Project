@@ -72,10 +72,12 @@ test.describe('Rent History Page Tests', () => {
     });
 
     test('Should display "No records found" message for unmatched filters', async ({ page }) => {
-        await page.locator('#filterName').fill('NonExistentUser');
-        await page.locator('#applyFilters').click();
+        await page.waitForTimeout(2000); // Wait for the table to update
 
-        await page.waitForTimeout(3000); // Wait for the table to update
+        await page.locator('#filterName').fill('NonExistentUser');
+        await page.getByRole('button', { name: 'Apply Filters' }).click();
+
+        await page.waitForTimeout(2000); // Wait for the table to update
 
         const noRecordsMessage = await page.locator('#no-records-message').isVisible();
         expect(noRecordsMessage).toBe(true);
