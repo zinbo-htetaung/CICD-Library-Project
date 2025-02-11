@@ -75,6 +75,8 @@ test.describe('Rent History Page Tests', () => {
         await page.locator('#filterName').fill('NonExistentUser');
         await page.locator('#applyFilters').click();
 
+        await page.waitForTimeout(3000); // Wait for the table to update
+
         const noRecordsMessage = await page.locator('#no-records-message').isVisible();
         expect(noRecordsMessage).toBe(true);
     });
