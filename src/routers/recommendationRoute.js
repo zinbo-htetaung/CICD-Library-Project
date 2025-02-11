@@ -3,7 +3,7 @@ const router = express.Router();
 const recommendationController = require('../controller/recommendationController');
 const jwtMiddleware = require('../middleware/jwtMiddleware');
 
-router.get('/genre', jwtMiddleware.verifyToken, recommendationController.getGenreBasedRecommendations);
-router.get('/popular', recommendationController.getMonthlyPopularBooks);
-router.get('/author', jwtMiddleware.verifyToken, recommendationController.getAuthorRecommendations);
+router.get('/genre-based', jwtMiddleware.verifyToken, recommendationController.getGenreBasedRecommendations);
+router.get('/monthly-popular', recommendationController.getMonthlyPopularBooks);
+router.get('/author-based', jwtMiddleware.verifyToken, recommendationController.getAuthorRecommendations);
 module.exports=router;

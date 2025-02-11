@@ -7,6 +7,9 @@
     <title>Library Home</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="../css/home.css" rel="stylesheet" />
+    <link href="../css/recommendation.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="../js/recommendation.js"></script>
 </head>
 
 <body>
@@ -164,8 +167,60 @@
         </div>
     </section>
     <!-- Recommendation Section -->
-    <section class="container my-5">
+    <section class="recommendation-container my-5">
         <h2 class="text-center">Your Discovery Queue</h2>
+        <div class="recommendation-wrapper">
+            <!-- Genre-based Recommendations -->
+            <div class="recommendation-section mb-4">
+                <div class="recommendation-layout">
+                    <div class="recommendation-title">
+                        <h2>Because You Love<br>Fantasy Books</h2>
+                        <p class="recommendation-subtitle">More adventures await you</p>
+                    </div>
+                    <div class="recommendation-carousel">
+                        <button class="nav-arrow prev" data-section="genre">❮</button>
+                        <div class="books-carousel" id="genre-recommendations">
+                            <div class="books-row"></div>
+                        </div>
+                        <button class="nav-arrow next" data-section="genre">❯</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Popular Books -->
+            <div class="recommendation-section mb-4">
+                <div class="recommendation-layout">
+                    <div class="recommendation-title">
+                        <h2>Monthly<br>Popular Books</h2>
+                        <p class="recommendation-subtitle">What others are reading</p>
+                    </div>
+                    <div class="recommendation-carousel">
+                        <button class="nav-arrow prev" data-section="popular">❮</button>
+                        <div class="books-carousel" id="popular-recommendations">
+                            <div class="books-row"></div>
+                        </div>
+                        <button class="nav-arrow next" data-section="popular">❯</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Author-based Recommendations -->
+            <div class="recommendation-section mb-4">
+                <div class="recommendation-layout">
+                    <div class="recommendation-title">
+                        <h2>Because You Love<br>Books from<br><span class="author-name">Stephen King</span></h2>
+                        <p class="recommendation-subtitle">More from your favorite author</p>
+                    </div>
+                    <div class="recommendation-carousel">
+                        <button class="nav-arrow prev" data-section="author">❮</button>
+                        <div class="books-carousel" id="author-recommendations">
+                            <div class="books-row"></div>
+                        </div>
+                        <button class="nav-arrow next" data-section="author">❯</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
     <!-- Email Us Section -->
     <section class="container my-5 email-us-section">
