@@ -85,6 +85,7 @@ test.describe('User Review Test', () => {
 
         const reviewSection = page.locator('#reviewsModal');
         await expect(reviewSection).toBeVisible();
+        await page.waitForTimeout(3000);
 
         const reviewCount = await reviewSection.locator('.card-body').count();
         await expect(reviewCount).toBeGreaterThan(0);
