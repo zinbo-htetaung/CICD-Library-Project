@@ -118,25 +118,20 @@ test.describe('Admin Dashboard Tests', () => {
         await viewByDropdown.selectOption('monthly');
 
         await page.waitForSelector('#year-filter');
-        console.log('Year dropdown is loaded.');
 
         // Filter rentals by specific years and verify results
         const yearDropdown = page.locator('#year-filter'); // Use the correct selector
 
         const options = await page.locator('#year-filter option').allTextContents();
-        console.log('Available options:', options);
         const yearsToTest = ['2019', '2020', '2021', '2022', '2023'];
 
         for (const year of yearsToTest) {
-            console.log(`Selecting year: ${year}`);
             await yearDropdown.selectOption(year);
 
-            console.log(`Waiting for chart to update after selecting year: ${year}`);
             await page.waitForTimeout(1000); // Adjust based on app response time
 
             const chartCanvas = page.locator('#monthlyRentalsChart');
             await expect(chartCanvas).toBeVisible();
-            console.log(`Year ${year} selected successfully and chart is visible.`);
         }
     });
 });

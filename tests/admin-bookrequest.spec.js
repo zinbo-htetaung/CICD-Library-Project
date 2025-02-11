@@ -108,6 +108,8 @@ test.describe('Manage Book Request', () => {
         await page.getByPlaceholder('Enter User ID').fill(userId);
         await page.getByRole('button', { name: 'Search ' }).click();
 
+        await page.waitForTimeout(3000);
+
         // Wait for table rows to appear
     await page.waitForSelector('table tbody tr');
 
