@@ -13,7 +13,7 @@ env:
   DATABASE_URL: ${{vars.DATABASE_URL}}
   PORT: ${{vars.PORT}}
   JWT_EXPIRES_IN: ${{ vars.JWT_EXPIRES_IN}}
-  JWT_ALGORITHM: "HS256"
+  JWT_ALGORITHM: ${{ vars.JWT_ALGORITHM}}
 
 jobs:
   build:
