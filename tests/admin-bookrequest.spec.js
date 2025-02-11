@@ -13,7 +13,8 @@ test.describe('Manage Book Request', () => {
         await page.click('button[type="submit"]');
         await expect(page).toHaveURL(`${appBaseURL}/admin/adminHome.html`);
         console.log('Login successful!');
-        await page.getByRole('link', { name: 'Manage Book Request' }).click();
+        await page.getByRole('button', { name: 'Manage' }).click();
+        await page.getByRole('link', { name: '📩 Manage Book Requests' }).click();
         await expect(page.getByRole('cell', { name: 'To Kill a Mockingbird' })).toBeVisible();
 
     })
@@ -64,9 +65,10 @@ test.describe('Manage Book Request', () => {
         // Ensure there is at least one row in the table
         const rowCount = await rows.count();
         expect(rowCount).toBeGreaterThan(0);
-
+        console.log("Current row count :"+rowCount)
         // Get data of the last row before deletion
         const lastRow = rows.nth(rowCount - 1);
+        console.log("Current last row :"+lastRow)
         const lastRowDataBefore = await lastRow.textContent();
 
         // Handle confirmation alert
@@ -89,6 +91,7 @@ test.describe('Manage Book Request', () => {
 
         // Verify that the row count has decreased by 1
         const updatedRowCount = await rows.count();
+        console.log("Updated row countr:"+updatedRowCount);
         expect(updatedRowCount).toBe(rowCount - 1);
 
         // Get data of the new last row
