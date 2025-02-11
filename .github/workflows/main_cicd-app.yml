@@ -38,11 +38,11 @@ jobs:
           
       - name: npm run test
         env:
-          DATABASE_URL: "postgresql://cicd-app_owner:RDd3tAelf1Cz@ep-late-morning-a1bggx4t.ap-southeast-1.aws.neon.tech/cicd-app?sslmode=require"
-          JWT_SECRET_KEY: "my-secret"
-          JWT_EXPIRES_IN: "1d"
-          JWT_ALGORITHM: "HS256"
-          PORT: 3001
+          DATABASE_URL: ${{vars.DATABASE_URL}}
+          JWT_SECRET_KEY: ${{vars.JWT_SECRET_KEY}}
+          JWT_EXPIRES_IN: ${{vars.JWT_EXPIRES_IN}}
+          JWT_ALGORITHM: ${{vars.JWT_ALGORITHM}}
+          PORT: ${{vars.PORT}}
         run: npm run test --if-present
 
       - name: Zip artifact for deployment
