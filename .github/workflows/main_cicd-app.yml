@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - main
-      - test-case-features-AungPP
   workflow_dispatch:
 
 jobs:
