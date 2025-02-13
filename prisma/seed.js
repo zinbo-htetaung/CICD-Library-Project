@@ -196,6 +196,69 @@ const messages = [
   { userId: 1, sender: 'admin', message: 'Go to settings and click on "Reset Password".', createdAt: new Date('2023-12-04T09:50:00Z') },
 ];
 
+const queues = [
+  // January 2024
+  { user_id: 1, book_id: 1, queue_number: 1, is_next: true, created_at: new Date('2024-01-05T10:00:00Z') },
+  { user_id: 2, book_id: 1, queue_number: 2, is_next: false, created_at: new Date('2024-01-10T10:00:00Z') },
+  { user_id: 3, book_id: 2, queue_number: 1, is_next: true, created_at: new Date('2024-01-15T10:00:00Z') },
+  { user_id: 4, book_id: 2, queue_number: 2, is_next: false, created_at: new Date('2024-01-15T10:00:00Z') },
+
+  // February 2024
+  { user_id: 1, book_id: 3, queue_number: 1, is_next: true, created_at: new Date('2024-02-08T10:00:00Z') },
+  { user_id: 2, book_id: 3, queue_number: 2, is_next: false, created_at: new Date('2024-02-14T10:00:00Z') },
+  { user_id: 3, book_id: 4, queue_number: 1, is_next: true, created_at: new Date('2024-02-20T10:00:00Z') },
+  { user_id: 4, book_id: 4, queue_number: 2, is_next: false, created_at: new Date('2024-02-20T10:00:00Z') },
+
+  // March 2024
+  { user_id: 1, book_id: 5, queue_number: 1, is_next: true, created_at: new Date('2024-03-10T10:00:00Z') },
+  { user_id: 2, book_id: 5, queue_number: 2, is_next: false, created_at: new Date('2024-03-15T10:00:00Z') },
+  { user_id: 3, book_id: 1, queue_number: 3, is_next: false, created_at: new Date('2024-03-25T10:00:00Z') },
+  { user_id: 4, book_id: 2, queue_number: 3, is_next: false, created_at: new Date('2024-03-25T10:00:00Z') },
+
+  // April 2024
+  { user_id: 1, book_id: 3, queue_number: 3, is_next: false, created_at: new Date('2024-04-05T10:00:00Z') },
+  { user_id: 2, book_id: 4, queue_number: 3, is_next: false, created_at: new Date('2024-04-12T10:00:00Z') },
+  { user_id: 3, book_id: 5, queue_number: 3, is_next: false, created_at: new Date('2024-04-22T10:00:00Z') },
+
+  // May 2024
+  { user_id: 1, book_id: 1, queue_number: 4, is_next: false, created_at: new Date('2024-05-05T10:00:00Z') },
+  { user_id: 2, book_id: 2, queue_number: 4, is_next: false, created_at: new Date('2024-05-10T10:00:00Z') },
+  { user_id: 3, book_id: 3, queue_number: 4, is_next: false, created_at: new Date('2024-05-15T10:00:00Z') },
+  { user_id: 4, book_id: 4, queue_number: 4, is_next: false, created_at: new Date('2024-05-20T10:00:00Z') },
+  { user_id: 1, book_id: 5, queue_number: 4, is_next: false, created_at: new Date('2024-05-25T10:00:00Z') },
+];
+
+
+
+const queueHistory = [
+  // January 2024
+  { queue_id: 1, user_id: 1, book_id: 1, queue_number: 1, status: "Fulfilled", timestamp: new Date('2024-01-05T10:00:00Z') },
+  { queue_id: 2, user_id: 2, book_id: 1, queue_number: 2, status: "In Progress", timestamp: new Date('2024-01-10T10:00:00Z') },
+  { queue_id: 3, user_id: 3, book_id: 2, queue_number: 1, status: "Pending", timestamp: new Date('2024-01-15T10:00:00Z') },
+
+  // February 2024
+  { queue_id: 4, user_id: 1, book_id: 3, queue_number: 1, status: "Fulfilled", timestamp: new Date('2024-02-08T10:00:00Z') },
+  { queue_id: 5, user_id: 2, book_id: 3, queue_number: 2, status: "In Progress", timestamp: new Date('2024-02-14T10:00:00Z') },
+  { queue_id: 6, user_id: 3, book_id: 4, queue_number: 1, status: "Pending", timestamp: new Date('2024-02-20T10:00:00Z') },
+
+  // March 2024
+  { queue_id: 7, user_id: 1, book_id: 5, queue_number: 1, status: "Fulfilled", timestamp: new Date('2024-03-10T10:00:00Z') },
+  { queue_id: 8, user_id: 2, book_id: 5, queue_number: 2, status: "Pending", timestamp: new Date('2024-03-15T10:00:00Z') },
+  { queue_id: 9, user_id: 3, book_id: 1, queue_number: 3, status: "Pending", timestamp: new Date('2024-03-25T10:00:00Z') },
+
+  // April 2024
+  { queue_id: 10, user_id: 1, book_id: 3, queue_number: 3, status: "In Progress", timestamp: new Date('2024-04-05T10:00:00Z') },
+  { queue_id: 11, user_id: 2, book_id: 4, queue_number: 3, status: "Pending", timestamp: new Date('2024-04-12T10:00:00Z') },
+  { queue_id: 12, user_id: 3, book_id: 5, queue_number: 3, status: "Pending", timestamp: new Date('2024-04-22T10:00:00Z') },
+
+  // May 2024
+  { queue_id: 13, user_id: 1, book_id: 1, queue_number: 4, status: "Pending", timestamp: new Date('2024-05-05T10:00:00Z') },
+  { queue_id: 14, user_id: 2, book_id: 2, queue_number: 4, status: "Pending", timestamp: new Date('2024-05-10T10:00:00Z') },
+  { queue_id: 15, user_id: 3, book_id: 3, queue_number: 4, status: "Pending", timestamp: new Date('2024-05-15T10:00:00Z') },
+  { queue_id: 16, user_id: 4, book_id: 4, queue_number: 4, status: "Pending", timestamp: new Date('2024-05-20T10:00:00Z') },
+  { queue_id: 17, user_id: 1, book_id: 5, queue_number: 4, status: "Pending", timestamp: new Date('2024-05-25T10:00:00Z') },
+]; 
+
 const penalty_fee_data = [
   { rent_history_id: 1, user_id: 1, fees: 15, status: false, paid_on: null },
   { rent_history_id: 18, user_id: 1, fees: 10, status: true, paid_on: new Date('2022-12-12')},
@@ -303,6 +366,16 @@ async function main() {
   // Insert Book Requests
   const insertedBook_request = await prisma.book_request.createMany({
     data: bookRequests,
+  });
+
+   // Insert Queue Data
+  const insertedQueues = await prisma.queue.createMany({
+    data: queues,
+  });
+
+  // Insert Queue History Data
+  const insertedQueueHistory = await prisma.queueHistory.createMany({
+    data: queueHistory,
   });
   console.log('Inserted reviews:', insertedReviews);
   console.log('Seed data inserted successfully');

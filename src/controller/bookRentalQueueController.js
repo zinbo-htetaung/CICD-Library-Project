@@ -43,14 +43,15 @@ module.exports.retrieveQueueByUserId = async (req, res, next) => {
 
 module.exports.removeQueueByUserIdAndQueueId = async (req, res, next) => {
     try {
-        let userId = res.locals.user_id;
-        let queue_id  = req.body.queueId; // Get queue_id from URL params
-
+        let userId = req.body.user_id;
+        let queue_id  = req.body.queue_id; // Get queue_id from URL params
+        console.log("queue_id", queue_id );
+        console.log("userId", userId);
         if (!queue_id) {
             return res.status(400).json({ message: "Queue ID is required to remove a queue entry." });
         }
 
-        const result = await model.removeQueueByUserIdAndQueueId(userId, parseInt(queue_id));
+        const result = await model.removeQueueByUserIdAndQueueId(parseInt(userId), parseInt(queue_id));
 
         return res.status(200).json({ message: result.message });
     } catch (error) {
@@ -93,13 +94,15 @@ module.exports.retrieveQueueByBookId = async (req, res, next) => {
 
 module.exports.getAllQueues = async (req, res, next) => {
     try {
-        const status = req.body.status || ""; // Empty string if not provided
+        const status = req.body.status || ""; // Default to empty (no filtering)
         const bookTitle = req.body.bookTitle || "";
         const userName = req.body.userName || "";
+        const sortBy = req.body.sortBy || "created_at"; // Default sorting field
+        const sortOrder = req.body.sortOrder === "desc" ? "desc" : "asc"; // Default ascending
 
-        console.log("Filters applied:", { status, bookTitle, userName });
+        console.log("Filters applied:", { status, bookTitle, userName, sortBy, sortOrder });
 
-        const activeQueues = await model.getAllQueues(status, bookTitle, userName);
+        const activeQueues = await model.getAllQueues(status, bookTitle, userName, sortBy, sortOrder);
 
         if (!activeQueues || activeQueues.length === 0) {
             return res.status(404).json({ message: "No queue entries found." });
@@ -115,11 +118,12 @@ module.exports.getAllQueues = async (req, res, next) => {
     }
 };
 
+
 module.exports.getMostQueuedBooks = async (req, res, next) => {
     try {
-        const limit = parseInt(req.query.limit) || 10; // Default to 10 books
+        const limit = parseInt(req.query.limit) || 5; // Default to 10 books
         const mostQueuedBooks = await model.getMostQueuedBooks(limit);
-
+        console.log("limit", limit);
         return res.status(200).json({ mostQueuedBooks });
     } catch (error) {
         console.error("Error in getMostQueuedBooks controller:", error.message);
@@ -140,6 +144,28 @@ module.exports.getMostQueuedGenre = async (req, res, next) => {
         return res.status(500).json({
             error: "Failed to retrieve most queued genre by interval",
             details: error.message,
+        });
+    }
+};
+
+
+module.exports.getQueueTrendsOverTime = async (req, res) => {
+    try {
+        const interval = req.query.interval || "month"; // Default to monthly trends
+        console.log("Fetching queue trends over time for:", interval);
+
+        const queueTrends = await model.getQueueTrendsOverTime(interval);
+
+        if (!queueTrends || queueTrends.length === 0) {
+            return res.status(404).json({ message: "No queue trend data available." });
+        }
+
+        return res.status(200).json({ queueTrends });
+    } catch (error) {
+        console.error("Error in getQueueTrendsOverTime controller:", error.message);
+        return res.status(500).json({
+            error: "Failed to retrieve queue trends over time",
+            details: error.message
         });
     }
 };

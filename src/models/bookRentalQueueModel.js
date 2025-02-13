@@ -195,7 +195,7 @@ module.exports.retrieveQueueByBookId = async (bookId) => {
     }
 };
 
-module.exports.getAllQueues = async (status = "", bookTitle = "", userName = "") => {
+module.exports.getAllQueues = async (status = "", bookTitle = "", userName = "", sortBy = "created_at", sortOrder = "asc") => {
     try {
         return await prisma.queue.findMany({
             where: {
@@ -245,7 +245,11 @@ module.exports.getAllQueues = async (status = "", bookTitle = "", userName = "")
                 },
             },
             orderBy: {
-                book_id: "asc",
+                // Sorting dynamically based on the input
+                ...(sortBy === "queue_number" ? { queue_number: sortOrder } : {}),
+                ...(sortBy === "book_name" ? { book: { book_name: sortOrder } } : {}),
+                ...(sortBy === "user_name" ? { users: { name: sortOrder } } : {}),
+                ...(sortBy === "created_at" ? { created_at: sortOrder } : {}),
             },
         });
     } catch (error) {
@@ -254,7 +258,8 @@ module.exports.getAllQueues = async (status = "", bookTitle = "", userName = "")
     }
 };
 
-module.exports.getMostQueuedBooks = async (limit = 10) => {
+
+module.exports.getMostQueuedBooks = async (limit) => {
     try {
         // Step 1: Group queue entries by book_id and count queue occurrences
         const queuedBooks = await prisma.queue.groupBy({
@@ -300,13 +305,13 @@ module.exports.getMostQueuedBooks = async (limit = 10) => {
     }
 };
 
-module.exports.getMostQueuedGenre= async () => {
+module.exports.getMostQueuedGenre = async () => {
     try {
-        // Step 1: Fetch queue counts grouped by book_id (as Prisma groupBy() doesn't support date truncation)
+        // Step 1: Group queue entries by book_id and count occurrences
         const queueCounts = await prisma.queue.groupBy({
             by: ["book_id"],
             _count: {
-                id: true
+                id: true // Count how many times each book appears in the queue
             },
             orderBy: {
                 _count: {
@@ -344,17 +349,58 @@ module.exports.getMostQueuedGenre= async () => {
             });
         });
 
-        // Step 4: Find the most queued genre
-        let mostQueuedGenre = { genre: "Unknown", queue_count: 0 };
-        Object.entries(genreQueueCounts).forEach(([genre, count]) => {
-            if (count > mostQueuedGenre.queue_count) {
-                mostQueuedGenre = { genre, queue_count: count };
+        // Step 4: Convert object to sorted array and return top 10 genres
+        const sortedGenres = Object.entries(genreQueueCounts)
+            .map(([genre, count]) => ({ genre, queue_count: count }))
+            .sort((a, b) => b.queue_count - a.queue_count) // Sort in descending order
+            .slice(0, 10); // Get top 10 genres
+
+        return sortedGenres;
+    } catch (error) {
+        console.error("Error fetching most queued genres:", error.message);
+        throw error;
+    }
+};
+
+
+module.exports.getQueueTrendsOverTime = async (interval = "month") => {
+    try {
+        const queueTrends = await prisma.queue.groupBy({
+            by: ["created_at", "book_id"],
+            _count: { id: true }, // Count number of queues per genre
+            orderBy: { created_at: "asc" } // Order by earliest date first
+        });
+
+        // Fetch book categories (genres) for each book_id
+        const bookIds = queueTrends.map(q => q.book_id);
+        const books = await prisma.book.findMany({
+            where: { id: { in: bookIds } },
+            select: {
+                id: true,
+                book_category: {
+                    select: {
+                        category: {
+                            select: { category_name: true }
+                        }
+                    }
+                }
             }
         });
 
-        return mostQueuedGenre;
+        // Merge queue data with genres
+        const formattedTrends = queueTrends.map(queue => {
+            const book = books.find(book => book.id === queue.book_id);
+            const genres = book?.book_category?.map(c => c.category.category_name) || ["Unknown"];
+            return {
+                interval: new Date(queue.created_at).toISOString().substring(0, 7), // Format: YYYY-MM
+                genre: genres.join(", "),
+                queue_count: queue._count.id
+            };
+        });
+
+        return formattedTrends;
     } catch (error) {
-        console.error("Error fetching most queued genre by interval:", error.message);
+        console.error("Error fetching queue trends over time:", error.message);
         throw error;
     }
 };
