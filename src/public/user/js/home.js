@@ -93,6 +93,8 @@ let searchInProgress = false;
 let chatbotEnabled = false;
 let hasGreeted = false;
 let liveChatActive = false;
+let aiChatActive = false;
+
 
 function sendGreetingMessage() {
     if (!hasGreeted) {
@@ -112,15 +114,15 @@ document.getElementById('chatbot-send-btn').addEventListener('click', function (
 
 document.getElementById("chatbot-input").addEventListener("keypress", function (event) {
     if (event.key === "Enter" && !event.shiftKey) {
-        event.preventDefault(); 
-        sendChatbotMessage(); 
+        event.preventDefault();
+        sendChatbotMessage();
     }
 });
 
-function sendChatbotMessage() {
+async function sendChatbotMessage() {
     let userInput = document.getElementById('chatbot-input').value.trim();
     if (!userInput) return;
-    
+
     if (!liveChatActive) {
         displayMessage(userInput, 'user');
     }
@@ -140,7 +142,7 @@ function sendChatbotMessage() {
 
 function displayMessage(message, sender) {
     console.log(liveChatActive);
-    if (!liveChatActive) {
+    if (!liveChatActive && !aiChatActive) {
         let messageContainer = document.createElement('div');
         messageContainer.classList.add('message');
         messageContainer.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
@@ -173,12 +175,26 @@ function generateBotResponse(userInput) {
     let doc = nlp(userInput.toLowerCase());
     if (liveChatActive) {
         sendMessageToAdmin(userInput);
-        return null;  // 🚀 Do not respond with normal chatbot messages
-    } else {
+        return null;  //  Do not respond with normal chatbot messages
+    } else if (aiChatActive) {
+
+        getAIResponse(userInput);
+        return null;
+    }
+    else {
 
         if (doc.has('hello') || doc.has('hi') || doc.has('hey')) return "Hello! How can I assist you today? 😊";
         if (doc.has('hours') || doc.has('open') || doc.has('close')) return "We are open from 9 AM to 6 PM every day!";
         if (doc.has('books') || doc.has('collection')) return 'We have a large collection of books! <a href="displayAllBooks.html" target="_blank">Explore here.</a>';
+        if (doc.has('ai')) {
+            displayMessage("AI chat enabled. Connecting you to AI ...", "bot");
+            // Wait for 2-3 seconds before calling enableLiveChat
+            setTimeout(() => {
+                enableAIChat();
+            }, Math.floor(Math.random() * 1000) + 2000);
+            return "Connecting to AI chat... 🤖";
+        }
+
         if (doc.has('membership') || doc.has('register')) return "Sign up for membership on our website or visit the library with an ID.";
         if (doc.has('contact') || doc.has('agent') || doc.has('help')) {
             displayMessage("Live agent chat enabled. Connecting you to an admin...", "bot");
@@ -344,7 +360,7 @@ function endLiveChatSession() {
     // Stop polling messages
     clearInterval(pollingInterval);
 
-    displayMessage("⏳ Live chat session has expired. Please press live agent to chat again.", "bot");
+    displayMessage("⏳ Live chat session has expired. Please press 'live agent' to chat again.", "bot");
 
     setTimeout(() => {
         displayMessage("Hello! How can I assist you today? 😊", "bot");
@@ -413,6 +429,7 @@ function displayResponseOptions() {
     optionsContainer.classList.add('bot-response-options');
 
     const options = [
+        { label: 'Chat with AI 🤖', value: 'chat with ai' },
         { label: 'Library Hours', value: 'hours' },
         { label: 'Book Collection', value: 'books' },
         { label: 'Membership', value: 'membership' },
@@ -442,3 +459,70 @@ document.getElementById('chatbot-toggle-btn').addEventListener('click', function
     chatbotContainer.style.display = chatbotContainer.style.display === "none" ? "flex" : "none";
     if (!hasGreeted) sendGreetingMessage();
 });
+
+async function enableAIChat() {
+    aiChatActive = true;
+    liveChatActive = false; // Disable live chat mode
+    displayMessage("✅ AI Chat mode enabled. You can now chat with the AI!", "bot");
+
+    let remainingTime = 120; // 2 minutes (in seconds)
+    let warningDisplayed = false; // Flag to track if the warning has been displayed
+
+    // Update countdown every second
+    let countdownInterval = setInterval(() => {
+        remainingTime--;
+
+        // Display a warning message when 20 seconds are left
+        if (remainingTime === 20 && !warningDisplayed) {
+            displayMessage("⚠️ This live chat session will end in 20 seconds.", "bot");
+            warningDisplayed = true; // Ensure the message is shown only once
+        }
+
+        if (remainingTime <= 0) {
+            clearInterval(countdownInterval);
+            exitAIChat();
+        }
+    }, 1000);
+}
+
+async function getAIResponse(userMessage) {
+    const apiKey = "AIzaSyB2Ej5knWF0o6MHn8ZVCD5dDY9L78mYwck"; // Replace with your actual key
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
+
+    const requestBody = {
+        contents: [{ role: "user", parts: [{ text: `User: ${userMessage}\nAI (Reply concisely, max 20 words):` }] }]
+    };
+
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        const responseData = await response.json();
+        console.log("📢 AI Response:", responseData); // ✅ Log the full response
+
+        if (response.ok && responseData.candidates) {
+            let aiReply = responseData.candidates[0]?.content?.parts[0]?.text || "⚠️ AI didn't return a response.";
+            displayMessage(aiReply, "bot");
+        } else {
+            displayMessage("⚠️ Sorry, I couldn't generate a response.", "bot");
+        }
+    } catch (error) {
+        console.error("❌ Error calling Gemini AI:", error);
+        displayMessage("⚠️ Error communicating with AI. Please try again later.", "bot");
+    }
+}
+
+function exitAIChat() {
+    aiChatActive = false;
+    displayMessage("AI session expired. Please press 'Chat with AI' to chat again..", "bot");
+
+    setTimeout(() => {
+        displayMessage("Hello! How can I assist you today? 😊", "bot");
+        displayResponseOptions();
+    }, 2000);
+}
