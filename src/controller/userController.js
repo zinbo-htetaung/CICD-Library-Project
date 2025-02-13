@@ -413,3 +413,15 @@ module.exports.getUserByID = async  (req, res) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 };
+
+module.exports.getUserReputation = async (req, res) => {
+    const user_id = parseInt(req.params.userId);
+
+    try {
+        const reputation = await model.calculateReputation(user_id);
+        res.status(200).json(reputation);
+    } catch (error) {
+        console.error("Error retrieving reputation:", error);
+        res.status(500).json({ error: "Failed to retrieve reputation" });
+    }
+};
