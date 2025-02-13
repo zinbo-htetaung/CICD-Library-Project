@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - User Penalty Records</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      background-color: #fff;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-container"></div>
+
+  <div class="container mt-4">
+    <h1 class="text-center mb-4">User Penalty Records</h1>
+    <div id="alert-container"></div> 
+
+    <div class="row g-3 mb-4">
+      <div class="col-lg-3 col-md-6 col-sm-12">
+        <label for="username" class="form-label">Username:</label>
+        <input type="text" id="username" class="form-control" placeholder="Enter username">
+      </div>
+      <div class="col-lg-3 col-md-6 col-sm-12">
+        <label for="status" class="form-label">Status:</label>
+        <select id="status" class="form-select">
+          <option value="">Select Status</option>
+          <option value="true">Paid</option>
+          <option value="false">Unpaid</option>
+        </select>
+      </div>
+      <div class="col-lg-3 col-md-6 col-sm-12">
+        <label for="startDate" class="form-label">Start Date:</label>
+        <input type="date" id="startDate" class="form-control">
+      </div>
+      <div class="col-lg-3 col-md-6 col-sm-12">
+        <label for="endDate" class="form-label">End Date:</label>
+        <input type="date" id="endDate" class="form-control">
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-center gap-3 mb-4">
+      <button id="filterRecords" class="btn btn-primary">Submit<i class="bi bi-search ms-2"></i></button>
+      <button id="resetFilters" class="btn btn-secondary">Reset<i class="bi bi-arrow-clockwise ms-2"></i></button>
+    </div>
+
+    <div class="table-responsive my-3">
+      <table class="table table-bordered table-striped text-center">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Rent History ID</th>
+            <th>Book Name</th>
+            <th>Username</th>
+            <th>Fees</th>
+            <th>Status</th>
+            <th>Paid On</th>
+          </tr>
+        </thead>
+        <tbody id="penaltyRecordsTable">
+          <tr>
+            <td colspan="6" class="text-center">No records found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="footer-container"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+  <script src="authAdmin.js"></script>
+  <script src="penaltyRecords.js"></script>
+</body>
+</html>
