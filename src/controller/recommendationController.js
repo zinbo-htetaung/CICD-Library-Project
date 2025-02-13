@@ -8,7 +8,12 @@ module.exports.getGenreBasedRecommendations = async (req, res) => {
             return res.status(400).json({ message: "User ID not found in token" });
         }
 
-        const recommendations = await model.getGenreBasedRecommendations({ userId });
+        const ignoredBookIds = res.locals.ignoredBookIds || [];
+
+        const recommendations = await model.getGenreBasedRecommendations({ 
+            userId,
+            ignoredBookIds
+        });
         
         const formattedRecommendations = recommendations.map(book => ({
             id: book.id,
@@ -31,7 +36,12 @@ module.exports.getGenreBasedRecommendations = async (req, res) => {
 
 module.exports.getMonthlyPopularBooks = async (req, res) => {
     try {
-        const popularBooks = await model.getMonthlyPopularBooks();
+        const ignoredBookIds = res.locals.ignoredBookIds || [];
+
+        const popularBooks = await model.getMonthlyPopularBooks({ 
+            userId,
+            ignoredBookIds
+        });
         
         const formattedBooks = popularBooks.map(book => ({
             id: book.id,
@@ -60,7 +70,12 @@ module.exports.getAuthorRecommendations = async (req, res) => {
             return res.status(400).json({ message: "User ID not found in token" });
         }
 
-        const recommendations = await model.getAuthorRecommendations({ userId });
+        const ignoredBookIds = res.locals.ignoredBookIds || [];
+
+        const recommendations = await model.getAuthorRecommendations({ 
+            userId,
+            ignoredBookIds
+        });
         
         if (!recommendations) {
             return res.status(404).json({ 

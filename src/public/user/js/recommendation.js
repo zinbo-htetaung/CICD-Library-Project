@@ -269,8 +269,21 @@ class RecommendationSystem {
                 : 0);
     
         card.innerHTML = `
-            <a href="displaySingleBook.html?bookId=${book.id}" class="text-decoration-none">
-                <div class="card h-100 border-0 shadow-sm">
+            <div class="card h-100 border-0 shadow-sm position-relative">
+                <div class="book-options">
+                    <button class="options-toggle" aria-label="Book options">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <div class="options-menu">
+                        <button class="option-item add-wishlist" data-book-id="${book.id}">
+                            <i class="bi bi-bookmark-plus"></i> Add to Wishlist
+                        </button>
+                        <button class="option-item add-ignore" data-book-id="${book.id}">
+                            <i class="bi bi-eye-slash"></i> Ignore Book
+                        </button>
+                    </div>
+                </div>
+                <a href="displaySingleBook.html?bookId=${book.id}" class="text-decoration-none">
                     <img src="../../images/book_cover.webp" alt="${book.book_name}" class="card-img-top book-cover">
                     <div class="card-body">
                         <h5 class="card-title book-title">${book.book_name}</h5>
@@ -284,11 +297,98 @@ class RecommendationSystem {
                             </span>
                         </div>
                     </div>
-                </div>
-            </a>
+                </a>
+            </div>
         `;
-
+    
+        // Add event listeners for the options menu
+        this.initializeBookOptions(card, book.id);
+    
         return card;
+    }
+
+    initializeBookOptions(card, bookId) {
+        const optionsToggle = card.querySelector('.options-toggle');
+        const optionsMenu = card.querySelector('.options-menu');
+        const wishlistBtn = card.querySelector('.add-wishlist');
+        const ignoreBtn = card.querySelector('.add-ignore');
+    
+        // Toggle menu
+        optionsToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            optionsMenu.classList.toggle('show');
+            
+            // Close other open menus
+            document.querySelectorAll('.options-menu.show').forEach(menu => {
+                if (menu !== optionsMenu) menu.classList.remove('show');
+            });
+        });
+    
+        // Close menu when clicking outside
+        document.addEventListener('click', () => {
+            optionsMenu.classList.remove('show');
+        });
+    
+        // Wishlist button
+        wishlistBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            try {
+                const response = await fetch(`/api/booklist/wishlist/${bookId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                
+                if (response.ok) {
+                    // Show success notification
+                    this.showNotification('Added to wishlist!', 'success');
+                }
+            } catch (error) {
+                console.error('Error adding to wishlist:', error);
+                this.showNotification('Failed to add to wishlist', 'error');
+            }
+            optionsMenu.classList.remove('show');
+        });
+    
+        // Ignore button
+        ignoreBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            try {
+                const response = await fetch(`/api/booklist/ignore/${bookId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                
+                if (response.ok) {
+                    // Remove the book card with animation
+                    card.style.opacity = '0';
+                    setTimeout(() => card.remove(), 300);
+                    this.showNotification('Book will no longer appear in recommendations', 'success');
+                }
+            } catch (error) {
+                console.error('Error adding to ignore list:', error);
+                this.showNotification('Failed to ignore book', 'error');
+            }
+            optionsMenu.classList.remove('show');
+        });
+    }
+    
+    showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        }, 100);
     }
 }
 
