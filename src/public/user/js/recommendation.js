@@ -68,8 +68,7 @@ class RecommendationSystem {
             for (const section of sections) {
                 // Skip the author section if no favorite author found
                 if (section.type === 'author' && !favoriteAuthor) continue;
-    
-                // For author section, we already have the data
+
                 const data = section.type === 'author' ? authorData : await this.loadRecommendations(section.type);
                 
                 if (data && data.length > 0) {
@@ -161,12 +160,11 @@ class RecommendationSystem {
         const cards = Array.from(container.children);
         if (cards.length === 0) return;
     
-        // Remove the transform when scrolling
         container.style.transition = 'transform 0.5s ease';
         container.style.left = '0';
         container.style.transform = 'none';
     
-        const cardWidth = cards[0].offsetWidth + 24; // Width + gap
+        const cardWidth = cards[0].offsetWidth + 24; 
         const currentIndex = Math.floor(carouselContainer.scrollLeft / cardWidth);
         let nextIndex;
     
@@ -186,7 +184,7 @@ class RecommendationSystem {
     }
 
     initializeAutoScroll(section) {
-        // Check if we should have auto-scroll
+        // Check if should have auto-scroll
         const container = document.querySelector(`#${section}-recommendations .books-row`);
         if (!container || container.children.length <= 3) {
             return;
@@ -223,7 +221,6 @@ class RecommendationSystem {
             container.appendChild(bookCard);
         });
     
-        // Add centering only for 3 or fewer books
         const shouldCenter = books.length <= 3;
         if (shouldCenter) {
             container.style.left = '50%';
@@ -256,7 +253,7 @@ class RecommendationSystem {
             if (prevButton) prevButton.style.display = 'flex';
             if (nextButton) nextButton.style.display = 'flex';
             
-            // Initialize auto-scroll only if we have more than 3 books
+            // Initialize auto-scroll only if have more than 3 books
             this.initializeAutoScroll(section);
         }
     }
@@ -270,29 +267,26 @@ class RecommendationSystem {
             (book.review && book.review.length 
                 ? book.review.reduce((acc, rev) => acc + rev.rating, 0) / book.review.length 
                 : 0);
-
-        // Using Bootstrap classes for better styling
+    
         card.innerHTML = `
-            <div class="card h-100 border-0 shadow-sm">
-                <img src="../../images/book_cover.webp" alt="${book.book_name}" class="card-img-top book-cover">
-                <div class="card-body">
-                    <h5 class="card-title book-title">${book.book_name}</h5>
-                    <p class="card-text book-author">${book.author}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="book-rating">
-                            <i class="bi bi-star-fill text-warning"></i> ${avgRating.toFixed(1)}
+            <a href="displaySingleBook.html?bookId=${book.id}" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm">
+                    <img src="../../images/book_cover.webp" alt="${book.book_name}" class="card-img-top book-cover">
+                    <div class="card-body">
+                        <h5 class="card-title book-title">${book.book_name}</h5>
+                        <p class="card-text book-author">${book.author}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="book-rating">
+                                <i class="bi bi-star-fill text-warning"></i> ${avgRating.toFixed(1)}
+                            </div>
+                            <span class="badge ${book.available_copies > 0 ? 'bg-success' : 'bg-danger'}">
+                                ${book.available_copies > 0 ? 'Available' : 'Unavailable'}
+                            </span>
                         </div>
-                        <span class="badge ${book.available_copies > 0 ? 'bg-success' : 'bg-danger'}">
-                            ${book.available_copies > 0 ? 'Available' : 'Unavailable'}
-                        </span>
                     </div>
                 </div>
-            </div>
+            </a>
         `;
-
-        card.addEventListener('click', () => {
-            window.location.href = `displaySingleBook.html?bookId=${book.id}`;
-        });
 
         return card;
     }

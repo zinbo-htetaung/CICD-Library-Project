@@ -114,7 +114,61 @@
             </div>
         </div>
     </section>
+    <!-- Recommendation Section -->
+    <section class="recommendation-container my-5">
+        <h2 class="text-center">Your Discovery Queue</h2>
+        <div class="recommendation-wrapper">
+            <!-- Genre-based Recommendations -->
+            <div class="recommendation-section mb-4">
+                <div class="recommendation-layout">
+                    <div class="recommendation-title">
+                        <h2>Because You Love<br>Fantasy Books</h2>
+                        <p class="recommendation-subtitle">More adventures await you</p>
+                    </div>
+                    <div class="recommendation-carousel">
+                        <button class="nav-arrow prev" data-section="genre">❮</button>
+                        <div class="books-carousel" id="genre-recommendations">
+                            <div class="books-row"></div>
+                        </div>
+                        <button class="nav-arrow next" data-section="genre">❯</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Monthly Popular Books -->
+            <div class="recommendation-section mb-4">
+                <div class="recommendation-layout">
+                    <div class="recommendation-title">
+                        <h2>Monthly<br>Popular Books</h2>
+                        <p class="recommendation-subtitle">What others are reading</p>
+                    </div>
+                    <div class="recommendation-carousel">
+                        <button class="nav-arrow prev" data-section="popular">❮</button>
+                        <div class="books-carousel" id="popular-recommendations">
+                            <div class="books-row"></div>
+                        </div>
+                        <button class="nav-arrow next" data-section="popular">❯</button>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Author-based Recommendations -->
+            <div class="recommendation-section mb-4">
+                <div class="recommendation-layout">
+                    <div class="recommendation-title">
+                        <h2>Because You Love<br>Books from<br><span class="author-name"></span></h2>
+                        <p class="recommendation-subtitle">More from your favorite author</p>
+                    </div>
+                    <div class="recommendation-carousel">
+                        <button class="nav-arrow prev" data-section="author">❮</button>
+                        <div class="books-carousel" id="author-recommendations">
+                            <div class="books-row"></div>
+                        </div>
+                        <button class="nav-arrow next" data-section="author">❯</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     <!-- Frequently Asked Questions Section -->
     <section class="container my-5">
         <h2 class="text-center">Frequently Asked Questions</h2>
@@ -161,62 +215,6 @@
                     <div class="accordion-body">
                         Becoming a member is easy! You can sign up through our website or by visiting the library with a
                         valid ID.
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Recommendation Section -->
-    <section class="recommendation-container my-5">
-        <h2 class="text-center">Your Discovery Queue</h2>
-        <div class="recommendation-wrapper">
-            <!-- Genre-based Recommendations -->
-            <div class="recommendation-section mb-4">
-                <div class="recommendation-layout">
-                    <div class="recommendation-title">
-                        <h2>Because You Love<br>Fantasy Books</h2>
-                        <p class="recommendation-subtitle">More adventures await you</p>
-                    </div>
-                    <div class="recommendation-carousel">
-                        <button class="nav-arrow prev" data-section="genre">❮</button>
-                        <div class="books-carousel" id="genre-recommendations">
-                            <div class="books-row"></div>
-                        </div>
-                        <button class="nav-arrow next" data-section="genre">❯</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Monthly Popular Books -->
-            <div class="recommendation-section mb-4">
-                <div class="recommendation-layout">
-                    <div class="recommendation-title">
-                        <h2>Monthly<br>Popular Books</h2>
-                        <p class="recommendation-subtitle">What others are reading</p>
-                    </div>
-                    <div class="recommendation-carousel">
-                        <button class="nav-arrow prev" data-section="popular">❮</button>
-                        <div class="books-carousel" id="popular-recommendations">
-                            <div class="books-row"></div>
-                        </div>
-                        <button class="nav-arrow next" data-section="popular">❯</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Author-based Recommendations -->
-            <div class="recommendation-section mb-4">
-                <div class="recommendation-layout">
-                    <div class="recommendation-title">
-                        <h2>Because You Love<br>Books from<br><span class="author-name">Stephen King</span></h2>
-                        <p class="recommendation-subtitle">More from your favorite author</p>
-                    </div>
-                    <div class="recommendation-carousel">
-                        <button class="nav-arrow prev" data-section="author">❮</button>
-                        <div class="books-carousel" id="author-recommendations">
-                            <div class="books-row"></div>
-                        </div>
-                        <button class="nav-arrow next" data-section="author">❯</button>
                     </div>
                 </div>
             </div>

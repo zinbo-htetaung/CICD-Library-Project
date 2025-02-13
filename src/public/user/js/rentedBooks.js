@@ -122,7 +122,7 @@ function renderBooksSection(title, books, showDaysKey, sectionId, badgeClass = n
         col.innerHTML = `
           <div class="card shadow-sm h-100">
             <h4 class="card-header">${book.book_name}</h4>
-            <img src="../../images/book_image.jpg" alt="Book Image" class="card-img-top">
+            <img src="../../images/book_cover.webp" alt="Book Image" class="card-img-top">
             <div class="card-body">   
               <h5 class="card-subtitle mb-2 text-muted"><em>By : ${book.author}</em></h5>
               ${daysRemaining}
