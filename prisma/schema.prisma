@@ -52,6 +52,7 @@ model book {
   rent_history     rent_history[]
   review           review[]
   Queue Queue[]
+  QueueHistory QueueHistory[]
 }
 
 model book_category {
@@ -126,6 +127,7 @@ model users {
   review        review[]
   user_status   user_status[]
   Queue Queue[]
+  QueueHistory QueueHistory[]
   messages     Message[] @relation("UserMessages")
   penalty_fees penalty_fees[]
 }
@@ -139,7 +141,21 @@ model Queue {
   created_at    DateTime @default(now())
   users          users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
   book          book     @relation(fields: [book_id], references: [id], onDelete: Cascade)
+  QueueHistory QueueHistory[]
   @@unique([book_id, queue_number]) // Ensures queue numbers are unique per book
+}
+
+model QueueHistory {
+  id            Int       @id @default(autoincrement())
+  queue_id      Int
+  user_id       Int
+  book_id       Int
+  queue_number  Int
+  status        String   @db.VarChar // "Pending" or "Fulfilled"
+  timestamp     DateTime @default(now())
+  queue         Queue   @relation(fields: [queue_id], references: [id], onDelete: Cascade)
+  users         users   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  book          book    @relation(fields: [book_id], references: [id], onDelete: Cascade)
 }
 
 model book_progress {

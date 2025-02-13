@@ -16,15 +16,6 @@ module.exports.createQueueEntry = async (userId, bookId) => {
             throw new Error(`User is currently renting this book and cannot join the queue.`);
         }
 
-        // Find the highest queue_number for the given book_id
-        const lastQueueEntry = await prisma.queue.findFirst({
-            where: { book_id: bookId },
-            orderBy: { queue_number: 'desc' }, // Get the last position in the queue
-        });
-
-        // Determine the new queue number (next available slot)
-        const newQueueNumber = lastQueueEntry ? lastQueueEntry.queue_number + 1 : 1;
-
         // Check if the user is already in the queue for this book
         const existingEntry = await prisma.queue.findFirst({
             where: { user_id: userId, book_id: bookId },
@@ -35,21 +26,45 @@ module.exports.createQueueEntry = async (userId, bookId) => {
             throw new Error(`User is already in the queue for this book.`);
         }
 
+        // Find the highest queue_number for the given book_id
+        const lastQueueEntry = await prisma.queue.findFirst({
+            where: { book_id: bookId },
+            orderBy: { queue_number: 'desc' }, // Get the last position in the queue
+        });
+
+        // Determine the new queue number (next available slot)
+        const newQueueNumber = lastQueueEntry ? lastQueueEntry.queue_number + 1 : 1;
+
         // Create the queue entry
-        const newQueueEntry = await prisma.queue.create({
+        const queueEntry = await prisma.queue.create({
             data: {
                 user_id: userId,
                 book_id: bookId,
                 queue_number: newQueueNumber,
-                is_next: newQueueNumber === 1, // First person in queue is marked as next
-            },
+                is_next: newQueueNumber === 1, // Mark as next if it's the first in the queue
+            }
         });
 
         console.log(`Successfully added user_id ${userId} to the queue for book_id ${bookId} at position ${newQueueNumber}.`);
+        if (!prisma.queueHistory) {
+            throw new Error(`QueueHistory model is not available in Prisma. Check your Prisma schema.`);
+        }
+        // Add the entry to QueueHistory
+        await prisma.queueHistory.create({
+            data: {
+                queue_id: queueEntry.id,
+                user_id: userId,
+                book_id: bookId,
+                queue_number: newQueueNumber,
+                status: "Pending", // Default status when queue is created
+            }
+        });
+
+        console.log(`Queue entry added to QueueHistory for user_id ${userId} and book_id ${bookId}.`);
 
         return {
             message: "Queue entry created successfully.",
-            queue: newQueueEntry,
+            queue: queueEntry,
         };
     } catch (error) {
         console.error(`Error occurred while creating queue entry for user_id ${userId} and book_id ${bookId}:`, error.message);
@@ -58,6 +73,7 @@ module.exports.createQueueEntry = async (userId, bookId) => {
         throw new Error(error.message);
     }
 };
+
 
 
 module.exports.retrieveQueueByUserId = async (userId) => {
@@ -178,3 +194,168 @@ module.exports.retrieveQueueByBookId = async (bookId) => {
         throw new Error(`Failed to retrieve queue records for book_id ${bookId} due to a database error.`);
     }
 };
+
+module.exports.getAllQueues = async (status = "", bookTitle = "", userName = "") => {
+    try {
+        return await prisma.queue.findMany({
+            where: {
+                // Only filter by QueueHistory status if a status is provided
+                ...(status ? {
+                    QueueHistory: {
+                        some: { status: { equals: status } }
+                    }
+                } : {}),
+
+                // Only filter by book title if a bookTitle is provided
+                ...(bookTitle ? {
+                    book: { book_name: { contains: bookTitle, mode: "insensitive" } }
+                } : {}),
+
+                // Only filter by user name if a userName is provided
+                ...(userName ? {
+                    users: { name: { contains: userName, mode: "insensitive" } }
+                } : {}),
+            },
+            select: {
+                id: true,
+                queue_number: true,
+                created_at: true,
+                users: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                    },
+                },
+                book: {
+                    select: {
+                        id: true,
+                        book_name: true,
+                        author: true,
+                    },
+                },
+                QueueHistory: {
+                    select: {
+                        status: true,
+                        timestamp: true,
+                    },
+                    orderBy: {
+                        timestamp: "desc", // Get latest status
+                    },
+                },
+            },
+            orderBy: {
+                book_id: "asc",
+            },
+        });
+    } catch (error) {
+        console.error("Error fetching active queues:", error.message);
+        throw error;
+    }
+};
+
+module.exports.getMostQueuedBooks = async (limit = 10) => {
+    try {
+        // Step 1: Group queue entries by book_id and count queue occurrences
+        const queuedBooks = await prisma.queue.groupBy({
+            by: ['book_id'],
+            _count: {
+                book_id: true // Count how many times each book appears in the queue
+            },
+            orderBy: {
+                _count: {
+                    book_id: 'desc' // Sort by most queued books
+                }
+            },
+            take: limit, // Limit results to top books
+        });
+
+        // Step 2: Fetch book details for each book_id
+        const bookIds = queuedBooks.map(q => q.book_id); // Extract book IDs
+
+        const books = await prisma.book.findMany({
+            where: { id: { in: bookIds } },
+            select: {
+                id: true,
+                book_name: true,
+                author: true
+            }
+        });
+
+        // Step 3: Merge queue counts with book details
+        const result = queuedBooks.map(queue => {
+            const bookDetails = books.find(book => book.id === queue.book_id);
+            return {
+                book_id: queue.book_id,
+                book_name: bookDetails?.book_name || "Unknown",
+                author: bookDetails?.author || "Unknown",
+                queue_count: queue._count.book_id
+            };
+        });
+
+        return result;
+    } catch (error) {
+        console.error("Error fetching most queued books:", error.message);
+        throw error;
+    }
+};
+
+module.exports.getMostQueuedGenre= async () => {
+    try {
+        // Step 1: Fetch queue counts grouped by book_id (as Prisma groupBy() doesn't support date truncation)
+        const queueCounts = await prisma.queue.groupBy({
+            by: ["book_id"],
+            _count: {
+                id: true
+            },
+            orderBy: {
+                _count: {
+                    id: "desc" // Sort by highest queue count
+                }
+            }
+        });
+
+        // Step 2: Fetch book categories (genres) for the grouped book_ids
+        const bookIds = queueCounts.map(q => q.book_id);
+        const books = await prisma.book.findMany({
+            where: { id: { in: bookIds } },
+            select: {
+                id: true,
+                book_category: {
+                    select: {
+                        category: {
+                            select: {
+                                category_name: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Step 3: Merge genre data with queue counts
+        const genreQueueCounts = {};
+        queueCounts.forEach(queue => {
+            const bookDetails = books.find(book => book.id === queue.book_id);
+            const genres = bookDetails?.book_category?.map(cat => cat.category.category_name) || ["Unknown"];
+
+            genres.forEach(genre => {
+                genreQueueCounts[genre] = (genreQueueCounts[genre] || 0) + queue._count.id;
+            });
+        });
+
+        // Step 4: Find the most queued genre
+        let mostQueuedGenre = { genre: "Unknown", queue_count: 0 };
+        Object.entries(genreQueueCounts).forEach(([genre, count]) => {
+            if (count > mostQueuedGenre.queue_count) {
+                mostQueuedGenre = { genre, queue_count: count };
+            }
+        });
+
+        return mostQueuedGenre;
+    } catch (error) {
+        console.error("Error fetching most queued genre by interval:", error.message);
+        throw error;
+    }
+};
+

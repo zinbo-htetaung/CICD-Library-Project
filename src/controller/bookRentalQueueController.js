@@ -89,3 +89,57 @@ module.exports.retrieveQueueByBookId = async (req, res, next) => {
         });
     }
 };
+
+
+module.exports.getAllQueues = async (req, res, next) => {
+    try {
+        const status = req.body.status || ""; // Empty string if not provided
+        const bookTitle = req.body.bookTitle || "";
+        const userName = req.body.userName || "";
+
+        console.log("Filters applied:", { status, bookTitle, userName });
+
+        const activeQueues = await model.getAllQueues(status, bookTitle, userName);
+
+        if (!activeQueues || activeQueues.length === 0) {
+            return res.status(404).json({ message: "No queue entries found." });
+        }
+
+        return res.status(200).json({ queues: activeQueues });
+    } catch (error) {
+        console.error("Error in getAllQueues controller:", error.message);
+        return res.status(500).json({
+            error: "Failed to retrieve active queues",
+            details: error.message,
+        });
+    }
+};
+
+module.exports.getMostQueuedBooks = async (req, res, next) => {
+    try {
+        const limit = parseInt(req.query.limit) || 10; // Default to 10 books
+        const mostQueuedBooks = await model.getMostQueuedBooks(limit);
+
+        return res.status(200).json({ mostQueuedBooks });
+    } catch (error) {
+        console.error("Error in getMostQueuedBooks controller:", error.message);
+        return res.status(500).json({
+            error: "Failed to retrieve most queued books",
+            details: error.message,
+        });
+    }
+};
+
+module.exports.getMostQueuedGenre = async (req, res, next) => {
+    try {
+        const mostQueuedGenre = await model.getMostQueuedGenre();
+
+        return res.status(200).json({ mostQueuedGenre });
+    } catch (error) {
+        console.error("Error in getMostQueuedGenreByInterval controller:", error.message);
+        return res.status(500).json({
+            error: "Failed to retrieve most queued genre by interval",
+            details: error.message,
+        });
+    }
+};
