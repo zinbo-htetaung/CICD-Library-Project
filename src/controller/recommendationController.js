@@ -37,6 +37,7 @@ module.exports.getGenreBasedRecommendations = async (req, res) => {
 module.exports.getMonthlyPopularBooks = async (req, res) => {
     try {
         const ignoredBookIds = res.locals.ignoredBookIds || [];
+        const userId = res.locals.user_id;
 
         const popularBooks = await model.getMonthlyPopularBooks({ 
             userId,

@@ -34,6 +34,12 @@ module.exports.addToIgnoreList = async (req, res) => {
     }
 };
 
+module.exports.getWishlist = async (req, res) => {
+};
+
+module.exports.getIgnoreList = async (req, res) => {
+};
+
 module.exports.removeFromWishlist = async (req, res) => {
     try {
         const userId = parseInt(res.locals.user_id);
