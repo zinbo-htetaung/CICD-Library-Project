@@ -29,6 +29,59 @@ module.exports.addToIgnoreList = async (data) => {
     }
 };
 
+module.exports.getWishlist = async (userId) => {
+    try {
+        const books = await prisma.bookWishlist.findMany({
+            where: { userId },
+            include: {
+                book: {
+                    select: {
+                        id: true,
+                        book_name: true,
+                        author: true
+                    }
+                }
+            }
+        });
+
+        return books.map(book => ({
+            bookId: book.book.id,
+            bookName: book.book.book_name,
+            author: book.book.author,
+            addedAt: book.addedAt
+        }));
+    } catch (error) {
+        console.error('Error in getWishlist:', error);
+        throw error;
+    }
+};
+
+module.exports.getIgnoreList = async (userId) => {
+    try {
+        const books = await prisma.bookIgnoreList.findMany({
+            where: { userId },
+            include: {
+                book: {
+                    select: {
+                        id: true,
+                        book_name: true,
+                        author: true
+                    }
+                }
+            }
+        });
+        return books.map(book => ({
+            bookId: book.book.id,
+            bookName: book.book.book_name,
+            author: book.book.author,
+            addedAt: book.addedAt
+        }));
+    } catch (error) {
+        console.error('Error in getIgnoreList:', error);
+        throw error;
+    }
+};
+
 module.exports.removeFromWishlist = async (data) => {
     try {
         return await prisma.bookWishlist.deleteMany({

@@ -263,42 +263,62 @@ class RecommendationSystem {
             });
         });
 
-        document.querySelectorAll('.wishlist-btn').forEach(button => {
-            button.addEventListener('click', async (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                try {
-                    const response = await fetch(`/api/booklist/wishlist/${button.dataset.id}`, {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                    });
-                    if (response.ok) {
-                        alert('Added to wishlist!');
-                        location.reload();
+        document.querySelectorAll('.wishlist-btn').forEach(button => { 
+            button.addEventListener('click', async (e) => { 
+                e.preventDefault(); 
+                e.stopPropagation(); 
+                try { 
+                    const response = await fetch(`/api/booklist/wishlist/${button.dataset.id}`, { 
+                        method: 'POST', 
+                        headers: { 
+                            'Authorization': `Bearer ${localStorage.getItem('token')}` 
+                        } 
+                    }); 
+        
+                    // Parse the response JSON
+                    const responseData = await response.json();
+        
+                    if (response.ok) { 
+                        alert(responseData.message || 'Added to Wishlist!'); 
+                        location.reload(); 
+                    } else {
+                        // Display error message from the server
+                        alert(responseData.message || 'Failed to add to Wishlist');
                     }
-                } catch (error) {
-                    console.error('Error:', error);
-                }
-            });
+                } catch (error) { 
+                    console.error('Error:', error); 
+                    alert('An unexpected error occurred'); 
+                } 
+            }); 
         });
 
-        document.querySelectorAll('.ignore-btn').forEach(button => {
-            button.addEventListener('click', async (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                try {
-                    const response = await fetch(`/api/booklist/ignore/${button.dataset.id}`, {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                    });
-                    if (response.ok) {
-                        alert('Added to Ignored List!');
-                        location.reload();
+        document.querySelectorAll('.ignore-btn').forEach(button => { 
+            button.addEventListener('click', async (e) => { 
+                e.preventDefault(); 
+                e.stopPropagation(); 
+                try { 
+                    const response = await fetch(`/api/booklist/ignore/${button.dataset.id}`, { 
+                        method: 'POST', 
+                        headers: { 
+                            'Authorization': `Bearer ${localStorage.getItem('token')}` 
+                        } 
+                    }); 
+        
+                    // Parse the response JSON
+                    const responseData = await response.json();
+        
+                    if (response.ok) { 
+                        alert(responseData.message || 'Added to Ignored List!'); 
+                        location.reload(); 
+                    } else {
+                        // Display error message from the server
+                        alert(responseData.message || 'Failed to add to Ignored List');
                     }
-                } catch (error) {
-                    console.error('Error:', error);
-                }
-            });
+                } catch (error) { 
+                    console.error('Error:', error); 
+                    alert('An unexpected error occurred'); 
+                } 
+            }); 
         });
     }
 
@@ -366,47 +386,6 @@ class RecommendationSystem {
                 </a>
             </div>
         `;
-
-        // Add click handlers
-        const dropdownMenu = card.querySelector('.dropdown-menu');
-        const wishlistBtn = card.querySelector('.wishlist-btn');
-        const ignoreBtn = card.querySelector('.ignore-btn');
-
-        wishlistBtn.onclick = async (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            try {
-                const response = await fetch(`/api/booklist/wishlist/${wishlistBtn.dataset.id}`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                });
-                if (response.ok) {
-                    alert('Added to wishlist!');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-            dropdownMenu.classList.remove('active');
-        };
-
-        ignoreBtn.onclick = async (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            try {
-                const response = await fetch(`/api/booklist/ignore/${ignoreBtn.dataset.id}`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                });
-                if (response.ok) {
-                    card.style.opacity = '0';
-                    setTimeout(() => card.remove(), 300);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-            dropdownMenu.classList.remove('active');
-        };
-
         return card;
     }
 
