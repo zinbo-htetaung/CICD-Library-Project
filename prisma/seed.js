@@ -173,21 +173,21 @@ const rentHistory = [
     book_id: 1, user_id: 2, // Mary borrowed book ID 1
     start_date: new Date('2023-01-12'),
     end_date: new Date('2023-01-15'),
-    return_date: new Date('2023-01-20'), // ❌ 5 days overdue
+    return_date: new Date('2023-01-20'), 
     due_status: true
   },
   {
     book_id: 2, user_id: 2, // Mary borrowed book ID 2
     start_date: new Date('2023-02-17'),
     end_date: new Date('2023-02-20'),
-    return_date: new Date('2023-02-18'), // ✅ Returned on time
+    return_date: new Date('2023-02-18'),
     due_status: false
   },
   {
     book_id: 1, user_id: 2, // Mary borrowed book ID 1 again
     start_date: new Date('2023-03-01'),
     end_date: new Date('2023-03-10'),
-    return_date: new Date('2023-03-15'), // ❌ 5 days overdue
+    return_date: new Date('2023-03-15'), 
     due_status: true
   }
 ];
@@ -224,10 +224,10 @@ const penalty_fee_data = [
     rent_history_id: 22, user_id: 2, fees: 12, status: false, paid_on: null // ❌ Unpaid penalty
   },
   {
-    rent_history_id: 23, user_id: 2, fees: 15, status: false, paid_on: null // ❌ Another unpaid penalty
+    rent_history_id: 24, user_id: 2, fees: 15, status: false, paid_on: null 
   },
   {
-    rent_history_id: 24, user_id: 2, fees: 8, status: true, paid_on: new Date('2023-02-25') // ✅ Paid penalty
+    rent_history_id: 23, user_id: 2, fees: 8, status: true, paid_on: new Date('2023-02-25') 
   }
 ];
 
