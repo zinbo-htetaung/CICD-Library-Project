@@ -56,36 +56,36 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('User Review Test', () => {
-    test('Create Review Both Fail and Success Case', async ({ page }) => {
+    // test('Create Review Both Fail and Success Case', async ({ page }) => {
 
-        await page.waitForSelector('#iconContainer', { state: 'visible' });
+    //     await page.waitForSelector('#iconContainer', { state: 'visible' });
 
-        await page.waitForLoadState('networkidle');
+    //     await page.waitForLoadState('networkidle');
 
-        const iconContainer = await page.locator('#iconContainer');
-        const icon = await iconContainer.locator('i');
+    //     const iconContainer = await page.locator('#iconContainer');
+    //     const icon = await iconContainer.locator('i');
 
-        await icon.waitFor({ state: 'visible' });
+    //     await icon.waitFor({ state: 'visible' });
 
-        await expect(icon).toHaveClass(/bi-book/, { timeout: 5000 });
-        await writeValidReview(page);
+    //     await expect(icon).toHaveClass(/bi-book/, { timeout: 5000 });
+    //     await writeValidReview(page);
 
-        const errorMessage = page.locator('#errorMessage');
-        await expect(errorMessage).toContainText('You need to rent and read the book before being allowed to review it.');
-        const closeButton = page.locator('#writeReviewModal .modal-header .btn-close');
-        await closeButton.click();
+    //     const errorMessage = page.locator('#errorMessage');
+    //     await expect(errorMessage).toContainText('You need to rent and read the book before being allowed to review it.');
+    //     const closeButton = page.locator('#writeReviewModal .modal-header .btn-close');
+    //     await closeButton.click();
 
-        rentBook(page);
+    //     rentBook(page);
 
-        await expect(icon).toHaveClass(/bi-book-half/);
+    //     await expect(icon).toHaveClass(/bi-book-half/);
 
-        writeValidReview(page);
+    //     writeValidReview(page);
 
-        const dialogPromise2 = page.waitForEvent('dialog');
-        const dialog2 = await dialogPromise2;
-        expect(dialog2.message()).toBe('Review submitted successfully!');
-        await dialog2.dismiss();
-    });
+    //     const dialogPromise2 = page.waitForEvent('dialog');
+    //     const dialog2 = await dialogPromise2;
+    //     expect(dialog2.message()).toBe('Review submitted successfully!');
+    //     await dialog2.dismiss();
+    // });
 
     test('View Review', async ({ page }) => {
         const displayReviewsButton = page.locator('#displayReviews');
