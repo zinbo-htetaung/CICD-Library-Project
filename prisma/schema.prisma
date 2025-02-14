@@ -127,6 +127,7 @@ model users {
   review        review[]
   user_status   user_status[]
   Queue Queue[]
+  Notification Notification[]
   QueueHistory QueueHistory[]
   messages     Message[] @relation("UserMessages")
   penalty_fees penalty_fees[]
@@ -194,5 +195,15 @@ model penalty_fees {
   paid_on         DateTime? @db.Date
   rent_history rent_history @relation(fields: [rent_history_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   users        users        @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model Notification {
+  id          Int       @id @default(autoincrement())
+  user_id     Int
+  title       String    @db.VarChar(255)
+  message     String
+  status      String    @default("unseen") @db.VarChar(10) // "seen" or "unseen"
+  created_at  DateTime  @default(now())
+  users        users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
