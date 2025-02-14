@@ -200,6 +200,8 @@ async function displayBookDetails(book) {
       const queueData = await fetchQueueInfo(getBookIdFromURL());
       const userQueueEntry = queueData.queue.find(person => person.user_id == userId);
       userQueueId = userQueueEntry ? userQueueEntry.queue_id : null;
+      console.log("userQueueId", userQueueId);
+      console.log("userId", userId);
       
       queueInfo = `<div class="d-inline-flex align-items-center mb-2" data-bs-toggle="modal" data-bs-target="#queueModal" style="cursor: pointer;">
                       <p class="text-black font-bold fs-5 bg-white border border-danger border-3 rounded-circle d-flex justify-content-center align-items-center m-0" style="width: 30px; height: 30px;">
@@ -244,6 +246,7 @@ async function displayBookDetails(book) {
     
     document.getElementById("leaveQueueButton")?.addEventListener("click", async (event) => {
       const queueId = event.target.getAttribute("data-queue-id");
+      console.log("queueId.....", queueId);
       if (queueId) {
         await leaveQueue(queueId);
       }
@@ -256,13 +259,13 @@ async function displayBookDetails(book) {
 // Function to leave the queue using queue ID
 async function leaveQueue(queueId) {
   try {
-    const response = await fetch(`/api/queue`, {
+    const response = await fetch(`/api/queue/admin`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       },
-      body: JSON.stringify({ queueId })
+      body: JSON.stringify({ queueId,userId: localStorage.getItem("user_id")   })
     });
     if (response.ok) {
       alert('Successfully left the queue!');

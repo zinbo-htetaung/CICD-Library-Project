@@ -15,8 +15,12 @@ const bookRentalQueueRoute=require('./routers/bookRentalQueueRoute');
 const messageRoutes = require('./routers/messageRoute');
 const bookProgressRoute = require('./routers/bookProgressRoute');
 const penaltyFeeRoute = require('./routers/penaltyFeeRoute');
+
+const notificationRoute = require('./routers/notificationRoute');
+
 const recommendationRoute = require('./routers/recommendationRoute');
 const bookListRoute = require('./routers/bookListRoute');
+
 
 const path = require('path');
 
@@ -41,6 +45,7 @@ app.use('/api/bookList', bookListRoute);
 app.use('/api/messages', messageRoutes);
 app.use('/api/bookProgress', bookProgressRoute);
 app.use('/api/penaltyFees', penaltyFeeRoute);
+app.use('/api/notifications', notificationRoute); 
 
 app.use((req, res, next) => {
   next(createError(404, `Unknown resource ${req.method} ${req.originalUrl}`));

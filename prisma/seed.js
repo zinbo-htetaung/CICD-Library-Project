@@ -88,6 +88,7 @@ const books = [
     available_copies: 5,
     categories: [2, 9], // Non-Fiction, Biography
   },
+
   // New books
   {
     book_name: 'Animal Farm',
@@ -402,7 +403,7 @@ const books = [
     author: 'Stephen R. Covey',
     description: 'A guide to personal and professional development.',
     no_of_copies: 12,
-    available_copies: 12,
+ : 12,
     categories: [2, 10], // Non-Fiction, Self-Help
   },
   {
@@ -465,6 +466,7 @@ const users = [
     address: '123 Main St, Springfield',
     dob: new Date('1990-01-01'),
     role: 'user',
+    avatar: 'https://api.dicebear.com/9.x/initials/svg?seed=John&scale=50&radius=50',
   },
   {
     name: 'mary',
@@ -473,6 +475,7 @@ const users = [
     address: '1 Boon Lay',
     dob: new Date('2000-01-01'),
     role: 'user',
+    avatar: 'https://api.dicebear.com/9.x/initials/svg?seed=Mary&scale50&radius=50',
   },
   {
     name: 'bruce',
@@ -481,6 +484,7 @@ const users = [
     address: '2 Canberra',
     dob: new Date('2004-04-04'),
     role: 'user',
+    avatar: 'https://api.dicebear.com/9.x/initials/svg?seed=Bruce&scale=50&radius=50',
   },
   {
     name: 'test',
@@ -489,6 +493,7 @@ const users = [
     address: '5 Canberra',
     dob: new Date('2004-04-05'),
     role: 'user',
+    avatar: 'https://api.dicebear.com/9.x/initials/svg?seed=Test&scale50&radius=50',
   },
   {
     name: 'admin',
@@ -707,6 +712,71 @@ const messages = [
   { userId: 1, sender: 'admin', message: 'Go to settings and click on "Reset Password".', isRead: true, createdAt: new Date('2023-12-04T09:50:00Z') },
 ];
 
+const queues = [
+  // 📌 January 2024
+  { user_id: 1, book_id: 6, queue_number: 1, is_next: true, created_at: new Date('2024-01-05T10:00:00Z') },
+  { user_id: 2, book_id: 6, queue_number: 2, is_next: false, created_at: new Date('2024-01-07T10:00:00Z') },
+  { user_id: 3, book_id: 7, queue_number: 1, is_next: true, created_at: new Date('2024-01-10T10:00:00Z') },
+  { user_id: 4, book_id: 7, queue_number: 2, is_next: false, created_at: new Date('2024-01-15T10:00:00Z') },
+
+  // 📌 February 2024
+  { user_id: 1, book_id: 8, queue_number: 1, is_next: true, created_at: new Date('2024-02-05T10:00:00Z') },
+  { user_id: 2, book_id: 8, queue_number: 2, is_next: false, created_at: new Date('2024-02-08T10:00:00Z') },
+  { user_id: 3, book_id: 9, queue_number: 1, is_next: true, created_at: new Date('2024-02-12T10:00:00Z') },
+  { user_id: 4, book_id: 9, queue_number: 2, is_next: false, created_at: new Date('2024-02-18T10:00:00Z') },
+
+  // 📌 March 2024
+  { user_id: 1, book_id: 10, queue_number: 1, is_next: true, created_at: new Date('2024-03-02T10:00:00Z') },
+  { user_id: 2, book_id: 10, queue_number: 2, is_next: false, created_at: new Date('2024-03-08T10:00:00Z') },
+  { user_id: 3, book_id: 6, queue_number: 3, is_next: false, created_at: new Date('2024-03-15T10:00:00Z') },
+  { user_id: 4, book_id: 7, queue_number: 3, is_next: false, created_at: new Date('2024-03-20T10:00:00Z') },
+
+  // 📌 April 2024
+  { user_id: 1, book_id: 8, queue_number: 3, is_next: false, created_at: new Date('2024-04-05T10:00:00Z') },
+  { user_id: 2, book_id: 9, queue_number: 3, is_next: false, created_at: new Date('2024-04-12T10:00:00Z') },
+  { user_id: 3, book_id: 10, queue_number: 3, is_next: false, created_at: new Date('2024-04-18T10:00:00Z') },
+
+  // 📌 May 2024
+  { user_id: 1, book_id: 6, queue_number: 4, is_next: false, created_at: new Date('2024-05-05T10:00:00Z') },
+  { user_id: 2, book_id: 7, queue_number: 4, is_next: false, created_at: new Date('2024-05-10T10:00:00Z') },
+  { user_id: 3, book_id: 8, queue_number: 4, is_next: false, created_at: new Date('2024-05-15T10:00:00Z') },
+  { user_id: 4, book_id: 9, queue_number: 4, is_next: false, created_at: new Date('2024-05-20T10:00:00Z') },
+];
+
+const queueHistory = [
+  // 📌 January 2024
+  { user_id: 1, book_id: 6, queue_id: 1, status: "Fulfilled", timestamp: new Date('2024-01-06T10:00:00Z') },
+  { user_id: 2, book_id: 6, queue_id: 2, status: "Pending", timestamp: new Date('2024-01-07T10:00:00Z') },
+  { user_id: 3, book_id: 7, queue_id: 3, status: "Fulfilled", timestamp: new Date('2024-01-12T10:00:00Z') },
+  { user_id: 4, book_id: 7, queue_id: 4, status: "Cancelled", timestamp: new Date('2024-01-15T10:00:00Z') },
+
+  // 📌 February 2024
+  { user_id: 1, book_id: 8, queue_id: 5, status: "Pending", timestamp: new Date('2024-02-05T10:00:00Z') },
+  { user_id: 2, book_id: 8, queue_id: 6, status: "Pending", timestamp: new Date('2024-02-08T10:00:00Z') },
+  { user_id: 3, book_id: 9, queue_id: 7, status: "Fulfilled", timestamp: new Date('2024-02-14T10:00:00Z') },
+  { user_id: 4, book_id: 9, queue_id: 8, status: "Cancelled", timestamp: new Date('2024-02-18T10:00:00Z') },
+
+  // 📌 March 2024
+  { user_id: 1, book_id: 10, queue_id: 9, status: "Pending", timestamp: new Date('2024-03-02T10:00:00Z') },
+  { user_id: 2, book_id: 10, queue_id: 10, status: "Pending", timestamp: new Date('2024-03-08T10:00:00Z') },
+  { user_id: 3, book_id: 6, queue_id: 11, status: "Cancelled", timestamp: new Date('2024-03-15T10:00:00Z') },
+  { user_id: 4, book_id: 7, queue_id: 12, status: "Fulfilled", timestamp: new Date('2024-03-20T10:00:00Z') },
+
+  // 📌 April 2024
+  { user_id: 1, book_id: 8, queue_id: 13, status: "Pending", timestamp: new Date('2024-04-05T10:00:00Z') },
+  { user_id: 2, book_id: 9, queue_id: 14, status: "Cancelled", timestamp: new Date('2024-04-12T10:00:00Z') },
+  { user_id: 3, book_id: 10, queue_id: 15, status: "Pending", timestamp: new Date('2024-04-18T10:00:00Z') },
+
+  // 📌 May 2024
+  { user_id: 1, book_id: 6, queue_id: 16, status: "Pending", timestamp: new Date('2024-05-05T10:00:00Z') },
+  { user_id: 2, book_id: 7, queue_id: 17, status: "Pending", timestamp: new Date('2024-05-10T10:00:00Z') },
+  { user_id: 3, book_id: 8, queue_id: 18, status: "Fulfilled", timestamp: new Date('2024-05-15T10:00:00Z') },
+  { user_id: 4, book_id: 9, queue_id: 19, status: "Cancelled", timestamp: new Date('2024-05-20T10:00:00Z') },
+];
+
+
+
+
 const penalty_fee_data = [
   { rent_history_id: 1, user_id: 1, fees: 15, status: false, paid_on: null },
   { rent_history_id: 18, user_id: 1, fees: 10, status: true, paid_on: new Date('2022-12-12') },
@@ -817,6 +887,16 @@ async function main() {
   // Insert Book Requests
   const insertedBook_request = await prisma.book_request.createMany({
     data: bookRequests,
+  });
+
+   // Insert Queue Data
+  const insertedQueues = await prisma.queue.createMany({
+    data: queues,
+  });
+
+  // Insert Queue History Data
+  const insertedQueueHistory = await prisma.queueHistory.createMany({
+    data: queueHistory,
   });
   console.log('Inserted reviews:', insertedReviews);
   console.log('Seed data inserted successfully');

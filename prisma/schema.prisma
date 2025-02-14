@@ -52,8 +52,12 @@ model book {
   rent_history     rent_history[]
   review           review[]
   Queue Queue[]
+
+  QueueHistory QueueHistory[]
+
   BookIgnoreList BookIgnoreList[]
   BookWishlist BookWishlist[]
+
 }
 
 model book_category {
@@ -128,6 +132,8 @@ model users {
   review        review[]
   user_status   user_status[]
   Queue Queue[]
+  Notification Notification[]
+  QueueHistory QueueHistory[]
   messages     Message[] @relation("UserMessages")
   penalty_fees penalty_fees[]
   BookIgnoreList BookIgnoreList[]
@@ -135,15 +141,32 @@ model users {
 }
 
 model Queue {
-  id            Int       @id @default(autoincrement())
+  id            Int       @id @default(autoincrement()) 
   user_id       Int
   book_id       Int
   queue_number  Int
-  is_next       Boolean  @default(false)
-  created_at    DateTime @default(now())
-  users          users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  is_next       Boolean   @default(false)
+  created_at    DateTime  @default(now())
+
+  users         users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
   book          book     @relation(fields: [book_id], references: [id], onDelete: Cascade)
-  @@unique([book_id, queue_number]) // Ensures queue numbers are unique per book
+  QueueHistory  QueueHistory[]
+
+  @@unique([book_id, queue_number])
+}
+
+
+
+model QueueHistory {
+  id            Int       @id @default(autoincrement())
+  user_id       Int
+  book_id       Int
+  queue_id      Int?
+  status        String   @default("Pending") @db.VarChar // "Pending" or "Fulfilled"
+  timestamp     DateTime @default(now())
+  queue         Queue?     @relation(fields: [queue_id], references: [id]) 
+  users         users   @relation(fields: [user_id], references: [id])
+  book          book    @relation(fields: [book_id], references: [id])
 }
 
 model book_progress {
@@ -183,6 +206,18 @@ model penalty_fees {
   rent_history rent_history @relation(fields: [rent_history_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   users        users        @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
+
+
+model Notification {
+  id          Int       @id @default(autoincrement())
+  user_id     Int
+  title       String    @db.VarChar(255)
+  message     String
+  status      String    @default("unseen") @db.VarChar(10) // "seen" or "unseen"
+  created_at  DateTime  @default(now())
+  users        users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
 
 model BookWishlist {
   id        Int      @id @default(autoincrement())
