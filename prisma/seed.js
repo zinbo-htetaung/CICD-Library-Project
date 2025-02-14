@@ -651,17 +651,33 @@ const rentHistory = [
   {
     book_id: 16, // Second Foundation
     user_id: 6,
-    start_date: new Date('2024-02-02'),
-    end_date: new Date('2024-02-05'),
-    return_date: new Date('2024-02-05'),
+    start_date: new Date('2025-02-02'),
+    end_date: new Date('2025-02-05'),
+    return_date: new Date('2025-02-05'),
     due_status: false
   },
   {
     book_id: 17, // Second Foundation
     user_id: 6,
-    start_date: new Date('2024-02-03'),
-    end_date: new Date('2024-02-06'),
-    return_date: new Date('2024-02-06'),
+    start_date: new Date('2025-02-03'),
+    end_date: new Date('2025-02-06'),
+    return_date: new Date('2025-02-06'),
+    due_status: false
+  },
+  {
+    book_id: 17, // Second Foundation
+    user_id: 4,
+    start_date: new Date('2025-02-03'),
+    end_date: new Date('2025-02-06'),
+    return_date: new Date('2025-02-06'),
+    due_status: false
+  },
+  {
+    book_id: 16, // Second Foundation
+    user_id: 4,
+    start_date: new Date('2025-02-03'),
+    end_date: new Date('2025-02-06'),
+    return_date: new Date('2025-02-06'),
     due_status: false
   }
 ];
