@@ -91,21 +91,23 @@ document.addEventListener("DOMContentLoaded", () => {
         queues.forEach((queue) => {
             const row = document.createElement("tr");
             row.innerHTML = `
-            <td class="text-center">${queue.id}</td>
-            <td class="text-center">${queue.users.id}</td>
-            <td class="text-center">${queue.users.name}</td>
-            <td class="text-center">${queue.book.book_name}</td>
-            <td class="text-center">${queue.queue_number}</td>
-            <td class="text-center">${queue.QueueHistory?.[0]?.status || 'Pending'}</td>
-            <td class="text-center">${new Date(queue.created_at).toLocaleDateString()}</td>
-            <td class="d-flex justify-content-center gap-3">
-                <button class="btn btn-danger btn-sm delete-btn border-2 border-black" data-id="${queue.id}" data-userId="${queue.users.id}">Remove</button>
-            </td>
+                <td class="text-center">${queue.queue_id}</td>
+                <td class="text-center">${queue.users.id}</td>
+                <td class="text-center">${queue.users.name}</td>
+                <td class="text-center">${queue.book.book_name}</td>
+                <td class="text-center">${queue.status || 'Pending'}</td>
+                <td class="text-center">${new Date(queue.timestamp).toLocaleDateString()}</td>
+                <td class="d-flex justify-content-center gap-3">
+                    <button class="btn btn-danger btn-sm delete-btn border-2 border-black" 
+                        data-id="${queue.queue_id}" data-userId="${queue.users.id}">
+                        Remove
+                    </button>
+                </td>
             `;
-
+        
             tableBody.appendChild(row);
         });
-
+        
         // Add event listeners to delete buttons
         document.querySelectorAll(".delete-btn").forEach((button) => {
             button.addEventListener("click", (event) => {
@@ -127,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${localStorage.getItem("token")}`
                     },
-                    body: JSON.stringify({ queue_id: queueId, user_id: userId })
+                    body: JSON.stringify({  queueId, userId })
                 });
     
                 if (response.ok) {

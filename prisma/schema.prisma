@@ -140,23 +140,25 @@ model Queue {
   queue_number  Int
   is_next       Boolean  @default(false)
   created_at    DateTime @default(now())
-  users          users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  users         users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
   book          book     @relation(fields: [book_id], references: [id], onDelete: Cascade)
-  QueueHistory QueueHistory[]
-  @@unique([book_id, queue_number]) // Ensures queue numbers are unique per book
+  QueueHistory  QueueHistory[] 
+
+  @@unique([book_id, queue_number]) 
 }
+
 
 model QueueHistory {
   id            Int       @id @default(autoincrement())
-  queue_id      Int
   user_id       Int
   book_id       Int
-  queue_number  Int
-  status        String   @db.VarChar // "Pending" or "Fulfilled"
+  queue_id      Int?
+  status        String   @default("Pending") @db.VarChar // "Pending" or "Fulfilled"
   timestamp     DateTime @default(now())
-  queue         Queue   @relation(fields: [queue_id], references: [id], onDelete: Cascade)
-  users         users   @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  book          book    @relation(fields: [book_id], references: [id], onDelete: Cascade)
+  queue         Queue?     @relation(fields: [queue_id], references: [id]) 
+  users         users   @relation(fields: [user_id], references: [id])
+  book          book    @relation(fields: [book_id], references: [id])
 }
 
 model book_progress {

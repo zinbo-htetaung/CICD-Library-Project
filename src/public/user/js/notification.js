@@ -170,5 +170,5 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (error) {
             console.error("⚠️ Error calling rent due notification API:", error);
         }
-    }, 10000); // in real life , this funciton will run only once a day, but 10000ms is used for testing purposes
+    }, 50000); // in real life , this funciton will run only once a day, but 10000ms is used for testing purposes
 });

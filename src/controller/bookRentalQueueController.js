@@ -43,8 +43,8 @@ module.exports.retrieveQueueByUserId = async (req, res, next) => {
 
 module.exports.removeQueueByUserIdAndQueueId = async (req, res, next) => {
     try {
-        let userId = req.body.user_id;
-        let queue_id  = req.body.queue_id; // Get queue_id from URL params
+        let userId = req.body.userId;
+        let queue_id  = req.body.queueId; // Get queue_id from URL params
         console.log("queue_id", queue_id );
         console.log("userId", userId);
         if (!queue_id) {
