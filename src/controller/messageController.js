@@ -84,3 +84,24 @@ module.exports.getMessageByUserId = async (req, res) => {
         res.status(404).json({ error: error.message });
     }
 };
+
+module.exports.markRead = async (req, res) => {
+    try {
+        await model.markMessagesAsRead(parseInt(req.params.userId));
+        res.status(200).json({ message: "Messages marked as read" });
+    } catch (error) {
+        console.error("Error marking messages as read:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+module.exports.getLatestMessages = async (req, res) => {
+    try {
+        const messages = await model.getLatestMessages();
+        res.status(200).json({ messages });
+    } catch (error) {
+        console.error("Error retrieving latest messages:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+

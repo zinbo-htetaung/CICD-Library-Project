@@ -45,13 +45,18 @@ module.exports.createMessage = async (data) => {
     if (!user) {
         throw new Error("User not found!");
     }
+    let isRead = false;
+    if(data.sender == "admin"){
+        isRead = true;
+    }
     try {
         const newMessage = await prisma.message.create({
             data: {
                 userId: parseInt(data.intUserId), // ✅ Ensure `userId` is an integer
                 sender: data.sender,
                 message: data.message,
-                replyToId: data.replyToId || null, // ✅ Ensure `replyToId` is set properly
+                replyToId: data.replyToId || null,
+                isRead: isRead
             }
         });
 
@@ -96,6 +101,55 @@ module.exports.getMessageByUserId = async (userId) => {
         return messages;
     } catch (error) {
         console.error("Error fetching messages:", error);
+        throw error;
+    }
+};
+
+module.exports.markMessagesAsRead = async (userId) => {
+    try {
+        await prisma.message.updateMany({
+            where: { userId, sender: "user", isRead: false },
+            data: { isRead: true },
+        });
+    } catch (error) {
+        console.error("Error marking messages as read:", error);
+        throw error;
+    }
+};
+
+module.exports.getLatestMessages = async () => {
+    try {
+        const latestMessages = await prisma.message.groupBy({
+            by: ["userId"],
+            _max: { createdAt: true },
+            orderBy: { _max: { createdAt: "desc" } },
+        });
+
+        const userIds = latestMessages.map(m => m.userId);
+        const users = await prisma.users.findMany({
+            where: { id: { in: userIds } },
+            select: { id: true, name: true, email: true },
+        });
+
+        const messages = await prisma.message.findMany({
+            where: { userId: { in: userIds } },
+            orderBy: { createdAt: "desc" },
+            select: { id: true, userId: true, message: true, createdAt: true, isRead: true },
+        });
+
+        return users.map(user => {
+            const latestMessage = messages.find(m => m.userId === user.id);
+            return {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                lastMessage: latestMessage ? latestMessage.message : "No messages",
+                lastMessageTime: latestMessage ? latestMessage.createdAt : null,
+                unread: latestMessage ? !latestMessage.isRead : false,
+            };
+        });
+    } catch (error) {
+        console.error("Error retrieving latest messages:", error);
         throw error;
     }
 };

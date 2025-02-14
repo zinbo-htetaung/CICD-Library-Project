@@ -47,7 +47,6 @@ module.exports.sendToken = function (req, res, next) {
 // The verifyToken function verifies the token provided in the request header.
 module.exports.verifyToken = function (req, res, next){
     const authHeader = req.headers.authorization;
-    console.log(authHeader)
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ message: 'No token provided' });
