@@ -14,7 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read #This is required for actions/checkout
-    environment: production
 
     steps:
       - uses: actions/checkout@v4
@@ -23,32 +22,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
-          
+
       - name: npm install, build, and test
-        run: | 
+        run: |
           npm install
-          npx playwright install                                              
           npm run build --if-present
-          npm i --save-dev prisma@latest                       
-          npm i @prisma/client@latest    
-
-      - name: npm run test
-        env:
-          DATABASE_URL: ${{vars.DATABASE_URL}}
-          JWT_SECRET_KEY: ${{vars.JWT_SECRET_KEY}}
-          JWT_EXPIRES_IN: ${{vars.JWT_EXPIRES_IN}}
-          JWT_ALGORITHM: ${{vars.JWT_ALGORITHM}}
-          PORT: ${{vars.PORT}}
-        run: npm run test --if-present
-
-      # Upload Playwright traces if any test fails
-      - name: Upload Playwright Traces
-        if: failure() # Upload only if tests fail
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-traces
-          path: test-results/
-          retention-days: 7
+          npm run test --if-present
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
@@ -81,9 +60,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_30E65F1BC28145B4A5381857F591BE48 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_9D559527F6D64C71AC19D807779C0809 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_D992153BEB384A128B6E1C4363BE2C43 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_34E44E9551E24E75B5B6F2401C17D040 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_F8CE830C2E9E463E845AAF349031419D }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3C59E15A8AD64E16982BD7B9457EB635 }}
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
