@@ -37,10 +37,9 @@ test.describe('Rent History Page Tests', () => {
     });
 
     test('Should apply filters and show filtered results', async ({ page }) => {
-        const tableRowsAwait = page.locator('#rent-history-table-body tr');
-        await tableRowsAwait.first().waitFor();
+        const tableRows = page.locator('#rent-history-table-body tr');
 
-        const rowCountAwait = await tableRowsAwait.count();
+        await tableRows.first().waitFor();
 
         await page.locator('#filterName').fill('john');
         await page.locator('#filterEmail').fill('john@gmail.com');
@@ -48,9 +47,13 @@ test.describe('Rent History Page Tests', () => {
         await page.locator('#filterDueStatus').selectOption('Overdue');
         await page.locator('#applyFilters').click();
 
-        const tableRows = page.locator('#rent-history-table-body tr');
-        const rowCount = await tableRows.count();
-        expect(rowCount).toBeGreaterThan(0);
+        await page.waitForSelector('#rent-history-table-body tr td:first-child:text("1")', {
+            state: 'visible',
+            timeout: 3000 
+        });
+
+        const rowText = await page.locator('#rent-history-table-body tr td:first-child').innerText();
+        expect(rowText).toBe('1');
     });
 
     test('Should reset filters to default values', async ({ page }) => {

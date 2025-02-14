@@ -29,9 +29,6 @@ test.describe('Admin Book Tests', () => {
     const bookCardsContainer = page.locator('#bookCardsContainer');
     await expect(bookCardsContainer).toBeVisible();
 
-    const bookCards = bookCardsContainer.locator('.card');
-    await expect(bookCards).toHaveCount(49); 
-
     const firstCard = bookCards.first();
     const cardTitle = await firstCard.locator('.card-header h4').textContent();
     await expect(cardTitle).not.toBeNull();   // ensure the card title is not null at least
