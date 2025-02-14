@@ -265,7 +265,7 @@ async function leaveQueue(queueId) {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       },
-      body: JSON.stringify({ queueId,userId: localStorage.getItem("user_id") })
+      body: JSON.stringify({ queueId,userId: localStorage.getItem("user_id")   })
     });
     if (response.ok) {
       alert('Successfully left the queue!');

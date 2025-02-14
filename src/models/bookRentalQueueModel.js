@@ -8,70 +8,64 @@ module.exports.createQueueEntry = async (userId, bookId) => {
             where: {
                 user_id: userId,
                 book_id: bookId,
-                return_date: null // Means the book has not been returned yet
+                return_date: null
             }
         });
 
         if (activeRental) {
-            console.warn(`User ${userId} is currently renting book ${bookId}.`);
             throw new Error(`User is currently renting this book and cannot join the queue.`);
         }
 
-        // Check if the user is already in the queue for this book
+        // Check if the user is already in the queue
         const existingEntry = await prisma.queue.findFirst({
             where: { user_id: userId, book_id: bookId },
         });
 
         if (existingEntry) {
-            console.warn(`User ${userId} is already in the queue for book ${bookId}.`);
             throw new Error(`User is already in the queue for this book.`);
         }
 
         // Find the highest queue_number for the given book_id
         const lastQueueEntry = await prisma.queue.findFirst({
             where: { book_id: bookId },
-            orderBy: { queue_number: 'desc' }, // Get the last position in the queue
+            orderBy: { queue_number: 'desc' },
         });
 
-        // Determine the new queue number (next available slot)
+        // Determine the new queue number
         const newQueueNumber = lastQueueEntry ? lastQueueEntry.queue_number + 1 : 1;
 
-        // Create the queue entry
+        // ✅ Create the queue entry
         const queueEntry = await prisma.queue.create({
             data: {
                 user_id: userId,
                 book_id: bookId,
                 queue_number: newQueueNumber,
-                is_next: newQueueNumber === 1, // Mark as next if it's the first in the queue
+                is_next: newQueueNumber === 1,
             }
-        });
+        }); 
+        console.log(queueEntry.id,)
+        console.log(userId)
+        console.log(bookId)
 
-        console.log(`Successfully added user_id ${userId} to the queue for book_id ${bookId} at position ${newQueueNumber}.`);
-        if (!prisma.queueHistory) {
-            throw new Error(`QueueHistory model is not available in Prisma. Check your Prisma schema.`);
-        }
-        // Add the entry to QueueHistory
+        // ✅ Add the entry to QueueHistory
         await prisma.queueHistory.create({
             data: {
+                queue_id: queueEntry.id,
                 user_id: userId,
                 book_id: bookId,
-                status: "Pending", // Default status when queue is created
+                status: "Pending",
             }
         });
-
-        console.log(`Queue entry added to QueueHistory for user_id ${userId} and book_id ${bookId}.`);
 
         return {
             message: "Queue entry created successfully.",
             queue: queueEntry,
         };
     } catch (error) {
-        console.error(`Error occurred while creating queue entry for user_id ${userId} and book_id ${bookId}:`, error.message);
-        
-        // Instead of overwriting the error, return the actual error message
         throw new Error(error.message);
     }
 };
+
 
 
 

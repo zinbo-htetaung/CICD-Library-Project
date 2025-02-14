@@ -134,19 +134,20 @@ model users {
 }
 
 model Queue {
-  id            Int       @id @default(autoincrement())
+  id            Int       @id @default(autoincrement()) 
   user_id       Int
   book_id       Int
   queue_number  Int
-  is_next       Boolean  @default(false)
-  created_at    DateTime @default(now())
+  is_next       Boolean   @default(false)
+  created_at    DateTime  @default(now())
 
   users         users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
   book          book     @relation(fields: [book_id], references: [id], onDelete: Cascade)
-  QueueHistory  QueueHistory[] 
+  QueueHistory  QueueHistory[]
 
-  @@unique([book_id, queue_number]) 
+  @@unique([book_id, queue_number])
 }
+
 
 
 model QueueHistory {

@@ -2,23 +2,21 @@ const model = require("../models/bookRentalQueueModel.js");
 
 module.exports.createQueueEntry = async (req, res, next) => {
     try {
-        let userId = res.locals.user_id;
-        let book_id = parseInt(req.body.bookId); // Extract book_id from request body
+        let userId = res.locals.user_id; // ✅ Extract user_id from session/auth
+        let bookId = parseInt(req.body.bookId); 
 
-        if (!book_id) {
+        if (!bookId) {
             return res.status(400).json({ message: "Book ID is required to join the queue." });
         }
 
-        const queueEntry = await model.createQueueEntry(userId, book_id);
+        const queueEntry = await model.createQueueEntry(userId, bookId);
         
         return res.status(201).json({ message: "Queue entry created successfully.", queue: queueEntry });
     } catch (error) {
-        console.error("Error in createQueueEntry controller:", error.message);
-
-        // Preserve and send the actual error message from the model
         return res.status(400).json({ message: error.message });
     }
 };
+
 
 module.exports.retrieveQueueByUserId = async (req, res, next) => {
     try {
