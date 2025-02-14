@@ -94,40 +94,40 @@ const books = [
     book_name: 'Animal Farm',
     author: 'George Orwell',
     description: 'An allegorical novel about the Soviet Union.',
-    no_of_copies: 6,
-    available_copies: 6,
+    no_of_copies: 5,
+    available_copies: 0,
     categories: [1, 5], // Fiction, Science Fiction
   },
   {
     book_name: 'Homo Deus',
     author: 'Yuval Noah Harari',
     description: 'A brief history of tomorrow.',
-    no_of_copies: 8,
-    available_copies: 8,
+    no_of_copies: 5,
+    available_copies: 0,
     categories: [2, 10], // Non-Fiction, Self-Help
   },
   {
     book_name: 'Emma',
     author: 'Jane Austen',
     description: 'A novel about youthful hubris and romantic misunderstandings.',
-    no_of_copies: 5,
-    available_copies: 5,
+    no_of_copies: 4,
+    available_copies: 0,
     categories: [1, 6], // Fiction, Romance
   },
   {
     book_name: 'The Da Vinci Code',
     author: 'Dan Brown',
     description: 'A mystery thriller about hidden religious secrets.',
-    no_of_copies: 10,
-    available_copies: 10,
+    no_of_copies: 6,
+    available_copies: 0,
     categories: [3, 7], // Mystery, Thriller
   },
   {
     book_name: 'Angels & Demons',
     author: 'Dan Brown',
     description: 'A thriller involving a secret society and the Catholic Church.',
-    no_of_copies: 8,
-    available_copies: 8,
+    no_of_copies: 3,
+    available_copies: 0,
     categories: [3, 7], // Mystery, Thriller
   },
   {
@@ -403,6 +403,7 @@ const books = [
     author: 'Stephen R. Covey',
     description: 'A guide to personal and professional development.',
     no_of_copies: 12,
+    available_copies: 7,
     categories: [2, 10], // Non-Fiction, Self-Help
   },
   {
