@@ -403,7 +403,9 @@ const books = [
     author: 'Stephen R. Covey',
     description: 'A guide to personal and professional development.',
     no_of_copies: 12,
-    available_copies: 7,
+
+    available_copies: 12,
+
     categories: [2, 10], // Non-Fiction, Self-Help
   },
   {
