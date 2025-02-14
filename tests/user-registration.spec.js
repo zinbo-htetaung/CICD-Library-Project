@@ -5,34 +5,9 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Registration Page Tests', () => {
-  // Test for successful registration - NEEDS A LOT OF WORK
+  // Test for successful registration
   test('Successful registration', async ({ page, request }) => {
-    // const nameInput = page.locator('#name');
-    // await nameInput.fill('doe');
-    // const emailInput = page.locator('#email');
-    // await emailInput.fill('doe@gmail.com');
-    // const passwordInput = page.locator('#password');
-    // await passwordInput.fill('password');
-    // const confirmPasswordInput = page.locator('#confirmPassword');
-    // await confirmPasswordInput.fill('password');
-    // const addressInput = page.locator('#address');
-    // await addressInput.fill('1 Ang Mo Kio');
-    // const dobInput = page.locator('#dob');
-    // await dobInput.fill('2000-01-01');
-    // const termsInput = page.locator("#checker");
-    // await termsInput.check();
-
-    // const captchaInput = await page.locator('textarea[name="g-recaptcha-response"]');
-    // expect(await captchaInput.isVisible()).toBe(true);
-
-    // // Simulate setting the CAPTCHA token in the frontend
-    // await page.evaluate(() => {
-    //   document.querySelector('textarea[name="g-recaptcha-response"]').value = 'test-captcha-token';
-    // });
-
-    // await page.getByRole('button', { name: 'Register' }).click();
-
-    // Send the registration request directly to the backend
+    // send the registration request directly to the backend
     const response = await request.post('http://localhost:3001/api/users/register', {
       data: {
         name: 'Test User',
@@ -41,20 +16,17 @@ test.describe('Registration Page Tests', () => {
         confirmPassword: 'password123',
         address: '1 Test Street',
         dob: '2000-01-01',
-        'g-recaptcha-response': 'test-captcha-token', // Pass the test token here
+        'g-recaptcha-response': 'test-captcha-token',     // pass test token
       },
     });
 
     const responseBody = await response.json();
-    // expect(response.status()).toBe(201); // Assuming 201 is the success status code
-    // expect(responseBody.message).toBe('Account created successfully Please log into your account.');
 
     page.on('dialog', async (dialog) => {
       expect(dialog.message()).toBe('Account created successfully Please log into your account.');
       await dialog.dismiss(); 
     });
 
-    // await expect(page).toHaveURL('http://localhost:3001/general/html/login.html');
   });
 
   // Test for failed registration due to password mismatch

@@ -1,6 +1,6 @@
 const model = require("../models/penaltyFeeModel.js");
 
-module.exports.retrieveAllPenaltyRecords = (req, res, next) => {
+module.exports.retrieveAllUserPenaltyRecords = (req, res, next) => {
     const userId = res.locals.user_id;
 
     model.retrieveAll(userId)
@@ -91,8 +91,7 @@ module.exports.insertPenaltyRecord = (req, res, next) => {
     const returnResponse = res.locals.returnResponse;
     const daysOverdue = res.locals.returnResponse.daysOverdue;
 
-    // Calculate penalty fees ($5 per overdue day)
-    const penaltyFee = daysOverdue * 5;
+    const penaltyFee = daysOverdue * 5;     // calculate overdue penalty fees
 
     model.insertPenalty({ rentHistoryId, userId, penaltyFee })
         .then(() => {
@@ -103,6 +102,42 @@ module.exports.insertPenaltyRecord = (req, res, next) => {
             return res.status(500).json({ error: "Failed to insert penalty fee record." });
         });
 
-    
 };
+
+module.exports.retrieveAllPenaltyRecords = (req, res, next) => {
+
+    model.getAllUsersPenaltyRecords()
+        .then(records => {
+            if (records.length == 0) {
+                return res.status(404).json({ message: "No penalty record history found" })
+            }
+            return res.status(200).json({ records: records });
+        })
+        .catch(function (error) {
+            console.error(error);
+            return res.status(500).json({ error: error.message });
+        });
+}
+
+module.exports.retrieveFilteredPenaltyRecords = (req, res, next) => {
+    const { username, status, start_date, end_date } = req.body;
+
+    // ensure at least one filter is applied
+    if (!username && status === undefined && !start_date && !end_date) {
+        return res.status(404).json({ message: "No filters applied" });
+    }
+
+    model.getFilteredPenaltyRecords({ username, status, start_date, end_date })
+        .then(records => {
+            if (records.length === 0) {
+                return res.status(404).json({ message: "No penalty records found matching the filters" });
+            }
+            return res.status(200).json({ records: records });
+        })
+        .catch(error => {
+            console.error("Error retrieving filtered penalty records:", error);
+            return res.status(500).json({ error: error.message });
+        });
+};
+
 

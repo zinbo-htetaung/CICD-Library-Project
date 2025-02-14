@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", async () => {
-
+    
     fetch('../html/user_navbar.html')
         .then(response => response.text())
         .then(data => {
