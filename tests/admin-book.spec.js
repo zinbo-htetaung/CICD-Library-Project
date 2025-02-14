@@ -30,7 +30,7 @@ test.describe('Admin Book Tests', () => {
     await expect(bookCardsContainer).toBeVisible();
 
     const bookCards = bookCardsContainer.locator('.card');
-    await expect(bookCards).toHaveCount(5); 
+    await expect(bookCards).toHaveCount(49); 
 
     const firstCard = bookCards.first();
     const cardTitle = await firstCard.locator('.card-header h4').textContent();
