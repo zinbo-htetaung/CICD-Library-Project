@@ -42,6 +42,7 @@ The Library Book Rental Web Application is designed to make book rental easy and
  **Chat Bot**
   - Respond to Users for Simple and FAQs such as Open Hours
   - Refer Back to the Admin for More Detailed Questions
+  - Enable chat with 'artificial intelligent' for registered users
 
  **Chat with Admin**
   - Allow Users to Contact the Adminstrators for Detailed Inquiries
@@ -116,6 +117,37 @@ The Library Book Rental Web Application is designed to make book rental easy and
     - **Wishlist: Allow users to add a book to their wishlist while in the recommendation section. Designed to help users who found a book to be interesting but does not have time to save the book to rent and read later.**
     - **Ignore List: Allow users to add a book to their Ignore List while in the recommendation section. Designed to help users who found a book to be not suited to their taste to hide the book from appearing in the recommendation section in the future.**
 
+##  **Chat Bot:**
+- The Chat Bot is designed to assist users by providing quick responses to common questions and guiding them to the right resources.
+- It operates in three modes to ensure an efficient and interactive user experience.
+
+### ***Respond to Users for Simple FAQs***
+- Instantly answers frequently asked questions (FAQs) such as:
+- Library Opening Hours
+- Viewing available books
+- Asking about membership
+- Search books
+- Provides immediate responses to enhance user experience.
+
+### ***Refer Back to the Admin for More Detailed Questions***
+- If a user’s query is complex or requires human intervention, the chat bot will:
+- Offer an option to connect with an admin.
+- Transfer the chat to live support, where an admin can provide assistance.
+- Notify the admin about the user’s question and chat history for better context.
+- Each session will be expired after 2 minutes, reminding 20 seconds before ending the session. However, users can call the admin at anytime again.
+
+### ***Enable AI Chat for Registered Users***
+- Registered users have access to an AI-powered chat assistant for advanced interactions.
+-  ***AI can:***
+- Provide personalized book recommendations based on reading history.
+- Answer more complex questions in a conversational manner.
+- Understand natural language for a smoother user experience.
+- Improve over time based on user interactions.
+- Each session will be expired after 2 minutes, reminding 20 seconds before ending the session. However, users can call the AI model at anytime again.
+
+With this feature, users get quick responses, admin support, and AI-powered assistance, making their library experience seamless and engaging! 
+
+
 - **Book Requests:**  
   - Users can request specific books they want to see in the library.
 
@@ -139,6 +171,8 @@ The Library Book Rental Web Application is designed to make book rental easy and
 - **App Insights:**  
   - Analyze application usage and generate insights.
 
+- **ADMIN ChatPanel:**  
+  - Recieve user prompts and reply them directly
 ---
 
 ### **User Simulation**

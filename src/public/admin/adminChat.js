@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
     const token = localStorage.getItem("token");
+    console.log(token);
     setTimeout(() => {
         loadUsersList(token);
     }, 200); await loadNavbarAndFooter();
@@ -43,20 +44,19 @@ async function fetchHTML(url) {
 
 let lastMessageId = null; // Track last message to avoid duplicates
 async function fetchMessages(userId, token) {
+   let Token = localStorage.getItem("token");
     try {
         const response = await fetch(`/api/messages/user/${userId}`, {
             method: "GET",
             headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${Token}`,
                 "Content-Type": "application/json",
             },
         });
-
         if (!response.ok) throw new Error("Failed to fetch messages");
 
         const messages = await response.json();
 
-        // ✅ Only display messages that are NEW
         const newMessages = messages.message.filter(msg => lastMessageId === null || msg.id > lastMessageId);
         if (newMessages.length > 0) {
             lastMessageId = newMessages[newMessages.length - 1].id; // Update last message ID
@@ -69,6 +69,7 @@ async function fetchMessages(userId, token) {
 
 // Send reply to backend
 async function sendReply(event, userId) {
+    const token = localStorage.getItem("token");
     event.preventDefault();
     const replyText = document.getElementById("adminReply").value.trim();
 

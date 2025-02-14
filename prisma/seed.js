@@ -553,27 +553,27 @@ const rentHistory = [
   { book_id: 1, user_id: 3, start_date: new Date('2023-01-05'), end_date: new Date('2023-02-05'), return_date: new Date('2023-02-02'), due_status: false },
   { book_id: 1, user_id: 4, start_date: new Date('2021-06-15'), end_date: new Date('2021-07-15'), return_date: new Date('2021-07-14'), due_status: false },
   {
-    book_id: 1, user_id: 2, // Mary borrowed book ID 1
+    book_id: 1, user_id: 2, // Mary borrowed book ID 1 5 days
     start_date: new Date('2023-01-12'),
     end_date: new Date('2023-01-15'),
-    return_date: new Date('2023-01-20'), 
+    return_date: new Date('2023-01-20'),
     due_status: true
   },
   {
-    book_id: 2, user_id: 2, // Mary borrowed book ID 2
+    book_id: 2, user_id: 2, // Mary borrowed book ID 2 3 days
     start_date: new Date('2023-02-17'),
     end_date: new Date('2023-02-20'),
-    return_date: new Date('2023-02-18'),
+    return_date: new Date('2023-02-23'),
     due_status: false
   },
   {
-    book_id: 1, user_id: 2, // Mary borrowed book ID 1 again
-    start_date: new Date('2023-03-01'),
+    book_id: 1, user_id: 2, // Mary borrowed book ID 1 again 7 days
+    start_date: new Date('2023-03-07'),
     end_date: new Date('2023-03-10'),
-    return_date: new Date('2023-03-15'), 
+    return_date: new Date('2023-03-17'),
     due_status: true
   },
-  { 
+  {
     book_id: 11, // The Hobbit
     user_id: 6,
     start_date: new Date('2023-06-01'),
@@ -581,7 +581,7 @@ const rentHistory = [
     return_date: new Date('2023-06-14'),
     due_status: false
   },
-  { 
+  {
     book_id: 12, // Fellowship of the Ring
     user_id: 6,
     start_date: new Date('2023-07-01'),
@@ -589,7 +589,7 @@ const rentHistory = [
     return_date: new Date('2023-07-14'),
     due_status: false
   },
-  { 
+  {
     book_id: 13, // Dune
     user_id: 6,
     start_date: new Date('2023-08-01'),
@@ -597,7 +597,7 @@ const rentHistory = [
     return_date: new Date('2023-08-14'),
     due_status: false
   },
-  { 
+  {
     book_id: 21, // Foundation
     user_id: 6,
     start_date: new Date('2023-09-01'),
@@ -605,7 +605,7 @@ const rentHistory = [
     return_date: new Date('2023-09-14'),
     due_status: false
   },
-  { 
+  {
     book_id: 22, // Foundation and Empire
     user_id: 6,
     start_date: new Date('2023-10-01'),
@@ -613,7 +613,7 @@ const rentHistory = [
     return_date: new Date('2023-10-14'),
     due_status: false
   },
-  { 
+  {
     book_id: 25, // The Name of the Wind
     user_id: 6,
     start_date: new Date('2023-11-15'),
@@ -621,7 +621,7 @@ const rentHistory = [
     return_date: new Date('2023-11-29'),
     due_status: false
   },
-  { 
+  {
     book_id: 26, // The Wise Man's Fear
     user_id: 6,
     start_date: new Date('2023-12-15'),
@@ -630,14 +630,55 @@ const rentHistory = [
     due_status: false
   },
   // A few recent rentals to test monthly popular books
-  { 
+  {
     book_id: 23, // Second Foundation
     user_id: 6,
     start_date: new Date('2024-01-15'),
     end_date: new Date('2024-01-30'),
-    return_date: new Date('2024-01-30'), 
+    return_date: new Date('2024-01-30'),
     due_status: false
 
+  },
+  // Newly added 3 
+  {
+    book_id: 15, // Second Foundation
+    user_id: 6,
+    start_date: new Date('2024-02-01'),
+    end_date: new Date('2024-02-04'),
+    return_date: new Date('2024-02-04'),
+    due_status: false
+  },
+  {
+    book_id: 16, // Second Foundation
+    user_id: 6,
+    start_date: new Date('2025-02-02'),
+    end_date: new Date('2025-02-05'),
+    return_date: new Date('2025-02-05'),
+    due_status: false
+  },
+  {
+    book_id: 17, // Second Foundation
+    user_id: 6,
+    start_date: new Date('2025-02-03'),
+    end_date: new Date('2025-02-06'),
+    return_date: new Date('2025-02-06'),
+    due_status: false
+  },
+  {
+    book_id: 17, // Second Foundation
+    user_id: 4,
+    start_date: new Date('2025-02-03'),
+    end_date: new Date('2025-02-06'),
+    return_date: new Date('2025-02-06'),
+    due_status: false
+  },
+  {
+    book_id: 16, // Second Foundation
+    user_id: 4,
+    start_date: new Date('2025-02-03'),
+    end_date: new Date('2025-02-06'),
+    return_date: new Date('2025-02-06'),
+    due_status: false
   }
 ];
 
@@ -669,9 +710,9 @@ const messages = [
 const penalty_fee_data = [
   { rent_history_id: 1, user_id: 1, fees: 15, status: false, paid_on: null },
   { rent_history_id: 18, user_id: 1, fees: 10, status: true, paid_on: new Date('2022-12-12') },
-  { rent_history_id: 22, user_id: 2, fees: 12, status: false, paid_on: null },
-  { rent_history_id: 24, user_id: 2, fees: 15, status: false, paid_on: null },
-  { rent_history_id: 23, user_id: 2, fees: 8, status: true, paid_on: new Date('2023-02-25') }
+  { rent_history_id: 22, user_id: 2, fees: 25, status: false, paid_on: null },
+  { rent_history_id: 23, user_id: 2, fees: 15, status: false, paid_on: null },
+  { rent_history_id: 24, user_id: 2, fees: 35, status: true, paid_on: new Date('2023-02-25') }
 ];
 
 const userStatuses = [];

@@ -37,23 +37,23 @@ test.describe('Rent History Page Tests', () => {
     });
 
     test('Should apply filters and show filtered results', async ({ page }) => {
-        await page.waitForTimeout(1000);
-        const tableRowsAwait = page.locator('#rent-history-table-body tr');
-        await tableRowsAwait.first().waitFor();
+        const tableRows = page.locator('#rent-history-table-body tr');
 
-        const rowCountAwait = await tableRowsAwait.count();
+        await tableRows.first().waitFor();
 
         await page.locator('#filterName').fill('john');
         await page.locator('#filterEmail').fill('john@gmail.com');
         await page.locator('#filterBookId').fill('5');
         await page.locator('#filterDueStatus').selectOption('Overdue');
-        await page.locator('#applyFilters').dblclick();
+        await page.locator('#applyFilters').click();
 
-        await page.waitForTimeout(1000);
+        await page.waitForSelector('#rent-history-table-body tr td:first-child:text("1")', {
+            state: 'visible',
+            timeout: 3000 
+        });
 
-        const tableRows = page.locator('#rent-history-table-body tr');
-        const rowCount = await tableRows.count();
-        expect(rowCount).toBeGreaterThan(0);
+        const rowText = await page.locator('#rent-history-table-body tr td:first-child').innerText();
+        expect(rowText).toBe('1');
     });
 
     test('Should reset filters to default values', async ({ page }) => {
@@ -75,10 +75,8 @@ test.describe('Rent History Page Tests', () => {
     });
 
     test('Should display "No records found" message for unmatched filters', async ({ page }) => {
-        await page.waitForFunction(() => {
-            const tableBody = document.querySelector("#rent-history-table-body");
-            return tableBody && tableBody.children.length > 0;
-        });
+        await page.waitForTimeout(2000); // Wait for the table to update
+
         await page.locator('#filterName').fill('NonExistentUser');
         await page.getByRole('button', { name: 'Apply Filters' }).click();
 
