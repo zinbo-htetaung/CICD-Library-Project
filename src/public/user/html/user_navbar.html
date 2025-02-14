@@ -53,21 +53,25 @@
             </li>
         </ul>
         <ul class="navbar-nav ms-auto">
-            <li class="nav-item dropdown me-3">
+            <li class="nav-item dropdown me-3 position-relative">
                 <a class="btn btn-primary position-relative" id="notificationBell" href="#">
                     🔔
-                    <span id="notificationCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
+                    <span id="notificationCount"
+                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
                         0
                     </span>
                 </a>
-                <div id="notificationDropdown" class="dropdown-menu dropdown-menu-end p-2 shadow-sm" style="width: 250px; display: none;">
-                    <h6 class="dropdown-header">Notifications</h6>
-                    <div id="notificationList" class="list-group">
-                        <p class="text-center text-muted">No new notifications</p>
+                <div id="notificationDropdown" class="dropdown-menu p-3 shadow-lg"
+                    style="width: 350px; max-height: 400px; overflow-y: auto; display: none; position: absolute; right: 10px;">
+                    <h6 class="dropdown-header text-center mb-2">📢 Notifications</h6>
+                    <div id="notificationList" class="list-group ">
+                        <p class="text-center text-muted m-0 p-0">No new notifications</p>
                     </div>
                 </div>
             </li>
-            
+
+
+
             <li class="nav-item me-3">
                 <a class="btn btn-primary" href="profile.html">My Profile<i class="bi bi-person-square ms-2"></i></a>
             </li>

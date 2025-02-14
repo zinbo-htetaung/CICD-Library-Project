@@ -1,4 +1,5 @@
 const prisma = require('./prismaClient');
+const notificationModel = require("../models/notificationModel");
 
 module.exports.createQueueEntry = async (userId, bookId) => {
     try {
@@ -154,12 +155,43 @@ module.exports.removeQueueByUserIdAndQueueId = async (userId, queueId) => {
         });
 
         console.log(`Updated queue numbers for users in book_id ${book_id} queue after removal.`);
-        return { message: "Queue record successfully removed and positions updated." };
+
+        //  Fetch the updated queue to notify users
+        const updatedQueue = await prisma.queue.findMany({
+            where: { book_id: book_id },
+            orderBy: { queue_number: "asc" },
+            select: {
+                user_id: true,
+                queue_number: true,
+            },
+        });
+
+        //  Get book details for the notification message
+        const book = await prisma.book.findUnique({
+            where: { id: book_id },
+            select: { book_name: true },
+        });
+
+        //  Send notifications to all users in queue
+        for (const user of updatedQueue) {
+            const isNext = user.queue_number === 1;
+            let message = `Your queue position for "${book.book_name}" is now #${user.queue_number}.`;
+
+            if (isNext) {
+                message += ` You are next in line! Please be ready to borrow the book. 📖`;
+            }
+
+            await notificationModel.createNotification(user.user_id, "Queue Position Updated", message);
+        }
+
+        return { message: "Queue record successfully removed, positions updated, and users notified." };
+
     } catch (error) {
         console.error(`Error removing queue record for user_id ${userId} and queue_id ${queueId}:`, error.message);
         throw new Error(`Failed to remove queue record and update queue numbers due to a database error.`);
     }
 };
+
 
 module.exports.retrieveQueueByBookId = async (bookId) => {
     try {
