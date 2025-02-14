@@ -16,7 +16,6 @@
     .search-input {
       max-width: 300px;
       border-radius: 5px;
-      padding: 0.5rem 1rem;
     }
 
     table {
@@ -33,9 +32,12 @@
     <h1 class="text-center mb-4">User Management</h1>
     <div id="alert-container"></div> 
   
-    <!-- Search Bar -->
     <div class="search-container mb-3">
-      <input type="text" id="searchInput" class="form-control search-input" placeholder="Search Users...">
+      <form class="d-flex justify-content-start gap-3">
+        <input type="text" id="searchInput" class="form-control search-input" placeholder="Search Users">
+        <button id="submitBtn" class="btn btn-primary">Submit<i class="bi bi-search ms-2"></i></button>
+        <button id="resetFilters" class="btn btn-secondary">Reset<i class="bi bi-arrow-clockwise ms-2"></i></button>
+      </form>
     </div>
 
     <div class="table-responsive">
@@ -65,17 +67,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
   <script src="authAdmin.js" type="text/javascript"></script>
   <script src="userManagement.js" type="text/javascript"></script>
-  <!-- jQuery filter logic -->
-  <script>
-    $(document).ready(function () {
-      $('#searchInput').on('keyup', function () {
-        const value = $(this).val().toLowerCase();
-        $('#userTable tbody tr').filter(function () {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-        });
-      });
-    });
-  </script>
+  
 </body>
 </html>
 

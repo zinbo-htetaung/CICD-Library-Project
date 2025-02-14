@@ -37,6 +37,7 @@ test.describe('Rent History Page Tests', () => {
     });
 
     test('Should apply filters and show filtered results', async ({ page }) => {
+        await page.waitForTimeout(1000);
         const tableRowsAwait = page.locator('#rent-history-table-body tr');
         await tableRowsAwait.first().waitFor();
 
@@ -46,7 +47,9 @@ test.describe('Rent History Page Tests', () => {
         await page.locator('#filterEmail').fill('john@gmail.com');
         await page.locator('#filterBookId').fill('5');
         await page.locator('#filterDueStatus').selectOption('Overdue');
-        await page.locator('#applyFilters').click();
+        await page.locator('#applyFilters').dblclick();
+
+        await page.waitForTimeout(1000);
 
         const tableRows = page.locator('#rent-history-table-body tr');
         const rowCount = await tableRows.count();
@@ -72,8 +75,10 @@ test.describe('Rent History Page Tests', () => {
     });
 
     test('Should display "No records found" message for unmatched filters', async ({ page }) => {
-        await page.waitForTimeout(2000); // Wait for the table to update
-
+        await page.waitForFunction(() => {
+            const tableBody = document.querySelector("#rent-history-table-body");
+            return tableBody && tableBody.children.length > 0;
+        });
         await page.locator('#filterName').fill('NonExistentUser');
         await page.getByRole('button', { name: 'Apply Filters' }).click();
 

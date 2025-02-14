@@ -195,6 +195,33 @@ module.exports.getAllUsers = (callback) => {
     pool.query(SQL_STATEMENT, [], callback);
 };
 
+module.exports.filterUsersByName = (name, callback) => {
+    const searchQuery = `%${name.toLowerCase()}%`;  
+
+    const SQL_STATEMENT = `
+    SELECT u.id, u.name, u.email, u.role, 
+           us.reputation, us.current_book_count, us.max_book_count
+    FROM users u 
+    LEFT JOIN user_status us ON u.id = us.user_id
+    WHERE u.role <> 'admin'
+    AND LOWER(u.name) LIKE $1; 
+    `;
+
+    pool.query(SQL_STATEMENT, [searchQuery], (error, results) => {
+        if (error) {
+            console.error("Error fetching users:", error);
+            return callback(error, null);
+        }
+
+        if (results.rows.length === 0) {
+            return callback(null, { error: "No users found" });
+        }
+
+        callback(null, results.rows);
+    });
+};
+
+
 module.exports.updateProfileInfo = async (data) => {
     try {
         const updatedProfile = await prisma.users.update({
@@ -360,5 +387,30 @@ module.exports.getUserByID = async (userId) => {
     } catch (error) {
         console.error("Error fetching user:", error);
         throw new Error("Database query failed"); // ❌ Avoid exposing raw DB errors
+    }
+};
+
+module.exports.calculateReputation = async (user_id) => {
+    try {
+        // Fetch reputation score from the `user_status` table
+        const userStatus = await prisma.user_status.findFirst({
+            where: { user_id },  //  Use findFirst instead of findUnique
+            select: { reputation: true }
+        });
+
+        if (!userStatus) {
+            return { score: 0, level: "Low" }; // Default if user has no status
+        }
+
+        const reputationScore = userStatus.reputation;
+
+        let level = "Low";
+        if (reputationScore >= 80) level = "High";
+        else if (reputationScore >= 50) level = "Medium";
+
+        return { score: reputationScore, level }; //  Return as requested
+    } catch (error) {
+        console.error("Error calculating reputation:", error);
+        throw error;
     }
 };
