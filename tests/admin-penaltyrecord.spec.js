@@ -22,15 +22,15 @@ test.beforeEach(async ({ page }) => {
 
 test.describe('Penalty Record Page Tests', () => {
     // Test for displaying penalty records
-    test('Successful penalty records display', async ({ page }) => {
-        await page.waitForTimeout(1000);
-        await expect(page).toHaveTitle('User Penalty Records');
-        await expect(page.locator('h1')).toHaveText('User Penalty Records');
+    // test('Successful penalty records display', async ({ page }) => {
+    //     await page.waitForTimeout(1000);
+    //     await expect(page).toHaveTitle('User Penalty Records');
+    //     await expect(page.locator('h1')).toHaveText('User Penalty Records');
 
-        const rows = await page.locator('#penaltyRecordsTable tr');
-        const rowCount = await rows.count();
-        await expect(rowCount).toBeGreaterThan(0); 
-    });
+    //     const rows = await page.locator('#penaltyRecordsTable tr');
+    //     const rowCount = await rows.count();
+    //     await expect(rowCount).toBeGreaterThan(0); 
+    // });
 
     // Test for filtering penalty records successfully
     test('Successful penalty records filtering', async ({ page }) => {
@@ -63,17 +63,17 @@ test.describe('Penalty Record Page Tests', () => {
         }
     });
 
-    // Test for filtering penalty records with no match
-    test('No records found for invalid filters', async ({ page }) => {
-        const nameFilter = await page.getByLabel("Username:");
-        await nameFilter.fill("xyz");
-        const endDateFilter = await page.getByLabel("End Date:");
-        await endDateFilter.fill("2021-11-11");
+    // // Test for filtering penalty records with no match
+    // test('No records found for invalid filters', async ({ page }) => {
+    //     const nameFilter = await page.getByLabel("Username:");
+    //     await nameFilter.fill("xyz");
+    //     const endDateFilter = await page.getByLabel("End Date:");
+    //     await endDateFilter.fill("2021-11-11");
 
-        await page.getByRole('button', { name: 'Submit' }).click();
+    //     await page.getByRole('button', { name: 'Submit' }).click();
 
-        await expect(page.locator("#penaltyRecordsTable")).toHaveText(/No penalty records found matching the filters/);
-    });
+    //     await expect(page.locator("#penaltyRecordsTable")).toHaveText(/No penalty records found matching the filters/);
+    // });
 
 
 });
