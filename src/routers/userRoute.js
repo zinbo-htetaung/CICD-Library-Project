@@ -17,4 +17,6 @@ router.delete('/ban/:userId', jwtMiddleware.verifyToken, jwtMiddleware.verifyIsA
 // for retrieve user info in admin chat
 router.get('/userId/:userId', jwtMiddleware.verifyToken, jwtMiddleware.verifyIsAdmin, userController.getUserByID);
 router.get('/search/:name', jwtMiddleware.verifyToken, jwtMiddleware.verifyIsAdmin, userController.searchUsersByName);
+router.get('/reputation/:userId', jwtMiddleware.verifyToken, userController.getUserReputation);
+
 module.exports = router;

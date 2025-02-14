@@ -22,6 +22,64 @@
             transform: scale(1.05);
             /* Enlarge the button slightly */
         }
+
+        /* Update the total penalty circle color */
+        .total-penalty-circle {
+            width: 120px;
+            height: 120px;
+            background: #3F72AF;
+            /* Medium Blue */
+            color: #F9F7F7;
+            /* Lightest Color */
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            border: 5px solid white;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* Hover effect */
+        .total-penalty-circle:hover {
+            transform: scale(1.1);
+            box-shadow: 0px 6px 15px rgba(63, 114, 175, 0.6);
+        }
+
+        /* Update the Pay Now button */
+        #payPenaltyBtn {
+            background-color: #3F72AF;
+            /* Medium Blue */
+            color: #F9F7F7;
+            /* Lightest Color */
+            border-color: #3F72AF;
+            font-weight: bold;
+            padding: 10px 20px;
+        }
+
+        #payPenaltyBtn:hover {
+            background-color: #112D4E;
+            /* Deep Blue */
+            border-color: #112D4E;
+        }
+
+        /* Disabled Pay Now button */
+        #payPenaltyBtn:disabled {
+            background-color: gray;
+            border-color: gray;
+            cursor: not-allowed;
+        }
+
+        /* No fees message */
+        #noPenaltyMessage {
+            color: #3F72AF;
+            /* Medium Blue */
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+        }
     </style>
 </head>
 
@@ -40,7 +98,7 @@
                         <ul class="dropdown-menu" aria-labelledby="profileActionsDropdown">
                             <li>
                                 <button type="button" data-bs-toggle="modal" data-bs-target="#updateModal"
-                        class="dropdown-item" >Update Info</button>
+                                    class="dropdown-item">Update Info</button>
                             </li>
                             <li>
                                 <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#chgPfpPic">
@@ -120,7 +178,77 @@
         <div class="p-3 mt-3">
             <div class="accordion shadow-lg" style="border:3px solid rgba(37, 37, 37, 0.764);border-radius: 8px;"
                 id="accordionExample">
-                <!-- First Accordion Item: Review History -->
+
+                <!-- Reputation Score Section -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingReputation">
+                        <button class="accordion-button fs-4 fw-bold collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseReputation" aria-expanded="false"
+                            aria-controls="collapseReputation">
+                            <i class="bi bi-star-fill fs-3 mx-3"></i> Reputation Score
+                        </button>
+                    </h2>
+                    <div id="collapseReputation" class="accordion-collapse collapse" aria-labelledby="headingReputation"
+                        data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                            <div class="d-flex align-items-center">
+                                <strong class="me-3">Reputation Level:</strong>
+                                <span id="reputationLevel" class="fw-bold">Loading...</span>
+                            </div>
+                            <div class="progress mt-3" style="height: 25px;">
+                                <div id="reputationBar" class="progress-bar" role="progressbar" style="width: 0%;"
+                                    aria-valuemin="0" aria-valuemax="100">
+                                    0%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingPenalty">
+                        <button class="accordion-button fs-4 fw-bold collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapsePenalty" aria-expanded="false" aria-controls="collapsePenalty">
+                            <i class="bi bi-cash-stack fs-3 mx-3"></i> Overdue Penalty Fees
+                        </button>
+                    </h2>
+                    <div id="collapsePenalty" class="accordion-collapse collapse" aria-labelledby="headingPenalty"
+                        data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <!-- Left: Penalty Table -->
+                                <div class="w-75" id="penaltyTableContainer">
+                                    <table class="table table-bordered table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center">Book Name</th>
+                                                <th class="text-center">Expiry Date</th>
+                                                <th class="text-center">Return Date</th>
+                                                <th class="text-center">Fee ($)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="penaltyTableBody">
+                                            <!-- Penalty records will be dynamically added here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Right: Total Penalty & Pay Button -->
+                                <div class="w-25 d-flex flex-column align-items-center" id="penaltySummary">
+                                    <div class="total-penalty-circle">
+                                        <span id="totalPenaltyAmount">$0.00</span>
+                                    </div>
+                                    <button class="btn btn-lg mt-3" id="payPenaltyBtn" disabled data-bs-toggle="modal"
+                                        data-bs-target="#confirmPaymentModal">
+                                        <i class="bi bi-credit-card"></i> Pay Now
+                                    </button>
+                                </div>
+                            </div>
+                            <p id="noPenaltyMessage" class="text-muted mt-2 d-none">No fees to pay</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="headingTwo">
                         <button class="accordion-button collapsed fs-4 fw-bold" type="button" data-bs-toggle="collapse"
@@ -150,6 +278,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="headingOne">
                         <button class="accordion-button collapsed fs-4 fw-bold" type="button" data-bs-toggle="collapse"
@@ -184,7 +313,27 @@
 
 
         </div>
-
+        <!-- Payment Confirmation Modal -->
+        <div class="modal fade" id="confirmPaymentModal" tabindex="-1" aria-labelledby="confirmPaymentModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmPaymentModalLabel">Confirm Payment</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to proceed with the payment of <strong
+                                id="confirmTotalAmount">$0.00</strong>?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="confirmPayBtn"
+                            onclick="payPenaltyFees()">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Modal for Change Profile Picture -->
         <div class="modal fade" id="chgPfpPic" tabindex="-1" aria-labelledby="chgPfpPicLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -201,17 +350,23 @@
                                 <div class="row mb-3">
                                     <!-- Row 1 -->
                                     <div class="col-md-4 d-flex justify-content-center">
-                                        <img class="profile-pic-option rounded-circle border border-2" src="https://api.dicebear.com/9.x/adventurer/svg?seed=Kingston&scale=80&radius=50&hairProbability=85&backgroundColor=c0aede" alt="Profile Pic 1"
+                                        <img class="profile-pic-option rounded-circle border border-2"
+                                            src="https://api.dicebear.com/9.x/adventurer/svg?seed=Kingston&scale=80&radius=50&hairProbability=85&backgroundColor=c0aede"
+                                            alt="Profile Pic 1"
                                             style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent;"
                                             onclick="selectProfilePic(this)">
                                     </div>
                                     <div class="col-md-4 d-flex justify-content-center">
-                                        <img class="profile-pic-option rounded-circle border border-2" src="https://api.dicebear.com/9.x/adventurer/svg?seed=Jocelyn&scale=80&radius=50&featuresProbability=15&hairProbability=85&backgroundColor=c0aede,b6e3f4,d1d4f9" alt="Profile Pic 2"
+                                        <img class="profile-pic-option rounded-circle border border-2"
+                                            src="https://api.dicebear.com/9.x/adventurer/svg?seed=Jocelyn&scale=80&radius=50&featuresProbability=15&hairProbability=85&backgroundColor=c0aede,b6e3f4,d1d4f9"
+                                            alt="Profile Pic 2"
                                             style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent;"
                                             onclick="selectProfilePic(this)">
                                     </div>
                                     <div class="col-md-4 d-flex justify-content-center">
-                                        <img class="profile-pic-option rounded-circle border border-2" src="https://api.dicebear.com/9.x/adventurer/svg?seed=Vivian&scale=80&radius=50&featuresProbability=15&hairProbability=85&backgroundColor=c0aede,b6e3f4,d1d4f9" alt="Profile Pic 3"
+                                        <img class="profile-pic-option rounded-circle border border-2"
+                                            src="https://api.dicebear.com/9.x/adventurer/svg?seed=Vivian&scale=80&radius=50&featuresProbability=15&hairProbability=85&backgroundColor=c0aede,b6e3f4,d1d4f9"
+                                            alt="Profile Pic 3"
                                             style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent;"
                                             onclick="selectProfilePic(this)">
                                     </div>
@@ -219,29 +374,33 @@
                                 <div class="row">
                                     <!-- Row 2 -->
                                     <div class="col-md-4 d-flex justify-content-center">
-                                        <img class="profile-pic-option rounded-circle border border-2" src="https://api.dicebear.com/9.x/adventurer/svg?seed=Aidan&scale=80&radius=50&featuresProbability=15&hairProbability=85&backgroundColor=c0aede,b6e3f4,d1d4f9" alt="Profile Pic 4"
+                                        <img class="profile-pic-option rounded-circle border border-2"
+                                            src="https://api.dicebear.com/9.x/adventurer/svg?seed=Aidan&scale=80&radius=50&featuresProbability=15&hairProbability=85&backgroundColor=c0aede,b6e3f4,d1d4f9"
+                                            alt="Profile Pic 4"
                                             style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent;"
                                             onclick="selectProfilePic(this)">
                                     </div>
                                     <div class="col-md-4 d-flex justify-content-center">
-                                        <img class="profile-pic-option rounded-circle border border-2" src="https://api.dicebear.com/9.x/adventurer/svg?seed=Maria&scale=80&radius=50&backgroundColor=c0aede" alt="Profile Pic 5"
+                                        <img class="profile-pic-option rounded-circle border border-2"
+                                            src="https://api.dicebear.com/9.x/adventurer/svg?seed=Maria&scale=80&radius=50&backgroundColor=c0aede"
+                                            alt="Profile Pic 5"
                                             style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent;"
                                             onclick="selectProfilePic(this)">
                                     </div>
                                     <div class="col-md-4 d-flex justify-content-center">
-                                        <img class="profile-pic-option  rounded-circle border border-2" src="" alt="Profile Pic 6"
-                                            style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent;" id="initImg"
-                                            onclick="selectProfilePic(this)">
+                                        <img class="profile-pic-option  rounded-circle border border-2" src=""
+                                            alt="Profile Pic 6"
+                                            style="width: 100px; height: 100px; cursor: pointer; border: 2px solid transparent;"
+                                            id="initImg" onclick="selectProfilePic(this)">
                                     </div>
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" id="submitProfilePicBtn"
-                            >Submit</button>
+                        <button type="button" class="btn btn-primary" id="submitProfilePicBtn">Submit</button>
                     </div>
                 </div>
             </div>
@@ -344,7 +503,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
         integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
         crossorigin="anonymous"></script>
-      
+
 
     <script src="../js/authUser.js"></script>
     <script src="../js/updateProfile.js" type="text/javascript"></script>
@@ -354,6 +513,7 @@
     <script src="../js/deleteUser.js" type="text/javascript"></script>
     <script src="../js/getUserRentHistory.js" type="text/javascript"></script>
     <script src="../js/getUserReview.js" type="text/javascript"></script>
+    <script src="../js/profileReputation.js" type="text/javascript"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <div id="footer-container"></div>
 </body>

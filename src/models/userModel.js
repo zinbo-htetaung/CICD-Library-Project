@@ -389,3 +389,28 @@ module.exports.getUserByID = async (userId) => {
         throw new Error("Database query failed"); // ❌ Avoid exposing raw DB errors
     }
 };
+
+module.exports.calculateReputation = async (user_id) => {
+    try {
+        // Fetch reputation score from the `user_status` table
+        const userStatus = await prisma.user_status.findFirst({
+            where: { user_id },  //  Use findFirst instead of findUnique
+            select: { reputation: true }
+        });
+
+        if (!userStatus) {
+            return { score: 0, level: "Low" }; // Default if user has no status
+        }
+
+        const reputationScore = userStatus.reputation;
+
+        let level = "Low";
+        if (reputationScore >= 80) level = "High";
+        else if (reputationScore >= 50) level = "Medium";
+
+        return { score: reputationScore, level }; //  Return as requested
+    } catch (error) {
+        console.error("Error calculating reputation:", error);
+        throw error;
+    }
+};
