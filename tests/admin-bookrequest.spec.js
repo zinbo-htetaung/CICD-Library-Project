@@ -18,46 +18,6 @@ test.describe('Manage Book Request', () => {
         await expect(page.getByRole('cell', { name: 'To Kill a Mockingbird' })).toBeVisible();
 
     })
-    // test('Should redirect to new page when add button is clicked', async ({ page }) => {
-    //     await expect(page.getByRole('cell', { name: '1984' })).toBeVisible();
-    //     await page.getByRole('row', { name: '2 2 mary 1984 George Orwell' }).getByRole('button').first().click();
-    //     await expect(page).toHaveURL(`${appBaseURL}/admin/addbook.html?bookName=1984&author=George%20Orwell`);
-    //     await expect(page.locator('body')).toMatchAriaSnapshot(`
-    //             - heading "Add a New Book" [level=2]
-    //             - text: Book Name
-    //             - textbox "Book Name"
-    //             - text: Author
-    //             - textbox "Author": George Orwell
-    //             - text: Description
-    //             - textbox "Description"
-    //             - text: Number of Copies
-    //             - spinbutton "Number of Copies"
-    //             - text: Categories
-    //             - checkbox "Fiction"
-    //             - text: Fiction
-    //             - checkbox "Non-Fiction"
-    //             - text: Non-Fiction
-    //             - checkbox "Mystery"
-    //             - text: Mystery
-    //             - checkbox "Fantasy"
-    //             - text: Fantasy
-    //             - checkbox "Science Fiction"
-    //             - text: Science Fiction
-    //             - checkbox "Romance"
-    //             - text: Romance
-    //             - checkbox "Thriller"
-    //             - text: Thriller
-    //             - checkbox "Historical Fiction"
-    //             - text: Historical Fiction
-    //             - checkbox "Biography"
-    //             - text: Biography
-    //             - checkbox "Self-Help"
-    //             - text: Self-Help
-    //             - button "Reset"
-    //             - button "Add Book"
-    //             `);
-    //     console.log("page redirected to new page passing required info")
-    // })
     test('Should pop up alert and delete when delete button is clicked', async ({ page }) => {
         // Get all rows in the table
         const rows = page.locator('table tr');

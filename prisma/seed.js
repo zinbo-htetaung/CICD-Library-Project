@@ -137,6 +137,7 @@ const users = [
     address: '123 Main St, Springfield',
     dob: new Date('1990-01-01'),
     role: 'user',
+    avatar: 'https://api.dicebear.com/9.x/initials/svg?seed=John&scale=50&radius=50',
   },
   {
     name: 'mary',
@@ -145,6 +146,7 @@ const users = [
     address: '1 Boon Lay',
     dob: new Date('2000-01-01'),
     role: 'user',
+    avatar: 'https://api.dicebear.com/9.x/initials/svg?seed=Mary&scale50&radius=50',
   },
   {
     name: 'bruce',
@@ -153,6 +155,7 @@ const users = [
     address: '2 Canberra',
     dob: new Date('2004-04-04'),
     role: 'user',
+    avatar: 'https://api.dicebear.com/9.x/initials/svg?seed=Bruce&scale=50&radius=50',
   },
   {
     name: 'test',
@@ -161,6 +164,7 @@ const users = [
     address: '5 Canberra',
     dob: new Date('2004-04-05'),
     role: 'user',
+    avatar: 'https://api.dicebear.com/9.x/initials/svg?seed=Test&scale50&radius=50',
   },
   {
     name: 'admin',
