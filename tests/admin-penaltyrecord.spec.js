@@ -23,6 +23,7 @@ test.beforeEach(async ({ page }) => {
 test.describe('Penalty Record Page Tests', () => {
     // Test for displaying penalty records
     test('Successful penalty records display', async ({ page }) => {
+        await page.waitForTimeout(1000);
         await expect(page).toHaveTitle('User Penalty Records');
         await expect(page.locator('h1')).toHaveText('User Penalty Records');
 
@@ -45,7 +46,12 @@ test.describe('Penalty Record Page Tests', () => {
         const submitBtn = await page.getByRole('button', { name: 'Submit' });
         await submitBtn.click();
 
-        // Verify that all displayed records match the filter criteria
+        await page.waitForFunction(() => {
+            const rows = document.querySelectorAll("#penaltyRecordsTable tr");
+            return rows.length > 0; 
+        });
+        await page.waitForTimeout(1000);
+        
         const rows = await page.locator("#penaltyRecordsTable tr");
         const rowCount = await rows.count();
         await expect(rowCount).toBeGreaterThan(0); 

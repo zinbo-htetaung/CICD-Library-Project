@@ -51,14 +51,22 @@ test.beforeEach(async ({ page }) => {
     const bookCard = page.locator('h4', { hasText: '1984' });
     await bookCard.click();
     await page.waitForURL('http://localhost:3001/user/html/displaySingleBook.html?bookId=2');
+
+    await page.waitForLoadState('networkidle');
 });
 
 test.describe('User Review Test', () => {
     test('Create Review Both Fail and Success Case', async ({ page }) => {
-        //Testing Failed Case Where the User hasnt read the book before
+        await page.waitForSelector('#iconContainer', { state: 'visible' });
+
+        await page.waitForLoadState('networkidle');
+
         const iconContainer = await page.locator('#iconContainer');
         const icon = await iconContainer.locator('i');
-        await expect(icon).toHaveClass(/bi-book/);
+
+        await icon.waitFor({ state: 'visible' });
+
+        await expect(icon).toHaveClass(/bi-book/, { timeout: 5000 });
         await writeValidReview(page);
 
         const errorMessage = page.locator('#errorMessage');
@@ -66,7 +74,6 @@ test.describe('User Review Test', () => {
         const closeButton = page.locator('#writeReviewModal .modal-header .btn-close');
         await closeButton.click();
 
-        //Testing Success Case Where the User read the book before
         rentBook(page);
 
         await expect(icon).toHaveClass(/bi-book-half/);
