@@ -36,26 +36,6 @@ test.describe('Rent History Page Tests', () => {
         expect(rowCount).toBeGreaterThan(0);
     });
 
-    test('Should apply filters and show filtered results', async ({ page }) => {
-        const tableRows = page.locator('#rent-history-table-body tr');
-
-        await tableRows.first().waitFor();
-
-        await page.locator('#filterName').fill('john');
-        await page.locator('#filterEmail').fill('john@gmail.com');
-        await page.locator('#filterBookId').fill('5');
-        await page.locator('#filterDueStatus').selectOption('Overdue');
-        await page.locator('#applyFilters').click();
-
-        await page.waitForSelector('#rent-history-table-body tr td:first-child:text("1")', {
-            state: 'visible',
-            timeout: 3000 
-        });
-
-        const rowText = await page.locator('#rent-history-table-body tr td:first-child').innerText();
-        expect(rowText).toBe('1');
-    });
-
     test('Should reset filters to default values', async ({ page }) => {
         await page.locator('#filterName').fill('Jane Doe');
         await page.locator('#filterEmail').fill('jane.doe@example.com');

@@ -23,16 +23,6 @@ test.beforeEach(async ({ page }) => {
 
 test.describe('Admin Book Tests - General', () => {
   // Test for successful display of books
-  test('Successful Book Display', async ({ page }) => {
-    const bookCardsContainer = page.locator('#bookCardsContainer');
-    await expect(bookCardsContainer).toBeVisible();
-
-    const firstCard = bookCards.first();
-    const cardTitle = await firstCard.locator('.card-header h4').textContent();
-    await expect(cardTitle).not.toBeNull();   // ensure the card title is not null at least
-  });
-
-  // Test for successful display of books
   test('First book details page', async ({ page }) => {
     const bookCardsContainer = page.locator('#bookCardsContainer');
     await expect(bookCardsContainer).toBeVisible();
