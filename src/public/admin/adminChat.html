@@ -46,6 +46,132 @@
             border-radius: 12px;
             display: inline-block;
         }
+
+        /* Updated User List Styling */
+        .user-list-container {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            background: #e3f2fd;
+            /* Light Blue Background */
+            padding: 10px;
+        }
+
+        /* Individual User Item */
+        .user-list-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #bbdefb;
+            /* Light Blue Border */
+            cursor: pointer;
+            transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: #ffffff;
+        }
+
+        /* Unread Messages - Highlight */
+        .user-list-item.unread {
+            background-color: #cfe9ff !important;
+            /* Light Blue for Unread */
+            font-weight: bold;
+            color: #0d47a1;
+        }
+
+        /* Hover Effect */
+        .user-list-item:hover {
+            background-color: #64b5f6 !important;
+            color: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* User Avatar - Circle with Initials */
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #42a5f5;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            text-transform: uppercase;
+        }
+
+        /* User Info */
+        .user-info {
+            flex-grow: 1;
+            font-size: 14px;
+        }
+
+        .user-info strong {
+            font-size: 16px;
+            color: #0d47a1;
+        }
+
+        /* Last Message Styling */
+        .last-message {
+            color: #546e7a;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        #notifBadge {
+            font-size: 0.8rem;
+            padding: 5px;
+            display: none;
+        }
+
+        .timestamp {
+            font-size: 0.75rem;
+            color: #6c757d;
+            display: block;
+            margin-top: -3px;
+        }
+
+        /* ✅ Red Dot Notification with Animation */
+        .noti-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            border-radius: 50%;
+            margin-left: 5px;
+            animation: pulse 0.5s infinite alternate;
+        }
+
+        /* ✅ Pulse Animation */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1.3);
+                opacity: 0.7;
+            }
+        }
+
+        /* ✅ Bounce Effect for Unread Messages */
+        .user-list-item.unread {
+            animation: bounce 1s infinite alternate;
+        }
+
+        @keyframes bounce {
+            0% {
+                transform: translateY(0px);
+            }
+
+            100% {
+                transform: translateY(-8px);
+            }
+        }
     </style>
 </head>
 
@@ -57,21 +183,26 @@
     <div class="container mt-5 mb-5">
         <h1 class="text-center mb-4">Admin Reply Panel</h1>
 
-        <div class="row justify-content-center">
+        <div class="row">
+            <div class="col-md-4">
+                <h5>Users</h5>
+
+                <div class="input-group mb-2">
+                    <input type="text" id="userSearch" class="form-control" placeholder="Search users...">
+                    <button id="resetSearch" class="btn btn-outline-secondary">Reset</button>
+                </div>
+
+                <div id="userListContainer" class="user-list-container"></div>
+            </div>
             <div class="col-md-8">
-                <!-- User Info -->
                 <div class="alert alert-primary" id="userInfo"></div>
-
-                <!-- Message Container -->
                 <div class="message-container" id="messageContainer"></div>
-
-                <!-- Reply Form -->
                 <div class="mt-4">
                     <form id="replyForm">
                         <div class="input-group">
                             <textarea class="form-control" id="adminReply" placeholder="Type your reply here..."
                                 rows="1"></textarea>
-                            <button class="btn btn-primary" type="submit">Send <i class="bi bi-send"></i></button>
+                            <button class="btn btn-primary" type="submit">Send</button>
                         </div>
                     </form>
                 </div>

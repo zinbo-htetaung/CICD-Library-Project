@@ -17,4 +17,8 @@ router.delete('/:id', controller.deleteMessage);
 // Get messages by user ID
 router.get('/user/:userId', controller.getMessageByUserId);
 
+router.get('/users/latestMessages', controller.getLatestMessages);
+
+router.post('/markRead/:userId', controller.markRead);
+
 module.exports = router;

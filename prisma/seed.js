@@ -634,19 +634,19 @@ const bookRequests = [
 ];
 
 const messages = [
-  { userId: 1, sender: 'user', message: 'Hello, I need help with borrowing a book.', createdAt: new Date('2023-12-01T10:00:00Z') },
-  { userId: 1, sender: 'admin', message: 'Sure! What book are you looking for?', createdAt: new Date('2023-12-01T10:05:00Z') },
-  { userId: 2, sender: 'user', message: 'Can I return a book after the due date?', createdAt: new Date('2023-12-02T15:30:00Z') },
-  { userId: 2, sender: 'admin', message: 'Yes, but there might be a late fee.', createdAt: new Date('2023-12-02T15:35:00Z') },
-  { userId: 3, sender: 'user', message: 'Do you have any recommendations for mystery books?', createdAt: new Date('2023-12-03T18:00:00Z') },
-  { userId: 3, sender: 'admin', message: 'Yes! You might like "Gone Girl" or "Sherlock Holmes".', createdAt: new Date('2023-12-03T18:10:00Z') },
-  { userId: 1, sender: 'user', message: 'How do I reset my password?', createdAt: new Date('2023-12-04T09:45:00Z') },
-  { userId: 1, sender: 'admin', message: 'Go to settings and click on "Reset Password".', createdAt: new Date('2023-12-04T09:50:00Z') },
+  { userId: 1, sender: 'user', message: 'Hello, I need help with borrowing a book.', isRead: true, createdAt: new Date('2023-12-01T10:00:00Z') },
+  { userId: 1, sender: 'admin', message: 'Sure! What book are you looking for?', isRead: true, createdAt: new Date('2023-12-01T10:05:00Z') },
+  { userId: 2, sender: 'user', message: 'Can I return a book after the due date?', isRead: true, createdAt: new Date('2023-12-02T15:30:00Z') },
+  { userId: 2, sender: 'admin', message: 'Yes, but there might be a late fee.', isRead: true, createdAt: new Date('2023-12-02T15:35:00Z') },
+  { userId: 3, sender: 'user', message: 'Do you have any recommendations for mystery books?', isRead: true, createdAt: new Date('2023-12-03T18:00:00Z') },
+  { userId: 3, sender: 'admin', message: 'Yes! You might like "Gone Girl" or "Sherlock Holmes".', isRead: true, createdAt: new Date('2023-12-03T18:10:00Z') },
+  { userId: 1, sender: 'user', message: 'How do I reset my password?', isRead: true, createdAt: new Date('2023-12-04T09:45:00Z') },
+  { userId: 1, sender: 'admin', message: 'Go to settings and click on "Reset Password".', isRead: true, createdAt: new Date('2023-12-04T09:50:00Z') },
 ];
 
 const penalty_fee_data = [
   { rent_history_id: 1, user_id: 1, fees: 15, status: false, paid_on: null },
-  { rent_history_id: 18, user_id: 1, fees: 10, status: true, paid_on: new Date('2022-12-12')},
+  { rent_history_id: 18, user_id: 1, fees: 10, status: true, paid_on: new Date('2022-12-12') },
 ];
 
 const userStatuses = [];
@@ -674,7 +674,7 @@ async function main() {
   const insertedMessages = await prisma.message.createMany({
     data: messages,
   });
-  
+
   const insertedTasks = await prisma.task.createManyAndReturn({
     data: [
       { name: 'Seed 1', statusId: insertedStatuses[0].id },
