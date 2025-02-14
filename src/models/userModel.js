@@ -195,6 +195,33 @@ module.exports.getAllUsers = (callback) => {
     pool.query(SQL_STATEMENT, [], callback);
 };
 
+module.exports.filterUsersByName = (name, callback) => {
+    const searchQuery = `%${name.toLowerCase()}%`;  
+
+    const SQL_STATEMENT = `
+    SELECT u.id, u.name, u.email, u.role, 
+           us.reputation, us.current_book_count, us.max_book_count
+    FROM users u 
+    LEFT JOIN user_status us ON u.id = us.user_id
+    WHERE u.role <> 'admin'
+    AND LOWER(u.name) LIKE $1; 
+    `;
+
+    pool.query(SQL_STATEMENT, [searchQuery], (error, results) => {
+        if (error) {
+            console.error("Error fetching users:", error);
+            return callback(error, null);
+        }
+
+        if (results.rows.length === 0) {
+            return callback(null, { error: "No users found" });
+        }
+
+        callback(null, results.rows);
+    });
+};
+
+
 module.exports.updateProfileInfo = async (data) => {
     try {
         const updatedProfile = await prisma.users.update({
