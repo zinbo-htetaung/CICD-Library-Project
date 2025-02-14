@@ -75,7 +75,10 @@ async function sendReply(event, userId) {
     if (replyText) {
         await fetch("/api/messages", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify({ userId, sender: "admin", message: replyText }),
         });
 
@@ -183,7 +186,10 @@ async function loadChat(userId) {
     // ✅ Mark messages as read
     await fetch(`/api/messages/markRead/${userId}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" }
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+        }
     });
 
     window.location.href = `http://localhost:3000/admin/adminChat.html?userId=${userId}`;

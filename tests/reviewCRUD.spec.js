@@ -56,6 +56,7 @@ test.beforeEach(async ({ page }) => {
 test.describe('User Review Test', () => {
     test('Create Review Both Fail and Success Case', async ({ page }) => {
         //Testing Failed Case Where the User hasnt read the book before
+        page.waitForTimeout(6000);
         const iconContainer = await page.locator('#iconContainer');
         const icon = await iconContainer.locator('i');
         await expect(icon).toHaveClass(/bi-book/);
