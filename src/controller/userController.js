@@ -172,6 +172,26 @@ module.exports.getAllUsers = (req, res, next) => {
     });
 };
 
+module.exports.searchUsersByName = (req, res) => {
+    const { name } = req.params;
+
+    if (!name || name.trim() === "") {
+        return res.status(400).json({ message: "Name parameter required" });
+    }
+
+    model.filterUsersByName(name.trim(), (error, users) => {
+        if (error) {
+            return res.status(500).json({ message: "Internal server error." });
+        }
+
+        if (users.error) {
+            return res.status(404).json({ message: users.error });
+        }
+
+        res.status(200).json({ users });
+    });
+};
+
 
 module.exports.checkDuplicateEmail = async (req, res, next) => {
     const userId = res.locals.user_id;
@@ -411,5 +431,17 @@ module.exports.getUserByID = async  (req, res) => {
         }
         console.error("Error get user by ID:", error);
         return res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+module.exports.getUserReputation = async (req, res) => {
+    const user_id = parseInt(req.params.userId);
+
+    try {
+        const reputation = await model.calculateReputation(user_id);
+        res.status(200).json(reputation);
+    } catch (error) {
+        console.error("Error retrieving reputation:", error);
+        res.status(500).json({ error: "Failed to retrieve reputation" });
     }
 };

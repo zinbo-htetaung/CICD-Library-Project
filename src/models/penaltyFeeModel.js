@@ -1,3 +1,4 @@
+const { user } = require('pg/lib/defaults');
 const prisma = require('./prismaClient');
 
 module.exports.retrieveAll = (userId) => {
@@ -202,6 +203,122 @@ module.exports.insertPenalty = ({ rentHistoryId, userId, penaltyFee }) => {
         throw new Error("Failed to insert penalty record.");
     });
 };
+
+module.exports.getAllUsersPenaltyRecords = () => {
+    return prisma.penalty_fees.findMany({
+        select: {
+            id: true,
+            rent_history_id: true,
+            fees: true,
+            status: true,
+            paid_on: true,
+            users: {
+                select: {
+                    name: true 
+                }
+            },
+            rent_history: {
+                select: {
+                    book: {
+                        select: {
+                            book_name: true
+                        }
+                    }
+                }
+            }
+        },
+        orderBy: {
+            id: 'asc' 
+        }
+    })
+    .then(records => {
+        return records.map(record => ({
+            id: record.id,
+            rent_history_id: record.rent_history_id,
+            username: record.users.name,
+            book_name: record.rent_history.book.book_name,
+            fees: record.fees,
+            status: record.status,
+            paid_on: record.paid_on
+        }));
+    })
+    .catch(error => {
+        console.error("Error retrieving all penalty records:", error);
+        throw new Error("Failed to retrieve all penalty records.");
+    });
+};
+
+module.exports.getFilteredPenaltyRecords = ({ username, status, start_date, end_date }) => {
+    const filters = {};
+
+    if (username) {
+        filters.users = {
+            name: {
+                equals: username,   // username match
+                mode: "insensitive" // case-insensitive
+            }
+        };
+    }
+
+    if (status !== undefined) {
+        filters.status = status;    // paid/unpaid status
+    }
+
+    if (start_date || end_date) {
+        filters.paid_on = {};
+        if (start_date) {
+            filters.paid_on.gte = new Date(start_date);     // paid on or after start_date
+        }
+        if (end_date) {
+            filters.paid_on.lte = new Date(end_date);   // paid on or before end_date
+        }
+    }
+
+    return prisma.penalty_fees.findMany({
+        where: filters,     // strict filters
+        select: {
+            id: true,
+            rent_history_id: true,
+            fees: true,
+            status: true,
+            paid_on: true,
+            users: {
+                select: {
+                    name: true 
+                }
+            },
+            rent_history: {
+                select: {
+                    book: {
+                        select: {
+                            book_name: true
+                        }
+                    }
+                }
+            }
+        },
+        orderBy: {
+            id: 'asc' 
+        }
+    })
+    .then(records => {
+        return records.map(record => ({
+            id: record.id,
+            rent_history_id: record.rent_history_id,
+            username: record.users.name,    
+            book_name: record.rent_history.book.book_name,
+            fees: record.fees,
+            status: record.status,
+            paid_on: record.paid_on
+        }));
+    })
+    .catch(error => {
+        console.error("Error retrieving filtered penalty records:", error);
+        throw new Error("Failed to retrieve filtered penalty records.");
+    });
+};
+
+
 
 
 

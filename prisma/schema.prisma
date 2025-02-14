@@ -52,7 +52,12 @@ model book {
   rent_history     rent_history[]
   review           review[]
   Queue Queue[]
+
   QueueHistory QueueHistory[]
+
+  BookIgnoreList BookIgnoreList[]
+  BookWishlist BookWishlist[]
+
 }
 
 model book_category {
@@ -131,6 +136,8 @@ model users {
   QueueHistory QueueHistory[]
   messages     Message[] @relation("UserMessages")
   penalty_fees penalty_fees[]
+  BookIgnoreList BookIgnoreList[]
+  BookWishlist BookWishlist[]
 }
 
 model Queue {
@@ -200,6 +207,7 @@ model penalty_fees {
   users        users        @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
+
 model Notification {
   id          Int       @id @default(autoincrement())
   user_id     Int
@@ -210,3 +218,25 @@ model Notification {
   users        users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
+
+model BookWishlist {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  bookId    Int
+  addedAt   DateTime @default(now())
+  user      users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book      book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, bookId])
+}
+
+model BookIgnoreList {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  bookId    Int
+  addedAt   DateTime @default(now())
+  user      users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book      book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, bookId])
+}
