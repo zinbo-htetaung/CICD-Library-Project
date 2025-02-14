@@ -38,45 +38,46 @@ test.describe('User Management Page', () => {
     });
   
     // Test for successful user search
-    test('Successful user search', async ({ page }) => {
-      await page.goto('http://localhost:3001/admin/userManagement.html');
+    test('Successfully user search', async ({ page }) => {
+      const searchInput = page.locator("#searchInput");
+      await searchInput.fill("john");
 
-      const searchInput = await page.getByPlaceholder('Search Users...');
-      await searchInput.fill('mary'); 
+      const submitBtn = page.getByRole('button', { name: 'Submit' });
+      await submitBtn.click();
 
-      await page.waitForFunction(() => {
-        const visibleRows = Array.from(document.querySelectorAll('#userTable tbody tr'))
-          .filter(row => row.offsetParent !== null); 
-        return visibleRows.length > 0; 
-      });
+      await page.waitForResponse(response =>
+          response.url().includes('/api/users/search/john') && response.status() === 200
+      );
 
-      const rows = await page.locator('#userTable tbody tr').filter({ hasText: 'mary' });
+      const rows = page.locator('#userTable tbody tr');
+      const rowCount = await rows.count();
+      expect(rowCount).toBeGreaterThan(0);
 
-      // Validate that all visible rows contain "mary"
       for (let i = 0; i < await rows.count(); i++) {
-        const nameColumn = await rows.nth(i).locator('td:nth-child(2)');
-        const nameText = await nameColumn.textContent();
-        expect(nameText.toLowerCase().trim()).toContain('mary');
+          const nameCell = await rows.nth(i).locator('td:nth-child(2)').textContent();
+          expect(nameCell.toLowerCase().trim()).toContain("john");
       }
     });
 
     // Test for unsuccessful user search 
-    // test('Unsuccessful user search', async ({ page }) => {
-    //   await page.goto('http://localhost:3001/admin/userManagement.html');
-    
-    //   const searchInput = await page.getByPlaceholder('Search Users...');
-    //   await searchInput.fill('xyz'); // This user does not exist
-    
-    //   await page.waitForFunction(() => {
-    //     return [...document.querySelectorAll('#userTable tbody tr')]
-    //       .every(row => row.offsetParent === null); // Ensure all rows are hidden
-    //   });
-    
-    //   const rows = await page.locator('#userTable tbody tr');
-    //   for (let i = 0; i < await rows.count(); i++) {
-    //     await expect(rows.nth(i)).not.toBeVisible(); // Check each row is not visible
-    //   }
-    // }); 
+    test('Unsuccessful user search', async ({ page }) => {
+      const searchInput = page.locator("#searchInput");
+    await searchInput.fill("nonexistentuser");
+
+    const submitBtn = page.getByRole('button', { name: 'Submit' });
+    await submitBtn.click();
+
+    await page.waitForFunction(() => {
+        const rows = document.querySelectorAll("#userTable tbody tr");
+        return rows.length === 0; 
+    });
+
+    const rows = page.locator('#userTable tbody tr');
+    await expect(rows).toHaveCount(0);
+
+    const alertMessage = page.locator("#alert-container .alert");
+    await expect(alertMessage).toHaveText("No users found");
+    }); 
 
     // Test for banning a user
     test('Ban a user', async ({ page }) => {

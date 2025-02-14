@@ -40,7 +40,7 @@ test.describe('Admin Book Tests - General', () => {
     const bookCardsContainer = page.locator('#bookCardsContainer');
     await expect(bookCardsContainer).toBeVisible();
 
-    const specificBookCard = page.locator('.card-link[href*="bookId=1"]');
+    const specificBookCard = page.locator('.card-link[href="displaySingleBook.html?bookId=1"]');
     await specificBookCard.click();
 
     await expect(page).toHaveURL('http://localhost:3001/admin/displaySingleBook.html?bookId=1');
@@ -128,7 +128,7 @@ test.describe('Admin Book Tests - General', () => {
     const filterTarget = page.getByLabel('Filter Target:');
     await filterTarget.selectOption('category');
 
-    const keywords = 'Gibberish';
+    const keywords = 'whatever-book';
     const filterKeyword = page.getByLabel('Enter Keyword:');
     await filterKeyword.fill(keywords);
 
@@ -167,7 +167,7 @@ test.describe.serial('Admin Book Tests - Serial Mode', () => {
 
   // Test for book details update
   test('Update Book Details', async ({ page }) => {
-    const specificBookCard = page.locator('.card-link[href*="bookId=6"]');
+    const specificBookCard = page.locator('.card-link[href="displaySingleBook.html?bookId=1"]');
     await specificBookCard.click();
 
     await page.getByRole('link', { name: 'Update Book Details' }).click();
@@ -195,7 +195,7 @@ test.describe.serial('Admin Book Tests - Serial Mode', () => {
     const bookCardsContainer = page.locator('#bookCardsContainer');
     await expect(bookCardsContainer).toBeVisible();
 
-    const specificBookCard = page.locator('.card-link[href*="bookId=6"]');
+    const specificBookCard = page.locator('.card-link[href="displaySingleBook.html?bookId=1"]');
     await specificBookCard.click();
 
     await page.getByRole('button', { name: 'Update Book Categories' }).click();
@@ -220,7 +220,7 @@ test.describe.serial('Admin Book Tests - Serial Mode', () => {
     const bookCardsContainer = page.locator('#bookCardsContainer');
     await expect(bookCardsContainer).toBeVisible();
   
-    const specificBookCard = page.locator('.card-link[href*="bookId=6"]');
+    const specificBookCard = page.locator('.card-link[href="displaySingleBook.html?bookId=1"]');
     await specificBookCard.click();
   
     page.on('dialog', async (dialog) => {
