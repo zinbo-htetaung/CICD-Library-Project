@@ -486,7 +486,7 @@ async function enableAIChat() {
 }
 
 async function getAIResponse(userMessage) {
-    const apiKey = "AIzaSyB2Ej5knWF0o6MHn8ZVCD5dDY9L78mYwck"; // Replace with your actual key
+    const apiKey = "abcdefg"; // Replace with your actual key
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
 
     const requestBody = {
